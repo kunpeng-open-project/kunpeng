@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.kunpeng.framework.modules.logRecord.mapper.InterfaceLogMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.kunpeng.framework.modules.logRecord.po.InterfaceLogPO">
+        <id column="uuid" property="uuid" />
+        <result column="create_date" property="createDate" />
+        <result column="create_user_id" property="createUserId" />
+        <result column="create_user_name" property="createUserName" />
+        <result column="update_date" property="updateDate" />
+        <result column="update_user_id" property="updateUserId" />
+        <result column="update_user_name" property="updateUserName" />
+        <result column="delete_flag" property="deleteFlag" />
+        <result column="project_name" property="projectName" />
+        <result column="url" property="url" />
+        <result column="uri" property="uri" />
+        <result column="name" property="name" />
+        <result column="method" property="method" />
+        <result column="parameters" property="parameters" />
+        <result column="result" property="result" />
+        <result column="dispose_time" property="disposeTime" />
+        <result column="dispose_time_explain" property="disposeTimeExplain" />
+        <result column="clinet_ip" property="clinetIp" />
+        <result column="call_time" property="callTime" />
+        <result column="plat_form" property="platForm" />
+        <result column="identification" property="identification" />
+        <result column="phone" property="phone" />
+        <result column="identification_name" property="identificationName" />
+        <result column="serial" property="serial" />
+        <result column="status" property="status" />
+        <result column="message" property="message" />
+    </resultMap>
+
+    <!-- 表字段结果列 -->
+    <sql id="Base_Column_List">
+        uuid, project_name, url, uri, name, method, parameters, result, dispose_time, dispose_time_explain, clinet_ip, call_time, plat_form, identification, phone, identification_name, serial, status, message
+    </sql>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_Common_List">
+        create_date, create_user_id, create_user_name, update_date, update_user_id, update_user_name, delete_flag
+    </sql>
+
+</mapper>

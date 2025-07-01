@@ -1,0 +1,487 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>com.kunpeng.framework</groupId>
+    <artifactId>kunpeng</artifactId>
+    <version>1.0-0-SNAPSHOT</version>
+    <packaging>pom</packaging>
+    <modules>
+        <module>kunpeng-gateway</module>
+        <module>kunpeng-auth</module>
+        <module>kunpeng-common</module>
+        <module>kunpeng-common/framework-core</module>
+        <module>kunpeng-common/framework-security</module>
+
+    </modules>
+
+
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+        <maven.compiler.source>8</maven.compiler.source>
+        <maven.compiler.target>8</maven.compiler.target>
+        <java.version>1.8</java.version>
+        <spring-boot.version>2.7.18</spring-boot.version>
+        <spring-cloud.version>2021.0.9</spring-cloud.version>
+        <spring.cloud.alibaba.version>2021.0.6.1</spring.cloud.alibaba.version>
+        <mysql.version>8.0.33</mysql.version> <!-- mysql驱动-->
+        <mssql-jdbc.version>8.4.1.jre8</mssql-jdbc.version> <!-- sqlserver驱动-->
+        <mybatis-spring.version>2.3.0</mybatis-spring.version> <!--mybatis-->
+        <mybatis-plus.version>3.5.5</mybatis-plus.version><!-- mybatis-plus-->
+        <mybatis-plus-generator.version>3.5.5</mybatis-plus-generator.version> <!-- mybatis逆向工程-->
+        <mybatis-plus-join.version>1.5.2</mybatis-plus-join.version><!-- mybatis-plus 多表联查 历史 1.4.5-->
+        <pagehelper.version>2.0.0</pagehelper.version> <!--分页插件-->
+        <druid.version>1.2.5</druid.version> <!--druid连接池-->
+        <dynamic-datasource.version>4.3.1</dynamic-datasource.version> <!--动态数据源2.5.5-->
+        <flywaydb.version>5.2.4</flywaydb.version> <!--数据库版本控制-->
+        <jwt.version>4.4.0</jwt.version> <!--jwt3.8.2-->
+        <minio.version>8.2.2</minio.version>
+        <lombok.version>1.18.8</lombok.version> <!--lombok1.18.26-->
+        <hutool.version>5.8.8</hutool.version> <!--hutool工具包-->
+        <knife4j.version>4.4.0</knife4j.version> <!--knife4j 接口文档-->
+        <alibaba-json.version>2.0.9</alibaba-json.version>  <!--alibaba-json 2.0.53-->
+        <kaptcha.version>2.3.2</kaptcha.version>  <!--验证码-->
+        <okhttp.version>4.10.0</okhttp.version><!--okhttp-->
+        <easyexcel.version>4.0.1</easyexcel.version> <!--阿里easyexcel 3.0.2-->
+
+        <tika.version>1.24.1</tika.version> <!-- tika 查询类型-->
+        <bsh-core.version>2.0b4</bsh-core.version> <!--bsh字符串已java代码执行-->
+        <staxon.version>1.3</staxon.version> <!--xml转换器 -->
+        <junrar.version>4.0.0</junrar.version> <!--压缩操作-->
+        <commons-lang3.version>3.8.1</commons-lang3.version> <!--lang3-->
+        <zxing.version>3.3.3</zxing.version> <!--生成二维码-->
+        <pinyin4j.version>2.5.1</pinyin4j.version> <!--pinyin4j 汉字转拼音-->
+        <oshi-core.version>6.6.3</oshi-core.version> <!-- 获取系统信息 -->
+        <smiley-http.version>1.7</smiley-http.version> <!--代理-->
+        <bitwalker.version>1.19</bitwalker.version> <!-- 获取客户端版本、操作系统等信息-->
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!--        <commons-pool2.version>2.6.1</commons-pool2.version> &lt;!&ndash;pool 对象池&ndash;&gt;-->
+      <!--  <nacos.version>2021.0.5.0</nacos.version>--> <!--nacos-->
+
+
+        <ehcache.version>1.1.0</ehcache.version>  <!-- mybatis 整合ehcache-->
+        <sf.ehcache.version>2.10.8</sf.ehcache.version> <!--ehcache 二级缓存 依赖-->
+
+
+    </properties>
+
+
+
+    <dependencyManagement>
+        <dependencies>
+            <!-- SpringBoot 依赖配置 -->
+            <dependency>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-dependencies</artifactId>
+                <version>${spring-boot.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+            <!--spring-cloud 微服务-->
+            <dependency>
+                <groupId>org.springframework.cloud</groupId>
+                <artifactId>spring-cloud-dependencies</artifactId>
+                <version>${spring-cloud.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+            <!-- SpringCloud Alibaba 微服务 -->
+            <dependency>
+                <groupId>com.alibaba.cloud</groupId>
+                <artifactId>spring-cloud-alibaba-dependencies</artifactId>
+                <version>${spring.cloud.alibaba.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+            <!--代理-->
+            <dependency>
+                <groupId>org.mitre.dsmiley.httpproxy</groupId>
+                <artifactId>smiley-http-proxy-servlet</artifactId>
+                <version>${smiley-http.version}</version>
+            </dependency>
+            <!--获取客户端版本、操作系统等信息-->
+            <dependency>
+                <groupId>eu.bitwalker</groupId>
+                <artifactId>UserAgentUtils</artifactId>
+                <version>${bitwalker.version}</version>
+            </dependency>
+            <!--mybatis-->
+            <dependency>
+                <groupId>org.mybatis.spring.boot</groupId>
+                <artifactId>mybatis-spring-boot-starter</artifactId>
+                <version>${mybatis-spring.version}</version>
+            </dependency>
+            <!--druid-->
+            <dependency>
+                <groupId>com.alibaba</groupId>
+                <artifactId>druid-spring-boot-starter</artifactId>
+                <version>${druid.version}</version>
+            </dependency>
+            <!--sqlserver驱动-->
+            <dependency>
+                <groupId>com.microsoft.sqlserver</groupId>
+                <artifactId>mssql-jdbc</artifactId>
+                <version>${mssql-jdbc.version}</version>
+            </dependency>
+            <!--mysql驱动-->
+            <dependency>
+                <groupId>mysql</groupId>
+                <artifactId>mysql-connector-java</artifactId>
+                <scope>runtime</scope>
+                <version>${mysql.version}</version>
+            </dependency>
+            <!--lombok-->
+            <dependency>
+                <groupId>org.projectlombok</groupId>
+                <artifactId>lombok</artifactId>
+                <version>${lombok.version}</version>
+            </dependency>
+            <!--knife4j接口文档-->
+            <dependency>
+                <groupId>com.github.xiaoymin</groupId>
+                <artifactId>knife4j-openapi2-spring-boot-starter</artifactId>
+                <version>${knife4j.version}</version>
+            </dependency>
+           <!-- mybatis-plus-->
+            <dependency>
+                <groupId>com.baomidou</groupId>
+                <artifactId>mybatis-plus-boot-starter</artifactId>
+                <version>${mybatis-plus.version}</version>
+            </dependency>
+            <!-- mybatis-plus-generator代码生成器 -->
+            <dependency>
+                <groupId>com.baomidou</groupId>
+                <artifactId>mybatis-plus-generator</artifactId>
+                <version>${mybatis-plus-generator.version}</version>
+            </dependency>
+            <!--mybatis-plus-join-->
+            <dependency>
+                <groupId>com.github.yulichang</groupId>
+                <artifactId>mybatis-plus-join-boot-starter</artifactId>
+                <version>${mybatis-plus-join.version}</version>
+            </dependency>
+            <!--dynamic多数据源-->
+            <dependency>
+                <groupId>com.baomidou</groupId>
+                <artifactId>dynamic-datasource-spring-boot-starter</artifactId>
+                <version>${dynamic-datasource.version}</version>
+            </dependency>
+            <!--分页插件-->
+            <dependency>
+                <groupId>com.github.pagehelper</groupId>
+                <artifactId>pagehelper-spring-boot-starter</artifactId>
+                <version>${pagehelper.version}</version>
+            </dependency>
+            <!--jwt权限-->
+            <dependency>
+                <groupId>com.auth0</groupId>
+                <artifactId>java-jwt</artifactId>
+                <version>${jwt.version}</version>
+            </dependency>
+            <!--hutool-->
+            <dependency>
+                <groupId>cn.hutool</groupId>
+                <artifactId>hutool-all</artifactId>
+                <version>${hutool.version}</version>
+            </dependency>
+            <!-- 生成二维码 -->
+            <dependency>
+                <groupId>com.google.zxing</groupId>
+                <artifactId>core</artifactId>
+                <version>${zxing.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.google.zxing</groupId>
+                <artifactId>javase</artifactId>
+                <version>${zxing.version}</version>
+            </dependency>
+            <!--阿里的json-->
+            <dependency>
+                <groupId>com.alibaba.fastjson2</groupId>
+                <artifactId>fastjson2</artifactId>
+                <version>${alibaba-json.version}</version>
+            </dependency>
+            <!--阿里easyexcel-->
+            <dependency>
+                <groupId>com.alibaba</groupId>
+                <artifactId>easyexcel</artifactId>
+                <version>${easyexcel.version}</version>
+            </dependency>
+            <!--验证码-->
+            <dependency>
+                <groupId>com.github.penggle</groupId>
+                <artifactId>kaptcha</artifactId>
+                <version>${kaptcha.version}</version>
+            </dependency>
+            <!--tika文件查询类型-->
+            <dependency>
+                <groupId>org.apache.tika</groupId>
+                <artifactId>tika-core</artifactId>
+                <version>${tika.version}</version>
+            </dependency>
+            <!--BSH字符串执行器-->
+            <dependency>
+                <groupId>org.beanshell</groupId>
+                <artifactId>bsh-core</artifactId>
+                <version>${bsh-core.version}</version>
+            </dependency>
+            <!--xml转换器-->
+            <dependency>
+                <groupId>de.odysseus.staxon</groupId>
+                <artifactId>staxon</artifactId>
+                <version>${staxon.version}</version>
+            </dependency>
+            <!--压缩-->
+            <dependency>
+                <groupId>com.github.junrar</groupId>
+                <artifactId>junrar</artifactId>
+                <version>${junrar.version}</version>
+            </dependency>
+            <!--okhttp-->
+            <dependency>
+                <groupId>com.squareup.okhttp3</groupId>
+                <artifactId>okhttp</artifactId>
+                <version>${okhttp.version}</version>
+            </dependency>
+            <!--mybatis和ehcache集成器-->
+            <dependency>
+                <groupId>org.mybatis.caches</groupId>
+                <artifactId>mybatis-ehcache</artifactId>
+                <version>${ehcache.version}</version>
+            </dependency>
+            <!--ehcache二级缓存-->
+            <dependency>
+                <groupId>net.sf.ehcache</groupId>
+                <artifactId>ehcache</artifactId>
+                <version>${sf.ehcache.version}</version>
+            </dependency>
+            <!--lang3-->
+            <dependency>
+                <groupId>org.apache.commons</groupId>
+                <artifactId>commons-lang3</artifactId>
+                <version>${commons-lang3.version}</version>
+            </dependency>
+            <!--pinyin4j-->
+            <dependency>
+                <groupId>com.belerweb</groupId>
+                <artifactId>pinyin4j</artifactId>
+                <version>${pinyin4j.version}</version>
+            </dependency>
+            <!-- 获取系统信息 -->
+            <dependency>
+                <groupId>com.github.oshi</groupId>
+                <artifactId>oshi-core</artifactId>
+                <version>${oshi-core.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.flywaydb</groupId>
+                <artifactId>flyway-core</artifactId>
+                <version>${flywaydb.version}</version>
+            </dependency>
+
+            <!--nacosValue 注解使用-->
+            <!--            <dependency>-->
+            <!--                <groupId>com.alibaba.boot</groupId>-->
+            <!--                <artifactId>nacos-config-spring-boot-starter</artifactId>-->
+            <!--                <version>0.2.1</version>-->
+            <!--            </dependency>-->
+            <!--            <dependency>-->
+            <!--                <groupId>com.alibaba.cloud</groupId>-->
+            <!--                <artifactId>spring-cloud-starter-alibaba-nacos-config</artifactId>-->
+            <!--                <version>${nacos.version}</version>-->
+            <!--            </dependency>-->
+            <!--            <dependency>-->
+            <!--                <groupId>com.alibaba.cloud</groupId>-->
+            <!--                <artifactId>spring-cloud-starter-alibaba-nacos-discovery</artifactId>-->
+            <!--                <version>${nacos.version}</version>-->
+            <!--                &lt;!&ndash;            <exclusions>&ndash;&gt;-->
+            <!--                &lt;!&ndash;                <exclusion>&ndash;&gt;-->
+            <!--                &lt;!&ndash;                    <artifactId>guava</artifactId>&ndash;&gt;-->
+            <!--                &lt;!&ndash;                    <groupId>com.google.guava</groupId>&ndash;&gt;-->
+            <!--                &lt;!&ndash;                </exclusion>&ndash;&gt;-->
+            <!--                &lt;!&ndash;            </exclusions>&ndash;&gt;-->
+            <!--            </dependency>-->
+
+
+            <!--commons 集合操作工具类-->
+            <!--        <dependency>-->
+            <!--            <groupId>org.apache.commons</groupId>-->
+            <!--            <artifactId>commons-collections4</artifactId>-->
+            <!--            <version>4.1</version>-->
+            <!--        </dependency>-->
+
+
+            <!--        <dependency>-->
+            <!--            <groupId>com.google.code.gson</groupId>-->
+            <!--            <artifactId>gson</artifactId>-->
+            <!--            <version>2.8.6</version>-->
+            <!--        </dependency>-->
+
+
+            <!--        <dependency>-->
+            <!--            <groupId>org.springframework.boot</groupId>-->
+            <!--            <artifactId>spring-boot-test</artifactId>-->
+            <!--        </dependency>-->
+            <!--        <dependency>-->
+            <!--            <groupId>junit</groupId>-->
+            <!--            <artifactId>junit</artifactId>-->
+            <!--        </dependency>-->
+
+
+            <!--        <dependency>-->
+            <!--            <groupId>com.github.xiaoymin</groupId>-->
+            <!--            <artifactId>knife4j-spring-boot-starter</artifactId>-->
+            <!--            <version>${knife4j.version}</version>-->
+            <!--        </dependency>-->
+
+            <!--        <dependency>-->
+            <!--            <groupId>org.springframework</groupId>-->
+            <!--            <artifactId>spring-test</artifactId>-->
+            <!--            <version>5.2.8.RELEASE</version>-->
+            <!--        </dependency>-->
+
+
+            <!--        <dependency>-->
+            <!--            <groupId>joda-time</groupId>-->
+            <!--            <artifactId>joda-time</artifactId>-->
+            <!--            <version>2.9.9</version>-->
+            <!--        </dependency>-->
+
+
+            <!--以下以后嫁-->
+            <!--
+            &lt;!&ndash;hystrix 熔断器&ndash;&gt;
+            <dependency>
+                <groupId>org.springframework.cloud</groupId>
+                <artifactId>spring-cloud-starter-netflix-hystrix</artifactId>
+            </dependency>
+
+            &lt;!&ndash; feign 客户端调用&ndash;&gt;
+            <dependency>
+                <groupId>org.springframework.cloud</groupId>
+                <artifactId>spring-cloud-starter-openfeign</artifactId>
+            </dependency>
+            <dependency>
+                <groupId>io.github.openfeign</groupId>
+                <artifactId>feign-core</artifactId>
+            </dependency>
+
+            <dependency>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-starter-json</artifactId>
+            </dependency>
+               <dependency>
+                <groupId>org.mybatis</groupId>
+                <artifactId>mybatis</artifactId>
+                <version>3.5.6</version>
+            </dependency>
+
+
+
+
+
+
+
+        &lt;!&ndash;shiro&ndash;&gt;
+        <dependency>
+            <groupId>org.apache.shiro</groupId>
+            <artifactId>shiro-core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.shiro</groupId>
+            <artifactId>shiro-spring</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.shiro</groupId>
+            <artifactId>shiro-ehcache</artifactId>
+        </dependency>
+
+
+        <dependency>
+            <groupId>org.freemarker</groupId>
+            <artifactId>freemarker</artifactId>
+        </dependency>
+
+
+
+
+
+        <dependency>
+            <groupId>com.github.junrar</groupId>
+            <artifactId>junrar</artifactId>
+        </dependency>
+
+
+
+
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-compress</artifactId>
+        </dependency>
+
+
+
+
+        <dependency>
+            <groupId>com.netflix.zuul</groupId>
+            <artifactId>zuul-core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.netflix.zuul</groupId>
+            <artifactId>zuul-core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.netflix.zuul</groupId>
+            <artifactId>zuul-core</artifactId>
+        </dependency>
+        -->
+        </dependencies>
+    </dependencyManagement>
+
+<!--
+
+    <distributionManagement>
+        <repository>
+            <id>releases</id>
+            <name>Nexus Release Repository</name>
+            <url>http://10.10.100.232:31214/repository/maven-releases/</url>
+        </repository>
+
+        <snapshotRepository>
+            <id>snapshots</id>
+            <name>Nexus Snapshots Repository</name>
+            <url>http://10.10.100.232:31214/repository/maven-snapshots/</url>
+        </snapshotRepository>
+    </distributionManagement>
+-->
+
+
+<!--    <build>-->
+<!--        <pluginManagement>-->
+<!--            <plugins>-->
+<!--                <plugin>-->
+<!--                    <groupId>org.springframework.boot</groupId>-->
+<!--                    <artifactId>spring-boot-maven-plugin</artifactId>-->
+<!--                    <version>${spring-boot.version}</version> &lt;!&ndash; 使用已定义的属性 &ndash;&gt;-->
+<!--                </plugin>-->
+<!--                &lt;!&ndash; 其他需要管理的插件（如果有） &ndash;&gt;-->
+<!--            </plugins>-->
+<!--        </pluginManagement>-->
+<!--    </build>-->
+</project>
