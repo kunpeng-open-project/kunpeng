@@ -99,7 +99,7 @@ public class ${table.serviceImplName} extends ${superServiceImplClass}<${table.m
         ${entity} ${entityLowerCase} = KPJsonUtil.toJavaObjectNotEmpty(${entityParam}EditParamPO, ${entity}.class);
 
         if (this.baseMapper.insert(${entityLowerCase}) == 0)
-            throw new ServiceException(ReturnFinishedMessageConstant.ERROR);
+            throw new KPServiceException(ReturnFinishedMessageConstant.ERROR);
     }
 
 
@@ -114,7 +114,7 @@ public class ${table.serviceImplName} extends ${superServiceImplClass}<${table.m
         ${entity} ${entityLowerCase} = KPJsonUtil.toJavaObjectNotEmpty(${entityParam}EditParamPO, ${entity}.class);
 
         if (this.baseMapper.updateById(${entityLowerCase}) == 0)
-            throw new ServiceException(ReturnFinishedMessageConstant.ERROR);
+            throw new KPServiceException(ReturnFinishedMessageConstant.ERROR);
     }
 
 
@@ -126,10 +126,10 @@ public class ${table.serviceImplName} extends ${superServiceImplClass}<${table.m
      * @return String
     **/
     public String batchRemove(List<String> ids){
-        if(KPStringUtil.isEmpty(ids)) throw new ServiceException("请选择要删除的内容！");
+        if(KPStringUtil.isEmpty(ids)) throw new KPServiceException("请选择要删除的内容！");
 
         Integer row = this.baseMapper.deleteBatchIds(ids);
-        if(row == 0) throw new ServiceException(ReturnFinishedMessageConstant.ERROR);
+        if(row == 0) throw new KPServiceException(ReturnFinishedMessageConstant.ERROR);
 
         return KPStringUtil.format("删除成功{0}条数据", row);
     }
