@@ -10,21 +10,13 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
-;
-
-
-
 
 /**
- * <p>Title: Mybatis模块相关配置</p>
- * <p>Description: </p>
- * <p>Copyright: Copyright (c) 2020</p>
- * <p>Company: www.jfzh.com</p>
- *
- * @author Chen Haidong
- * @version 1.0
- * @date 2020/7/15  15:11
- */
+ * @Author lipeng
+ * @Description mybatisplus 相关配置
+ * @Date  2020/7/15
+ * @return
+ **/
 @Configuration
 @EnableTransactionManagement
 public class MybatisPlusConfig {

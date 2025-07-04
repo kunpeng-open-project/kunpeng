@@ -29,7 +29,7 @@ public class LogUtil {
      * @return java.lang.String
      * @Author lipeng
      * @Description 内部接口用时
-     * @Date 2024/2/5 9:20
+     * @Date 2024/2/5
      **/
     public String interfaceRecordLog(HttpServletRequest req, String parameter, String result, Long disposeDate) {
         return new KPJSONFactoryUtil()
@@ -59,7 +59,7 @@ public class LogUtil {
      * @return java.lang.String
      * @Author lipeng
      * @Description 调用第三方接口用时
-     * @Date 2024/2/5 9:29
+     * @Date 2024/2/5
      **/
     public String interfaceRecordLog(String url, String method, HttpServletRequest req, String parameter, String result, Long disposeDate) {
         return new KPJSONFactoryUtil()

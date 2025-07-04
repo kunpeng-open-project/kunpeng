@@ -32,7 +32,7 @@ import java.util.stream.Collectors;
 /**
  * @Author lipeng
  * @Description 系统内部接口调用记录 服务实现类
- * @Date 2025-05-21 15:17:04
+ * @Date 2025-05-21
  **/
 @Service
 public class InterfaceLogService extends ServiceImpl<InterfaceLogMapper, InterfaceLogPO> {
@@ -47,7 +47,7 @@ public class InterfaceLogService extends ServiceImpl<InterfaceLogMapper, Interfa
     /**
      * @Author lipeng
      * @Description 查询系统内部接口调用记录列表
-     * @Date 2025-05-21 15:17:04
+     * @Date 2025-05-21
      * @param interfaceLogListParamPO
      * @return java.util.List<InterfaceLogPO>
      **/
@@ -94,7 +94,7 @@ public class InterfaceLogService extends ServiceImpl<InterfaceLogMapper, Interfa
     /**
      * @Author lipeng
      * @Description 查询接口所属项目
-     * @Date 2025/5/21 16:20
+     * @Date 2025/5/21
      * @param
      * @return java.lang.Object
      **/
@@ -134,7 +134,7 @@ public class InterfaceLogService extends ServiceImpl<InterfaceLogMapper, Interfa
     /**
      * @Author lipeng
      * @Description 根据查询详情
-     * @Date 2025-05-21 15:17:04
+     * @Date 2025-05-21
      * @param parameter
      * @return InterfaceLogPO
      **/
@@ -148,7 +148,7 @@ public class InterfaceLogService extends ServiceImpl<InterfaceLogMapper, Interfa
     /**
      * @Author lipeng
      * @Description 查询内部接口名称
-     * @Date 2025/5/21 16:40
+     * @Date 2025/5/21
      * @param parameter
      * @return java.util.List<com.kunpeng.framework.entity.bo.DictionaryBO>
      **/
@@ -195,7 +195,7 @@ public class InterfaceLogService extends ServiceImpl<InterfaceLogMapper, Interfa
     /**
      * @Author lipeng
      * @Description 清空接口缓存
-     * @Date 2025/5/21 17:04
+     * @Date 2025/5/21
      * @param
      * @return void
      **/
@@ -209,7 +209,7 @@ public class InterfaceLogService extends ServiceImpl<InterfaceLogMapper, Interfa
     /**
      * @Author lipeng
      * @Description 查询接口日志的项目名称
-     * @Date 2025/6/12 11:42
+     * @Date 2025/6/12
      * @param
      * @return java.util.List<com.kunpeng.framework.entity.bo.DictionaryBO>
      **/
@@ -238,7 +238,7 @@ public class InterfaceLogService extends ServiceImpl<InterfaceLogMapper, Interfa
     /**
      * @Author lipeng
      * @Description 查询接口调用次数列表
-     * @Date 2025/6/12 10:43
+     * @Date 2025/6/12
      * @param parameter
      * @return java.util.List<com.kunpeng.framework.modules.logRecord.po.customer.InterfaceCallListCustomerPO>
      **/

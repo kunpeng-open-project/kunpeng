@@ -10,10 +10,11 @@ import lombok.NoArgsConstructor;
 import java.util.List;
 
 /**
- * 路由配置信息
- *
- * @author Chen Haidong
- */
+ * @Author lipeng
+ * @Description 路由配置信息
+ * @Date 2025/5/4
+ * @return
+ **/
 @Data
 @Builder
 @NoArgsConstructor

@@ -23,7 +23,7 @@ import java.util.List;
 /**
 * @Author lipeng
 * @Description  项目菜单关联表相关接口
-* @Date 2025-05-16 10:07:47
+* @Date 2025-05-16
 **/
 @RestController
 @RequestMapping("/auth/project/menu")

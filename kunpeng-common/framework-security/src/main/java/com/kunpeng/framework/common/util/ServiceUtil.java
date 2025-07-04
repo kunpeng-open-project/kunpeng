@@ -10,7 +10,7 @@ import org.springframework.stereotype.Component;
 /* *
  * @Author 李鹏
  * @Description 管理spring 中的bean
- * @Date 2020/5/18 22:37
+ * @Date 2020/5/18
  * @Param
  * @return
  **/

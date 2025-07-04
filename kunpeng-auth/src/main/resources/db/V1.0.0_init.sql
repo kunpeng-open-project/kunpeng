@@ -706,7 +706,7 @@ CREATE TABLE `auth_dict_type`
     `dict_type_id`     char(36) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL COMMENT '字典类型ID',
     `dict_name`        varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL COMMENT '字典名称',
     `dict_type`        varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL COMMENT '字典类型',
-    `status`           int                                                           DEFAULT NULL COMMENT '状态 0正常 1停用',
+    `status`           int                                                           DEFAULT NULL COMMENT '状态 0 停用 1 正常',
     `create_date`      datetime                                                      DEFAULT NULL COMMENT '创建时间',
     `create_user_id`   varchar(36) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci  DEFAULT NULL COMMENT '创建用户id',
     `create_user_name` varchar(36) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci  DEFAULT NULL COMMENT '创建用户名称',
@@ -728,14 +728,14 @@ CREATE TABLE `auth_dict_type`
 DROP TABLE IF EXISTS `auth_dict_data`;
 CREATE TABLE `auth_dict_data`
 (
-    `dict_data__id`    char(36) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL COMMENT '字典编码ID',
+    `dict_data_id`    char(36) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL COMMENT '字典编码ID',
     `dict_type_id`     char(36) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL COMMENT '字典类型ID',
     `sort`             int                                                           DEFAULT '0' COMMENT '字典排序',
     `label`            varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL COMMENT '字典标签',
     `value`            varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL COMMENT '字典键值',
-    `type`             varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL COMMENT '字典类型',
-    `selected`          int                                                           DEFAULT NULL COMMENT '是否默认选中 1是 2否',
-    `status`           int                                                           DEFAULT NULL COMMENT '状态 0正常 1停用',
+    `dict_type`             varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL COMMENT '字典类型',
+    `selected`          int                                                           DEFAULT NULL COMMENT '是否默认选中 1是 0否',
+    `status`           int                                                           DEFAULT NULL COMMENT '状态 0 停用 1 正常',
     `create_date`      datetime                                                      DEFAULT NULL COMMENT '创建时间',
     `create_user_id`   varchar(36) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci  DEFAULT NULL COMMENT '创建用户id',
     `create_user_name` varchar(36) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci  DEFAULT NULL COMMENT '创建用户名称',
@@ -744,10 +744,10 @@ CREATE TABLE `auth_dict_data`
     `update_user_name` varchar(36) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci  DEFAULT NULL COMMENT '修改用户名称',
     `delete_flag`      tinyint                                                       DEFAULT NULL COMMENT '删除状态 0正常 1删除',
     `remark`           varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL COMMENT '备注',
-    PRIMARY KEY (`dict_data__id`) USING BTREE,
+    PRIMARY KEY (`dict_data_id`) USING BTREE,
     KEY                `dict_type_id` (`dict_type_id`),
     KEY                `label` (`label`),
-    KEY                `type` (`type`),
+    KEY                `dict_type` (`dict_type`),
     KEY                `selected` (`selected`),
     KEY                `status` (`status`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='字典数据表';

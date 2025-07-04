@@ -27,7 +27,7 @@ import org.springframework.security.web.authentication.logout.LogoutFilter;
 /**
  * @Author lipeng
  * @Description spring security配置
- * @Date 2024/11/21 12:49
+ * @Date 2024/11/21
  * @return
  **/
 @EnableGlobalMethodSecurity(prePostEnabled = true, securedEnabled = true)

@@ -29,7 +29,7 @@ package com.kunpeng.framework.utils.kptool;
 ///**
 // * @Author lipeng
 // * @Description plus 代码生成器
-// * @Date 2022/3/20 16:13
+// * @Date 2022/3/20
 // * @return
 // **/
 //@Component

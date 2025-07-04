@@ -148,7 +148,7 @@ public class LoginUserBO implements UserDetails {
     /**
      * @Author lipeng
      * @Description 获取当前登录用户的token
-     * @Date 2024/4/22 14:05
+     * @Date 2024/4/22
      * @param
      * @return com.framework.security.modules.user.po.customer.LoginUserBO
      **/
@@ -164,7 +164,7 @@ public class LoginUserBO implements UserDetails {
     /**
      * @Author lipeng
      * @Description 获取当前登录用户的token
-     * @Date 2024/4/22 12:02
+     * @Date 2024/4/22
      * @param request
      * @return com.framework.security.modules.user.po.customer.LoginUserBO
      **/

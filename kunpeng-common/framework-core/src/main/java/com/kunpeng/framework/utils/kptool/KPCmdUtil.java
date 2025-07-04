@@ -13,7 +13,7 @@ import java.util.regex.Pattern;
 /**
  * @Author lipeng
  * @Description 操作命令窗口
- * @Date 2020/9/22 15:35
+ * @Date 2020/9/22
  * @Param
  * @return
  **/
@@ -26,7 +26,7 @@ public final class KPCmdUtil {
     /**
      * @Author lipeng
      * @Description 执行cmd命令
-     * @Date 2020/9/22 15:35
+     * @Date 2020/9/22
      * @Param [cmd]
      * @return java.lang.String
      **/
@@ -51,7 +51,7 @@ public final class KPCmdUtil {
     /**
      * @Author lipeng
      * @Description 根据指定ip获取对应的mac地址
-     * @Date 2020/9/22 15:36
+     * @Date 2020/9/22
      * @Param [ip]
      * @return java.lang.String
      **/
@@ -78,7 +78,7 @@ public final class KPCmdUtil {
     /**
      * @Author lipeng
      * @Description 查询所有ip 和 mac
-     * @Date 2020/9/22 15:45
+     * @Date 2020/9/22
      * @Param []
      * @return java.util.List<com.alibaba.fastjson.JSONObject>
      **/

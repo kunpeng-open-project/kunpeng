@@ -19,7 +19,7 @@ public class KPIOUtil {
     /**
      * @Author lipeng
      * @Description 以流的形式下载文件
-     * @Date 2022/3/16 10:47
+     * @Date 2022/3/16
      * @param inputStream 文件流
      * @param fileName 文件名称
      * @return void

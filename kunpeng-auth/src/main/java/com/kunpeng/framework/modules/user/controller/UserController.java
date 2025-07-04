@@ -28,7 +28,7 @@ import java.util.List;
 /**
 * @Author lipeng
 * @Description  用户信息表相关接口
-* @Date 2025-04-21 11:00:54
+* @Date 2025-04-21
 **/
 @RestController
 @RequestMapping("/auth/user")

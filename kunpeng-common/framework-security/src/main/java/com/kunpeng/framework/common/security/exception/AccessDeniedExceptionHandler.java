@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 /**
  * @Author lipeng
  * @Description 解决全局异常处理器提前处理而不进入 UserAuthAccessDeniedHandler 处理器
- * @Date 2024/4/21 14:51
+ * @Date 2024/4/21
  * @return
  **/
 @RestControllerAdvice

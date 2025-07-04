@@ -19,11 +19,13 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
+
 /**
- * 自定义退出处理类 返回成功
- *
- * @author Chen Haidong
- */
+ * @Author lipeng
+ * @Description 退出登录
+ * @Date 2024/4/20
+ * @return
+ **/
 @Configuration
 public class LogoutSuccessHandlerImpl implements LogoutSuccessHandler {
 

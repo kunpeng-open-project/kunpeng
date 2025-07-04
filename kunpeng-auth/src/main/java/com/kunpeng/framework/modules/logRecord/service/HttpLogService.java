@@ -22,7 +22,7 @@ import java.util.List;
 /**
  * @Author lipeng
  * @Description 系统外部接口调用记录 服务实现类
- * @Date 2025-05-21 15:17:03
+ * @Date 2025-05-21
  **/
 @Service
 public class HttpLogService extends ServiceImpl<HttpLogMapper, HttpLogPO> {
@@ -33,7 +33,7 @@ public class HttpLogService extends ServiceImpl<HttpLogMapper, HttpLogPO> {
     /**
      * @Author lipeng
      * @Description 查询系统外部接口调用记录列表
-     * @Date 2025-05-21 15:17:03
+     * @Date 2025-05-21
      * @param httpLogListParamPO
      * @return java.util.List<HttpLogPO>
      **/
@@ -80,7 +80,7 @@ public class HttpLogService extends ServiceImpl<HttpLogMapper, HttpLogPO> {
     /**
      * @Author lipeng
      * @Description 根据查询详情
-     * @Date 2025-05-21 15:17:03
+     * @Date 2025-05-21
      * @param parameter
      * @return HttpLogPO
      **/

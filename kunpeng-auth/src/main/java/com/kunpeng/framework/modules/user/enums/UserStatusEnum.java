@@ -3,7 +3,7 @@ package com.kunpeng.framework.modules.user.enums;
 /**
  * @Author lipeng
  * @Description 用户状态
- * @Date 2024/9/10 15:12
+ * @Date 2024/9/10
  * @return
  **/
 public enum UserStatusEnum {

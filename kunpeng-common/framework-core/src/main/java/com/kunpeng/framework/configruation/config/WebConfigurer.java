@@ -8,16 +8,13 @@ import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
+
 /**
- * <p>Title: WebConfigurer </p>
- * <p>Description: </p>
- * <p>Copyright: Copyright (c) 2020</p>
- * <p>Company: www.jfzh.com</p>
- *
- * @author Chen Haidong
- * @version 1.0
- * @date 2020/7/28  11:28
- */
+ * @Author lipeng
+ * @Description web相关配置
+ * @Date 2021-04-12
+ * @return
+ **/
 @Configuration
 public class WebConfigurer implements WebMvcConfigurer {
 

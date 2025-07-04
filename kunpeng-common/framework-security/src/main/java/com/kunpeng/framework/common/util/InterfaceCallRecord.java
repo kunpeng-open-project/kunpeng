@@ -103,7 +103,7 @@ public class InterfaceCallRecord {
     /**
      * @Author lipeng
      * @Description 把get请求参数转为json
-     * @Date 2021/11/8 15:19
+     * @Date 2021/11/8
      * @return com.alibaba.fastjson.JSONObject
      **/
     private static final JSONObject getJSONParam() throws UnsupportedEncodingException {
@@ -143,7 +143,7 @@ public class InterfaceCallRecord {
     /**
      * @Author lipeng
      * @Description 把get请求参数转为json
-     * @Date 2024/11/8 14:53
+     * @Date 2024/11/8
      * @param request
      * @return com.alibaba.fastjson.JSONObject
      **/

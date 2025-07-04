@@ -30,7 +30,7 @@ import java.util.List;
 /**
  * @Author lipeng
  * @Description 登录服务层
- * @Date 2025/3/7 9:35
+ * @Date 2025/3/7
  * @return
  **/
 @Service
@@ -49,7 +49,7 @@ public class LoginService {
     /**
      * @Author lipeng
      * @Description 普通登录
-     * @Date 2025/3/7 10:01
+     * @Date 2025/3/7
      * @param parameter
      * @return com.kunpeng.framework.modules.user.po.customer.UserLoginCustomerPO
      **/
@@ -94,7 +94,7 @@ public class LoginService {
     /**
      * @Author lipeng
      * @Description 免密登录
-     * @Date 2025/6/4 15:57
+     * @Date 2025/6/4
      * @param parameter
      * @return com.kunpeng.framework.modules.user.po.customer.UserLoginCustomerPO
      **/
@@ -150,7 +150,7 @@ public class LoginService {
     /**
      * @Author lipeng
      * @Description 授权登录
-     * @Date 2025/6/9 11:36
+     * @Date 2025/6/9
      * @param parameter
      * @return com.kunpeng.framework.modules.user.po.customer.AuthorizationCustomerPO
      **/

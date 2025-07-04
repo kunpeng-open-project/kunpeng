@@ -1,4 +1,4 @@
-//package com.kunpeng.framework.config;
+package com.kunpeng.framework.config;//package com.kunpeng.framework.config;
 //
 //import cn.hutool.core.collection.CollectionUtil;
 //import com.github.xiaoymin.knife4j.spring.annotations.EnableKnife4j;

@@ -58,7 +58,7 @@ import java.util.stream.Collectors;
 /**
  * @Author lipeng
  * @Description 用户验证处理
- * @Date 2024/4/21 14:52
+ * @Date 2024/4/21
  * @return
  **/
 @Service
@@ -159,7 +159,7 @@ public class UserDetailsCheck implements UserDetailsService {
      * @return com.framework.security.modules.user.po.customer.LoginUserBO
      * @Author lipeng
      * @Description 普通登录
-     * @Date 2024/4/22 10:12
+     * @Date 2024/4/22
      **/
     private LoginUserBO common(LoginUserTypeBO loginUserTypeBO, AuthLoginRecordPO loginRecordPO) throws UsernameNotFoundException {
         LambdaQueryWrapper<AuthUserPO> queryWrapper = new LambdaQueryWrapper<>();
@@ -318,7 +318,7 @@ public class UserDetailsCheck implements UserDetailsService {
     /**
      * @Author lipeng
      * @Description 授权登录
-     * @Date 2024/7/10 14:09
+     * @Date 2024/7/10
      * @param loginUserTypeBO
      * @return com.framework.security.modules.user.po.customer.LoginUserBO
      **/
@@ -383,7 +383,7 @@ public class UserDetailsCheck implements UserDetailsService {
     /**
      * @Author lipeng
      * @Description 登录失败
-     * @Date 2024/6/26 8:50
+     * @Date 2024/6/26
      * @param userId
      * @return java.lang.String
      **/
@@ -413,7 +413,7 @@ public class UserDetailsCheck implements UserDetailsService {
     /**
      * @Author lipeng
      * @Description 记录登录日志
-     * @Date 2024/6/26 8:52
+     * @Date 2024/6/26
      * @param loginRecordPO
      * @param loginResult
      * @return void

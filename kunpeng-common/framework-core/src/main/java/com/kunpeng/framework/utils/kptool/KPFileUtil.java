@@ -45,7 +45,7 @@ public final class KPFileUtil {
     /**
      * @Author lipeng
      * @Description 创建文件夹
-     * @Date 2020/9/21 12:49
+     * @Date 2020/9/21
      * @Param [path]
      * @return boolean
      **/

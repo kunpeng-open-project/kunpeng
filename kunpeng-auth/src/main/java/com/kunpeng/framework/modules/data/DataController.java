@@ -10,6 +10,7 @@ import com.kunpeng.framework.entity.bo.DictionaryChildrenBO;
 import com.kunpeng.framework.entity.bo.KPResult;
 import com.kunpeng.framework.modules.dept.po.param.DeptListParamPO;
 import com.kunpeng.framework.modules.dept.service.DeptService;
+import com.kunpeng.framework.modules.dict.service.DictDataService;
 import com.kunpeng.framework.modules.menu.service.MenuService;
 import com.kunpeng.framework.modules.post.service.PostService;
 import com.kunpeng.framework.modules.project.service.ProjectService;
@@ -19,12 +20,14 @@ import com.kunpeng.framework.utils.kptool.KPServiceUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiModelProperty;
 import io.swagger.annotations.ApiOperation;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import java.util.List;
+import java.util.Map;
 
 
 /**
@@ -37,6 +40,9 @@ import java.util.List;
 @Api(tags = "数据相关接口", value = "数据相关接口")
 @ApiSupport(order = 0)
 public class DataController {
+
+    @Autowired
+    private DictDataService dictDataService;
 
     @ApiOperation(value = "查询项目下拉框")
     @PostMapping("/project/select")
@@ -54,7 +60,7 @@ public class DataController {
             @ApiModelProperty(name = "roleId", value = "角色Id", required = true, example = "e3ae1261c42dcb0e195fb9b9d9298bfe"),
     })
     @ResponseBody
-    public KPResult<List<DictionaryBO>> queryRoleProjectSelect(@RequestBody JSONObject parameter){
+    public KPResult<List<DictionaryBO>> queryRoleProjectSelect(@RequestBody JSONObject parameter) {
         return KPResult.success(KPServiceUtil.getBean(RoleProjectRelevanceService.class).queryRoleProjectSelect(parameter));
     }
 
@@ -84,16 +90,36 @@ public class DataController {
     @ApiOperation(value = "查询角色下拉框")
     @PostMapping("/role/select")
     @ResponseBody
-    public KPResult<List<DictionaryBO>> queryRoleSelect(){
+    public KPResult<List<DictionaryBO>> queryRoleSelect() {
         return KPResult.success(KPServiceUtil.getBean(RoleService.class).querySelect());
     }
 
     @ApiOperation(value = "查询岗位下拉框")
     @PostMapping("/post/select")
     @ResponseBody
-    public  KPResult<List<DictionaryBO>> queryPostSelect(){
+    public KPResult<List<DictionaryBO>> queryPostSelect() {
         return KPResult.success(KPServiceUtil.getBean(PostService.class).querySelect());
     }
 
 
+    @ApiOperation(value = "查询数据字典")
+    @PostMapping(value = "/open/dict/data/list")
+    @KPApiJsonlParam({
+        @ApiModelProperty(name = "dictType", value = "字典类型", example = "sex", required = true)
+    })
+    @ResponseBody
+    public KPResult<List<DictionaryBO>> queryDictData(@RequestBody JSONObject parameter) {
+        return KPResult.success(dictDataService.queryDictData(parameter));
+    }
+
+
+    @ApiOperation(value = "批量查询数据字典")
+    @PostMapping(value = "/open/dict/data/batch/list")
+    @KPApiJsonlParam({
+            @ApiModelProperty(name = "dictTypes", value = "字典类型集合", required = true, example = "[\"sex\",\"age\"]", dataType ="list")
+    })
+    @ResponseBody
+    public KPResult<Map<String, List<DictionaryBO>>> queryDictDatas(@RequestBody List<String> dictTypes) {
+        return KPResult.success(dictDataService.queryDictDatas(dictTypes));
+    }
 }

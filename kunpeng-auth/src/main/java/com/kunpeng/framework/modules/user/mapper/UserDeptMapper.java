@@ -9,7 +9,7 @@ import org.mybatis.caches.ehcache.LoggingEhcache;
 /**
  * @Author lipeng
  * @Description 用户部门关联表 Mapper 接口
- * @Date 2025-04-08 16:02:00
+ * @Date 2025-04-08
 **/
 @Mapper
 @CacheNamespace(implementation = LoggingEhcache.class)

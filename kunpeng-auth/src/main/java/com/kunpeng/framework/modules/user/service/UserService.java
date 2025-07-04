@@ -55,7 +55,7 @@ import java.util.stream.Collectors;
 /**
  * @Author lipeng
  * @Description 用户信息表 服务实现类
- * @Date 2025-04-21 11:00:54
+ * @Date 2025-04-21
  **/
 @Service
 public class UserService extends ServiceImpl<UserMapper, UserPO> {
@@ -75,7 +75,7 @@ public class UserService extends ServiceImpl<UserMapper, UserPO> {
     /**
      * @Author lipeng
      * @Description 查询用户信息列表
-     * @Date 2025-04-21 20:00:54
+     * @Date 2025-04-21
      * @param userListParamPO
      * @return java.util.List<UserListCustomerPO>
      **/
@@ -135,7 +135,7 @@ public class UserService extends ServiceImpl<UserMapper, UserPO> {
     /**
      * @Author lipeng
      * @Description 查询用户列表
-     * @Date 2025/5/14 20:34
+     * @Date 2025/5/14
      * @param userListParamPO
      * @return java.lang.Object
      **/
@@ -199,7 +199,7 @@ public class UserService extends ServiceImpl<UserMapper, UserPO> {
     /**
      * @Author lipeng
      * @Description 根据用户Id查询详情
-     * @Date 2025-04-21 20:00:54
+     * @Date 2025-04-21
      * @param parameter
      * @return UserDetailsCustomerPO
      **/
@@ -301,7 +301,7 @@ public class UserService extends ServiceImpl<UserMapper, UserPO> {
     /**
      * @Author lipeng
      * @Description 新增用户信息
-     * @Date 2025-04-21 20:00:58
+     * @Date 2025-04-21
      * @param userEditParamPO
      * @return void
      **/
@@ -347,7 +347,7 @@ public class UserService extends ServiceImpl<UserMapper, UserPO> {
     /**
      * @Author lipeng
      * @Description 修改用户信息
-     * @Date 2025-04-21 20:00:58
+     * @Date 2025-04-21
      * @param userEditParamPO
      * @return void
      **/
@@ -408,7 +408,7 @@ public class UserService extends ServiceImpl<UserMapper, UserPO> {
     /**
      * @Author lipeng
      * @Description 批量删除用户信息
-     * @Date 2025-04-21 20:00:59
+     * @Date 2025-04-21
      * @param ids
      * @return String
      **/
@@ -425,7 +425,7 @@ public class UserService extends ServiceImpl<UserMapper, UserPO> {
     /**
      * @Author lipeng
      * @Description 禁用或者取消禁用
-     * @Date 2025/4/29 20:25
+     * @Date 2025/4/29
      * @param parameter
      * @return void
      **/
@@ -458,7 +458,7 @@ public class UserService extends ServiceImpl<UserMapper, UserPO> {
     /**
      * @Author lipeng
      * @Description 批量注销
-     * @Date 2025/5/8 20:29
+     * @Date 2025/5/8
      * @param ids
      * @return com.kunpeng.framework.entity.bo.KPResult
      **/
@@ -476,7 +476,7 @@ public class UserService extends ServiceImpl<UserMapper, UserPO> {
     /**
      * @Author lipeng
      * @Description 管理员密码重置
-     * @Date 2025/5/8 20:37
+     * @Date 2025/5/8
      * @param parameter
      * @return void
      **/
@@ -494,7 +494,7 @@ public class UserService extends ServiceImpl<UserMapper, UserPO> {
     /**
      * @Author lipeng
      * @Description 管理员手动解锁
-     * @Date 2025/5/8 20:44
+     * @Date 2025/5/8
      * @param parameter
      * @return void
      **/

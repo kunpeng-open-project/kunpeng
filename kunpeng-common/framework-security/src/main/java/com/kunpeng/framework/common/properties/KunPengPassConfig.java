@@ -11,7 +11,7 @@ import java.util.List;
 /**
  * @Author lipeng
  * @Description 白名单
- * @Date 2024/4/19 13:30
+ * @Date 2024/4/19
  * @return
  **/
 @Data

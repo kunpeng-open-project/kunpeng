@@ -3,11 +3,10 @@ package com.kunpeng.framework.common.enums;
 /**
  * @Author lipeng
  * @Description 登录用户类型
- * @Date 2024/4/19 14:22
+ * @Date 2024/4/19
  * @return
  **/
 public enum LoginUserTypeEnum {
-
 
     COMMON(1, "账号登录"),
     AUTHORIZATION(2, "授权登录"),

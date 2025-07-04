@@ -53,7 +53,7 @@ public class WelcomeService {
      * @return java.util.List<com.jfzh.rht.modules.welcome.po.customer.LoginNumberCustomerPO>
      * @Author lipeng
      * @Description 查询首页用户登录数
-     * @Date 2024/8/6 10:45
+     * @Date 2024/8/6
      **/
     public List<LoginNumberCustomerPO> queryLoginNumber(List<String> projectCodes) {
         KPVerifyUtil.notNull(projectCodes, "请输入项目编码");
@@ -96,7 +96,7 @@ public class WelcomeService {
      * @return java.util.List<com.jfzh.rht.modules.welcome.po.customer.LoginRecordCustomerPO>
      * @Author lipeng
      * @Description 查询首页登录记录
-     * @Date 2024/8/6 11:29
+     * @Date 2024/8/6
      **/
     public List<LoginRecordCustomerPO> queryLoginRecord(JSONObject parameter) {
         ProjectPO projectPO = KPJsonUtil.toJavaObject(parameter, ProjectPO.class);
@@ -134,7 +134,7 @@ public class WelcomeService {
      * @return java.util.List<com.jfzh.rht.modules.welcome.po.customer.LoginRecordStatisticsCustomerPO>
      * @Author lipeng
      * @Description 查询首页用户登录次数统计
-     * @Date 2024/8/6 15:37
+     * @Date 2024/8/6
      **/
     public List<LoginRecordStatisticsCustomerPO> queryLoginRecordStatistics(JSONObject parameter) {
         ProjectPO projectPO = KPJsonUtil.toJavaObject(parameter, ProjectPO.class);
@@ -172,7 +172,7 @@ public class WelcomeService {
     /**
      * @Author lipeng
      * @Description 查询首页接口调用次数统计
-     * @Date 2024/8/7 10:16
+     * @Date 2024/8/7
      * @param parameter
      * @return java.util.List<com.jfzh.rht.modules.welcome.po.customer.InterfaceCallStatisticsCustomerPO>
      **/

@@ -4,7 +4,7 @@ package com.kunpeng.framework.common.enums;
 /**
  * @Author lipeng
  * @Description 数据权限类型
- * @Date 2024/4/26 11:12
+ * @Date 2024/4/26
  * @return
  **/
 public enum PermissionTypeEnum {

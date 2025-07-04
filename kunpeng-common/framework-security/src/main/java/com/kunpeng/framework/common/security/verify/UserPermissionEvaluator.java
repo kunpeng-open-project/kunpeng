@@ -17,7 +17,7 @@ import java.util.List;
 /**
  * @Author lipeng
  * @Description 自定义权限注解验证
- * @Date 2024/4/21 14:53
+ * @Date 2024/4/21
  * @return
  **/
 @Component

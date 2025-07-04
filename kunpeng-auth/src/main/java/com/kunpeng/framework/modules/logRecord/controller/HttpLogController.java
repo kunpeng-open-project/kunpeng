@@ -22,7 +22,7 @@ import org.springframework.web.bind.annotation.RestController;
 /**
 * @Author lipeng
 * @Description  系统外部接口调用记录相关接口
-* @Date 2025-05-21 15:17:03
+* @Date 2025-05-21
 **/
 @RestController
 @RequestMapping("/auth/http/log")

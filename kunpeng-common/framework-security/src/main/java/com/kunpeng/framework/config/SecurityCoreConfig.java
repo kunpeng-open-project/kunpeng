@@ -23,7 +23,7 @@ public class SecurityCoreConfig {
     /**
      * @Author lipeng
      * @Description 解决spring security firewall 防火墙导致 // 链接不支持
-     * @Date 2023/12/5 9:11
+     * @Date 2023/12/5
      * @param
      * @return org.springframework.security.web.firewall.HttpFirewall
      **/

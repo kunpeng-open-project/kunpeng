@@ -4,7 +4,7 @@ package com.kunpeng.framework.modules.logRecord.enums;
 /**
  * @Author lipeng
  * @Description 日志级别
- * @Date 2024/7/16 17:43
+ * @Date 2024/7/16
  * @return
  **/
 public enum JournalStatusEnum {

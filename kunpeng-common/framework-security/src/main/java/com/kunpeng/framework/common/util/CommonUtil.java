@@ -32,7 +32,6 @@ import java.util.concurrent.TimeUnit;
 /**
  * @Author lipeng
  * @Description 因为鉴权系统不能直接引用鲲鹏核心工具包  所有把用的的 放在这里   只限这个小jar包使用
- * @Date  10:37
  * @return
  **/
 @Deprecated
@@ -44,7 +43,6 @@ public class CommonUtil {
     /* *
      * @Author 李鹏
      * @Description //返回json
-     * @Date 2020/5/30 21:30
      * @Param [response, jsonData]
      * @return void
      **/
@@ -86,7 +84,7 @@ public class CommonUtil {
     /**
      * @Author lipeng
      * @Description String转Json
-     * @Date 2020/9/10 12:15
+     * @Date 2020/9/10
      * @Param [jsonString]
      * @return com.alibaba.fastjson.JSON
      **/
@@ -98,7 +96,7 @@ public class CommonUtil {
     /**
      * @Author lipeng
      * @Description String转Java对象
-     * @Date 2020/9/10 12:15
+     * @Date 2020/9/10
      * @Param [jsonString, clazz]
      * @return T
      **/
@@ -126,7 +124,7 @@ public class CommonUtil {
     /**
      * @Author lipeng
      * @Description LocalDateTime 转 date
-     * @Date 2023/10/7 14:38
+     * @Date 2023/10/7
      * @param localDateTime
      * @return java.util.Date
      **/
@@ -153,7 +151,7 @@ public class CommonUtil {
     /**
      * @Author lipeng
      * @Description date转LocalDateTime
-     * @Date 2023/10/7 14:38
+     * @Date 2023/10/7
      * @param date
      * @return java.time.LocalDateTime
      **/
@@ -165,7 +163,7 @@ public class CommonUtil {
     /**
      * @Author lipeng
      * @Description 将毫秒数转换为天、小时、分钟、秒和毫秒的字符串形式
-     * @Date 2024/1/25 17:30
+     * @Date 2024/1/25
      * @param milliseconds 毫秒数
      * @return java.lang.String
      **/
@@ -215,7 +213,7 @@ public class CommonUtil {
     /**
      * @Author lipeng
      * @Description 计算两个日期时间（包含日期和时间）相差的分钟数。
-     * @Date 2024/5/7 14:52
+     * @Date 2024/5/7
      * @param startTime 开始日期时间
      * @param endTime 结束日期时间
      * @return 相差的分钟数
@@ -230,7 +228,7 @@ public class CommonUtil {
     /**
      * @Author lipeng
      * @Description 字符串替换  {num} 占位符 0 開始
-     * @Date 2022/5/10 15:04
+     * @Date 2022/5/10
      * @param format
      * @param args
      * @return java.lang.String
@@ -311,7 +309,7 @@ public class CommonUtil {
     /**
      * @Author lipeng
      * @Description 字符串首字母小写
-     * @Date 2021/2/7 17:37
+     * @Date 2021/2/7
      * @param str
      * @return java.lang.String
      **/
@@ -394,7 +392,7 @@ public class CommonUtil {
     /**
      * @Author lipeng
      * @Description 获取锁
-     * @Date 2021/2/1 12:57
+     * @Date 2021/2/1
      * @param key 锁的Key
      * @param value 值(随便写毫无意义)
      * @param releaseTime 锁过期时间 防止死锁  秒
@@ -417,7 +415,7 @@ public class CommonUtil {
     /**
      * @Author lipeng
      * @Description 从req中获取HandlerMethod
-     * @Date 2024/4/10 14:50
+     * @Date 2024/4/10
      * @param req
      * @return org.springframework.web.method.HandlerMethod
      **/

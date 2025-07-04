@@ -4,7 +4,7 @@ package com.kunpeng.framework.enums;
 /**
  * @Author lipeng
  * @Description 删除状态
- * @Date 2021/10/13 16:02
+ * @Date 2021/10/13
  * @return
  **/
 public enum DeleteFalgEnum  {

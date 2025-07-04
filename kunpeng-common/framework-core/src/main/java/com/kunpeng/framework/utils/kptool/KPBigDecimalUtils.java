@@ -6,7 +6,7 @@ import java.math.RoundingMode;
 /**
  * @Author lipeng
  * @Description BigDecimal
- * @Date 2021/2/19 10:51
+ * @Date 2021/2/19
  * @return
  **/
 public final class KPBigDecimalUtils {
@@ -32,7 +32,7 @@ public final class KPBigDecimalUtils {
     /**
      * @Author lipeng
      * @Description 加
-     * @Date 2022/6/7 15:48
+     * @Date 2022/6/7
      * @param value
      * @return com.daoben.framework.util.KPBigDecimalUtils
      **/

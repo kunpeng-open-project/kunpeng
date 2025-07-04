@@ -4,7 +4,6 @@ package com.kunpeng.framework.common.enums;
 public enum AuthCodeEnum {
 
     SUCCESS(200, "操作成功"),
-
     FAILED(500, "系统内部错误"),
     ACCOUNT_NUMBER_NULL(600, "账号不存在"),
     INVALID(601, "账号或密码错误"),
@@ -26,8 +25,6 @@ public enum AuthCodeEnum {
         this.code = code;
         this.message = message;
     }
-
-
 
     private String message;
 

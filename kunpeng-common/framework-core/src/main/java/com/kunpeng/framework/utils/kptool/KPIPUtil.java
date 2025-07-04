@@ -65,7 +65,7 @@ public final class KPIPUtil {
      * @return void
      * @Author lipeng
      * @Description 根据ip获取位数
-     * @Date 2020/10/29 11:30
+     * @Date 2020/10/29
      * @Param []
      **/
     public static String getMaskDigit(String mask) {

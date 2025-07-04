@@ -32,7 +32,7 @@ import java.util.List;
 /**
  * @Author lipeng
  * @Description 项目表 服务实现类
- * @Date 2025-03-14 17:19:50
+ * @Date 2025-03-14
  **/
 @Service
 public class ProjectService extends ServiceImpl<ProjectMapper, ProjectPO> {
@@ -40,7 +40,7 @@ public class ProjectService extends ServiceImpl<ProjectMapper, ProjectPO> {
     /**
      * @Author lipeng
      * @Description 查询项目列表
-     * @Date 2025-03-14 17:19:50
+     * @Date 2025-03-1
      * @param projectListParamPO
      * @return java.util.List<ProjectPO>
      **/
@@ -62,7 +62,7 @@ public class ProjectService extends ServiceImpl<ProjectMapper, ProjectPO> {
     /**
      * @Author lipeng
      * @Description 根据项目Id查询详情
-     * @Date 2025-03-14 17:19:50
+     * @Date 2025-03-14
      * @param parameter
      * @return ProjectPO
      **/
@@ -76,7 +76,7 @@ public class ProjectService extends ServiceImpl<ProjectMapper, ProjectPO> {
     /**
      * @Author lipeng
      * @Description 新增项目
-     * @Date 2025-03-14 17:19:50
+     * @Date 2025-03-14
      * @param projectEditParamPO
      * @return void
      **/
@@ -112,7 +112,7 @@ public class ProjectService extends ServiceImpl<ProjectMapper, ProjectPO> {
     /**
      * @Author lipeng
      * @Description 修改项目
-     * @Date 2025-03-14 17:19:50
+     * @Date 2025-03-14
      * @param projectEditParamPO
      * @return void
      **/
@@ -146,7 +146,7 @@ public class ProjectService extends ServiceImpl<ProjectMapper, ProjectPO> {
     /**
      * @Author lipeng
      * @Description 批量删除项目
-     * @Date 2025-03-14 17:19:50
+     * @Date 2025-03-14
      * @param ids
      * @return String
      **/
@@ -164,7 +164,7 @@ public class ProjectService extends ServiceImpl<ProjectMapper, ProjectPO> {
     /**
      * @Author lipeng
      * @Description 设置项目状态
-     * @Date 2025/3/27 16:16
+     * @Date 2025/3/27
      * @param parameter
      * @return void
      **/
@@ -187,7 +187,7 @@ public class ProjectService extends ServiceImpl<ProjectMapper, ProjectPO> {
     /**
      * @Author lipeng
      * @Description 查询下拉框
-     * @Date 2025/3/31 15:20
+     * @Date 2025/3/31
      * @param parameter
      * @return java.util.List<com.kunpeng.framework.entity.bo.DictionaryBO>
      **/

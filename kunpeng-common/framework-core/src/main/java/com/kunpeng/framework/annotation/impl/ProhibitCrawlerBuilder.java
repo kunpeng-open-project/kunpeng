@@ -41,7 +41,7 @@ public class ProhibitCrawlerBuilder {
 
         Integer number = KPRedisUtil.getInteger(redisKey); //访问次数
         String forbid = KPRedisUtil.getString(redisKey_forbid); // 是否禁用
-        List<Object> blacklist = KPRedisUtil.getList111(redisKey_blacklist); // 黑名单
+        List<Object> blacklist = KPRedisUtil.getList(redisKey_blacklist); // 黑名单
 
         if (blacklist != null && blacklist.size()>0 && blacklist.contains(KPIPUtil.getClinetIP())){
             JSONObject error = new KPJSONFactoryUtil()
@@ -85,7 +85,7 @@ public class ProhibitCrawlerBuilder {
                 KPRedisUtil.set(redisKey_forbidNumber, forbidCount, 30, TimeUnit.DAYS);
                 if (forbidCount >= prohibitCrawler.blacklist()){
                     if (!blacklist.contains(KPIPUtil.getClinetIP())){
-                        KPRedisUtil.setListLeftPush(redisKey_blacklist, KPIPUtil.getClinetIP());
+                        KPRedisUtil.setListByLeftPush(redisKey_blacklist, KPIPUtil.getClinetIP());
                     }
                 }
             }

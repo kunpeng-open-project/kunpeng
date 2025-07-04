@@ -15,7 +15,7 @@ import java.time.LocalDateTime;
 /**
  * @Author lipeng
  * @Description 系统外部接口调用记录-历史表
- * @Date 2025-05-28 14:44:21
+ * @Date 2025-05-28
 **/
 @Data
 @Accessors(chain = true)

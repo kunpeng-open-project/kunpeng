@@ -137,7 +137,7 @@ public class RolePermissionService extends ServiceImpl<RolePermissionMapper, Rol
      * @return java.util.List<java.lang.String>
      * @Author lipeng
      * @Description 查询选中的数据权限
-     * @Date 2024/5/6 8:38
+     * @Date 2024/5/6
      **/
     public QueryPermissionCustomerPO queryPermissionInstall(JSONObject parameter) {
         KPVerifyUtil.notNull(parameter.getString("roleId"), "请输入角色Id");

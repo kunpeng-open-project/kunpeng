@@ -6,7 +6,7 @@ import lombok.Data;
 /**
  * @Author lipeng
  * @Description 业务异常
- * @Date 2021/7/8 22:30
+ * @Date 2021/7/8
  * @return
  **/
 @Data

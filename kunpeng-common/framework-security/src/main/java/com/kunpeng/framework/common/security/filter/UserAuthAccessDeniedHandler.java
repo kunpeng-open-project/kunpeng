@@ -14,7 +14,7 @@ import javax.servlet.http.HttpServletResponse;
 /**
  * @Author lipeng
  * @Description 暂无权限处理类
- * @Date 2024/4/21 14:49
+ * @Date 2024/4/21
  * @return
  **/
 @Component

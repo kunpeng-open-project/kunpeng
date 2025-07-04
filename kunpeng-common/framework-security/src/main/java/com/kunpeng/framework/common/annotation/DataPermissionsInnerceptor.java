@@ -34,7 +34,7 @@ import java.util.stream.Collectors;
 /**
  * @Author lipeng
  * @Description 数据权限拦截器
- * @Date 2024/9/20 10:27
+ * @Date 2024/9/20
  * @return
  **/
 @Slf4j
@@ -99,7 +99,7 @@ public class DataPermissionsInnerceptor implements InnerInterceptor {
     /**
      * @Author lipeng
      * @Description 普通登录拼接查询条件
-     * @Date 2024/9/25 9:03
+     * @Date 2024/9/25
      * @param kpDataPermissions 注解
      * @param condition 条件
      * @param loginUserBO 登录用户
@@ -164,7 +164,7 @@ public class DataPermissionsInnerceptor implements InnerInterceptor {
     /**
      * @Author lipeng
      * @Description 添加搜索条件
-     * @Date 2024/9/25 9:03
+     * @Date 2024/9/25
      * @param originalSql 原生sql
      * @param condition 条件
      * @return java.lang.String
@@ -196,7 +196,7 @@ public class DataPermissionsInnerceptor implements InnerInterceptor {
     /**
      * @Author lipeng
      * @Description 获取表名
-     * @Date 2024/9/25 8:57
+     * @Date 2024/9/25
      * @param originalSql
      * @return java.lang.String
      **/

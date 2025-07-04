@@ -24,7 +24,7 @@ public class IconUtil {
     /**
      * @Author lipeng
      * @Description 打印自定义内容
-     * @Date 2023/12/12 11:47
+     * @Date 2023/12/12
      * @param color 颜色
      * @param body 内容
      * @param isCenter 是否居中 true 居中

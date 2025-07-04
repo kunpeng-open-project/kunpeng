@@ -17,7 +17,7 @@ import java.io.IOException;
 /**
  * @Author lipeng
  * @Description 认证失败处理类 返回未授权
- * @Date 2024/4/20 15:41
+ * @Date 2024/4/20
  * @return
  **/
 @Component

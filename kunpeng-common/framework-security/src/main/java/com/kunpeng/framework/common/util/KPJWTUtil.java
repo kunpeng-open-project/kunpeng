@@ -15,7 +15,7 @@ import java.util.Map;
 /* *
  * @Author 李鹏
  * @Description JWT 相关操作
- * @Date 2020/5/19 11:29
+ * @Date 2020/5/19
  * @Param
  * @return
  **/
@@ -38,7 +38,7 @@ public final class KPJWTUtil {
     /**
      * @Author lipeng
      * @Description 生成Token
-     * @Date 2021/7/7 13:46
+     * @Date 2021/7/7
      * @param val
      * @param expireTime 过期时间 单位秒
      * @return java.lang.String
@@ -70,7 +70,7 @@ public final class KPJWTUtil {
    /**
     * @Author lipeng
     * @Description 验证Token
-    * @Date 2021/7/7 13:46
+    * @Date 2021/7/7
     * @param token
     * @return boolean
     **/
@@ -87,7 +87,7 @@ public final class KPJWTUtil {
     /**
      * @Author lipeng
      * @Description  解析Token
-     * @Date 2021/7/7 13:46
+     * @Date 2021/7/7
      * @param token
      * @return java.lang.String
      **/

@@ -5,7 +5,7 @@ package com.kunpeng.framework.enums;
 /**
  * @Author lipeng
  * @Description 层级
- * @Date 2024/6/14 14:30
+ * @Date 2024/6/14
  * @return
  **/
 public enum HierarchyEnum implements IErrorCodeEnum {

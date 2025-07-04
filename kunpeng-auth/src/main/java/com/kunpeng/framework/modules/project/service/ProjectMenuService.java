@@ -29,7 +29,7 @@ import java.util.stream.Collectors;
 /**
  * @Author lipeng
  * @Description 项目菜单关联表 服务实现类
- * @Date 2025-05-16 10:07:47
+ * @Date 2025-05-16
  **/
 @Service
 public class ProjectMenuService extends ServiceImpl<ProjectMenuMapper, ProjectMenuPO> {
@@ -40,7 +40,7 @@ public class ProjectMenuService extends ServiceImpl<ProjectMenuMapper, ProjectMe
     /**
      * @Author lipeng
      * @Description 设置权限
-     * @Date 2025/5/16 10:45
+     * @Date 2025/5/16
      * @param projectMenuInstallParamPO
      * @return void
      **/
@@ -76,7 +76,7 @@ public class ProjectMenuService extends ServiceImpl<ProjectMenuMapper, ProjectMe
     /**
      * @Author lipeng
      * @Description 查询选中的权限
-     * @Date 2025/5/16 10:45
+     * @Date 2025/5/16
      * @param parameter
      * @return java.util.List<java.lang.String>
      **/

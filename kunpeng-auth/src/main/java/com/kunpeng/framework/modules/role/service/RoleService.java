@@ -155,7 +155,7 @@ public class RoleService extends ServiceImpl<RoleMapper, RolePO> {
     /**
      * @Author lipeng
      * @Description 批量删除角色信息
-     * @Date 2025-03-31 10:52:31
+     * @Date 2025-03-31
      * @param ids
      * @return String
      **/
@@ -175,7 +175,7 @@ public class RoleService extends ServiceImpl<RoleMapper, RolePO> {
     /**
      * @Author lipeng
      * @Description 修改角色状态
-     * @Date 2025/3/31 14:10
+     * @Date 2025/3/31
      * @param parameter
      * @return void
      **/
@@ -196,7 +196,7 @@ public class RoleService extends ServiceImpl<RoleMapper, RolePO> {
     /**
      * @Author lipeng
      * @Description 查询角色下拉框
-     * @Date 2025/4/30 16:29
+     * @Date 2025/4/30
      * @param
      * @return java.util.List<com.kunpeng.framework.entity.bo.DictionaryBO>
      **/

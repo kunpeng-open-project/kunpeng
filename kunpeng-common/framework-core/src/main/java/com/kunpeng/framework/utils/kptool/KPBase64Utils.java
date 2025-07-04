@@ -9,7 +9,7 @@ import java.util.List;
 /**
  * @Author lipeng
  * @Description
- * @Date 2023/9/28 11:25
+ * @Date 2023/9/28
  * @return
  **/
 public class KPBase64Utils {
@@ -34,7 +34,7 @@ public class KPBase64Utils {
     /**
      * @Author lipeng
      * @Description 加密
-     * @Date 2023/9/28 11:26
+     * @Date 2023/9/28
      * @return java.lang.String
      **/
     public KPBase64Utils encryption(){
@@ -46,7 +46,7 @@ public class KPBase64Utils {
     /**
      * @Author lipeng
      * @Description 解密
-     * @Date 2023/9/28 11:35
+     * @Date 2023/9/28
      * @return java.lang.String
      **/
     public KPBase64Utils decode(){
@@ -58,7 +58,7 @@ public class KPBase64Utils {
     /**
      * @Author lipeng
      * @Description 返回结果
-     * @Date 2023/9/28 14:06
+     * @Date 2023/9/28
      * @param
      * @return java.lang.String
      **/
@@ -70,7 +70,7 @@ public class KPBase64Utils {
     /**
      * @Author lipeng
      * @Description 随机加盐
-     * @Date 2023/9/28 13:57
+     * @Date 2023/9/28
      * @return java.lang.String
      **/
     public KPBase64Utils addSalt(){
@@ -86,7 +86,7 @@ public class KPBase64Utils {
     /**
      * @Author lipeng
      * @Description 去盐
-     * @Date 2023/9/28 13:58
+     * @Date 2023/9/28
      * @return java.lang.String
      **/
     public KPBase64Utils delSalt(){
@@ -103,7 +103,7 @@ public class KPBase64Utils {
     /**
      * @Author lipeng
      * @Description 根据要加密的内容生成合适的盐
-     * @Date 2023/10/13 17:08
+     * @Date 2023/10/13
      * @param body 明文
      * @param interval 间隔
      * @return java.lang.String

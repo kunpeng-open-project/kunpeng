@@ -26,7 +26,7 @@ import java.util.List;
 /**
 * @Author lipeng
 * @Description  系统内部接口调用记录相关接口
-* @Date 2025-05-21 15:17:04
+* @Date 2025-05-21
 **/
 @RestController
 @RequestMapping("/auth/interface/log")

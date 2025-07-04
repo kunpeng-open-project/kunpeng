@@ -25,7 +25,7 @@ import java.util.List;
 /**
 * @Author lipeng
 * @Description  用户登录记录表相关接口
-* @Date 2025-06-10 17:25:05
+* @Date 2025-06-10
 **/
 @RestController
 @RequestMapping("/auth/login/record")

@@ -15,7 +15,7 @@ public class KPIDCardUtil {
     /**
      * @Author lipeng
      * @Description 根据身份证获取年龄
-     * @Date 2023/12/8 16:43
+     * @Date 2023/12/8
      * @param idCard
      * @return java.lang.Integer
      **/
@@ -46,7 +46,7 @@ public class KPIDCardUtil {
     /**
      * @Author lipeng
      * @Description 根据身份证获取性别
-     * @Date 2023/12/8 16:46
+     * @Date 2023/12/8
      * @param realName
      * @param idCard
      * @return java.lang.String

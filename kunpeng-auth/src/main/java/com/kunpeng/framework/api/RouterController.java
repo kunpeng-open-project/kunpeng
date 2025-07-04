@@ -20,8 +20,8 @@ import java.util.List;
 
 @Controller
 @RequestMapping("/api/router")
-@Api(tags = "_API-路由相关接口", value = "API-路由相关接口")
-@ApiSupport(order = 9999)
+@Api(tags = "API-路由相关接口", value = "API-路由相关接口")
+@ApiSupport(order = 0)
 public class RouterController {
 
     @Autowired

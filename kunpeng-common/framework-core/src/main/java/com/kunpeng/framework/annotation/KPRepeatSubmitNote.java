@@ -8,12 +8,13 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 
+
 /**
- * 自定义注解防止表单重复提交
- *
- * @author Chen Haidong lipeng
- *
- */
+ * @Author lipeng
+ * @Description
+ * @Date 2023/12/20 8:59
+ * @return
+ **/
 @Inherited
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)

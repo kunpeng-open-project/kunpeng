@@ -13,7 +13,7 @@ import java.time.LocalDate;
 /**
  * @Author lipeng
  * @Description 系统内部接口调用记录列表查询入参
- * @Date 2025-05-21 15:17:04
+ * @Date 2025-05-21
 **/
 @Data
 @Accessors(chain = true)

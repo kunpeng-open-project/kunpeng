@@ -24,7 +24,7 @@ import java.util.Map;
 /**
  * @Author lipeng
  * @Description 条形码
- * @Date 2022/10/13 10:37
+ * @Date 2022/10/13
  * @return
  **/
 public final class KPBarCodeUtil {
@@ -85,7 +85,7 @@ public final class KPBarCodeUtil {
     /**
      * @Author lipeng
      * @Description 生成条形码
-     * @Date 2022/10/13 11:45
+     * @Date 2022/10/13
      * @param
      * @return com.daoben.framework.util.KPBarCodeUtil
      **/
@@ -138,7 +138,7 @@ public final class KPBarCodeUtil {
     /**
      * @Author lipeng
      * @Description 生成并下载条形码
-     * @Date 2022/10/13 11:45
+     * @Date 2022/10/13
      * @param downLoadFileNme
      * @return void
      **/

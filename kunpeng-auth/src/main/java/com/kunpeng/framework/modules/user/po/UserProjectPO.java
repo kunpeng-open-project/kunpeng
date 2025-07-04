@@ -13,7 +13,7 @@ import lombok.experimental.Accessors;
 /**
  * @Author lipeng
  * @Description 用户项目关联表
- * @Date 2025-04-21 16:18:35
+ * @Date 2025-04-21
 **/
 @Data
 @Accessors(chain = true)

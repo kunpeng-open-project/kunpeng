@@ -25,7 +25,7 @@ import java.util.stream.Collectors;
 /**
  * @Author lipeng
  * @Description 用户登录记录表 服务实现类
- * @Date 2025-06-10 17:25:05
+ * @Date 2025-06-10
  **/
 @Service
 public class LoginRecordService extends ServiceImpl<LoginRecordMapper, LoginRecordPO> {
@@ -34,7 +34,7 @@ public class LoginRecordService extends ServiceImpl<LoginRecordMapper, LoginReco
     /**
      * @Author lipeng
      * @Description 查询用户登录记录列表
-     * @Date 2025-06-10 17:25:05
+     * @Date 2025-06-10
      * @param loginRecordListParamPO
      * @return java.util.List<LoginRecordPO>
      **/
@@ -74,7 +74,7 @@ public class LoginRecordService extends ServiceImpl<LoginRecordMapper, LoginReco
     /**
      * @Author lipeng
      * @Description 根据登录记录id查询详情
-     * @Date 2025-06-10 17:25:05
+     * @Date 2025-06-10
      * @param parameter
      * @return LoginRecordPO
      **/
@@ -88,7 +88,7 @@ public class LoginRecordService extends ServiceImpl<LoginRecordMapper, LoginReco
     /**
      * @Author lipeng
      * @Description 新增用户登录记录
-     * @Date 2025-06-10 17:25:05
+     * @Date 2025-06-10
      * @param loginRecordEditParamPO
      * @return void
      **/
@@ -103,7 +103,7 @@ public class LoginRecordService extends ServiceImpl<LoginRecordMapper, LoginReco
     /**
      * @Author lipeng
      * @Description 修改用户登录记录
-     * @Date 2025-06-10 17:25:05
+     * @Date 2025-06-10
      * @param loginRecordEditParamPO
      * @return void
      **/
@@ -118,7 +118,7 @@ public class LoginRecordService extends ServiceImpl<LoginRecordMapper, LoginReco
     /**
      * @Author lipeng
      * @Description 批量删除用户登录记录
-     * @Date 2025-06-10 17:25:05
+     * @Date 2025-06-10
      * @param ids
      * @return String
      **/

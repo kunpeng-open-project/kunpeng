@@ -22,7 +22,7 @@ import java.util.stream.Collectors;
 /**
  * @Author lipeng
  * @Description 用户角色
- * @Date 2025/5/15 14:27
+ * @Date 2025/5/15
  * @return
  **/
 @Service
@@ -35,7 +35,7 @@ public class UserRoleService extends ServiceImpl<UserRoleMapper, UserRolePO> {
     /**
      * @Author lipeng
      * @Description 设置用户
-     * @Date 2025/5/15 14:44
+     * @Date 2025/5/15
      * @param parameter
      * @return void
      **/

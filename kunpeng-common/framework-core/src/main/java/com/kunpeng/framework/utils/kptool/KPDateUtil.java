@@ -13,7 +13,7 @@ import java.util.Random;
 /* *
  * @Author 李鹏
  * @Description //时间操作的工具类
- * @Date 2020/5/31 0:07
+ * @Date 2020/5/31
  * @Param
  * @return
  **/
@@ -88,7 +88,7 @@ public final class KPDateUtil {
     /**
      * @Author lipeng
      * @Description  转换日期格式
-     * @Date 2024/8/6 15:21
+     * @Date 2024/8/6
      * @param date 日期
      * @param inputPattern  输入格式
      * @param outputPattern 输出格式
@@ -441,7 +441,7 @@ public final class KPDateUtil {
     /**
      * @Author lipeng
      * @Description 获取本周周一日期
-     * @Date 2023/12/7 17:17
+     * @Date 2023/12/7
      * @param
      * @return java.lang.String
      **/
