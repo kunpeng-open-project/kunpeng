@@ -102,7 +102,6 @@ public class RoleController {
     @KPApiJsonlParam({
             @ApiModelProperty(name = "roleId", value = "角色Id", required = true, example = "4c2943e45aa513c079045020b0d1bd8e")
     })
-    @ResponseBody
     public KPResult updateStatus(@RequestBody JSONObject parameter) {
         roleService.updateStatus(parameter);
         return KPResult.success();
@@ -116,7 +115,6 @@ public class RoleController {
             @ApiModelProperty(name = "userIds", value = "用户id集合", required = true, dataType = "list")
     })
     @PostMapping(value = "/add/user")
-    @ResponseBody
     public KPResult roleAddUser(@RequestBody JSONObject parameter) {
         userRoleService.userRoleService(parameter);
         return KPResult.success();

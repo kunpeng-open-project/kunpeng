@@ -38,7 +38,6 @@
         <dynamic-datasource.version>4.3.1</dynamic-datasource.version> <!--动态数据源2.5.5-->
         <flywaydb.version>5.2.4</flywaydb.version> <!--数据库版本控制-->
         <jwt.version>4.4.0</jwt.version> <!--jwt3.8.2-->
-        <minio.version>8.2.2</minio.version>
         <lombok.version>1.18.8</lombok.version> <!--lombok1.18.26-->
         <hutool.version>5.8.8</hutool.version> <!--hutool工具包-->
         <knife4j.version>4.4.0</knife4j.version> <!--knife4j 接口文档-->
@@ -46,6 +45,8 @@
         <kaptcha.version>2.3.2</kaptcha.version>  <!--验证码-->
         <okhttp.version>4.10.0</okhttp.version><!--okhttp-->
         <easyexcel.version>4.0.1</easyexcel.version> <!--阿里easyexcel 3.0.2-->
+        <minio.version>8.5.9</minio.version> <!--minio 7.1.0 -->
+
 
         <tika.version>1.24.1</tika.version> <!-- tika 查询类型-->
         <bsh-core.version>2.0b4</bsh-core.version> <!--bsh字符串已java代码执行-->
@@ -293,6 +294,13 @@
                 <groupId>org.flywaydb</groupId>
                 <artifactId>flyway-core</artifactId>
                 <version>${flywaydb.version}</version>
+            </dependency>
+
+            <!--添加minio的依赖-->
+            <dependency>
+                <groupId>io.minio</groupId>
+                <artifactId>minio</artifactId>
+                <version>${minio.version}</version>
             </dependency>
 
             <!--nacosValue 注解使用-->

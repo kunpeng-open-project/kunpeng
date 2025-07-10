@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
@@ -28,7 +29,7 @@ import java.util.List;
  * @author lipeng
  * @since 2024-04-19
  */
-@Controller
+@RestController
 @RequestMapping("/auth/role/menu")
 @Api(tags = "角色信息相关接口", value = "角色信息相关接口")
 @ApiSupport(order = 2)
@@ -41,7 +42,6 @@ public class RoleMenuController {
     @ApiOperation(value = "设置菜单权限", notes="权限 auth:role:menu:setting:install")
     @PostMapping(value = "/setting/install")
     @KPVerifyNote
-    @ResponseBody
     public KPResult doMenuInstall(@RequestBody RoleMenuInstallParamPO roleMenuInstallParamPO) {
         roleMenuService.doMenuInstall(roleMenuInstallParamPO);
         return KPResult.success();
@@ -54,7 +54,6 @@ public class RoleMenuController {
         @ApiModelProperty(name = "roleId", value = "角色Id", required = true, example = "e3ae1261c42dcb0e195fb9b9d9298bfe"),
         @ApiModelProperty(name = "projectId", value = "项目Id", required = true, example = "af0ccec3d65f7571d75a0a4fdf597407"),
     })
-    @ResponseBody
     public KPResult<List<String>> queryMenuInstall(@RequestBody JSONObject parameter) {
         return KPResult.success(roleMenuService.queryMenuInstall(parameter));
     }

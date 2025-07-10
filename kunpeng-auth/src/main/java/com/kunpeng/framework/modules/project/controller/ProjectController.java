@@ -96,7 +96,6 @@ public class ProjectController {
     @KPApiJsonlParam({
         @ApiModelProperty(name = "projectId", value = "项目Id", required = true, example = "af0ccec3d65f7571d75a0a4fdf597407"),
     })
-    @ResponseBody
     public KPResult doStatus(@RequestBody JSONObject parameter) {
         projectService.doStatus(parameter);
         return KPResult.success();

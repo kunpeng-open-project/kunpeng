@@ -96,7 +96,6 @@ public class MenuController {
     @ApiOperation(value = "设置排序", notes = "权限 auth:menu:do:set:sort")
     @PostMapping(value = "/do/set/sort")
     @KPVerifyNote
-    @ResponseBody
     public KPResult doSetOrderNum(@RequestBody List<MenuSortParamPO> menuSortParamPOList) {
         menuService.doSetSort(menuSortParamPOList);
         return KPResult.success();
@@ -109,7 +108,6 @@ public class MenuController {
     @KPApiJsonlParam({
             @ApiModelProperty(name = "menuId", value = "菜单Id", required = true)
     })
-    @ResponseBody
     public KPResult doEnable(@RequestBody JSONObject parameter) {
         menuService.doEnable(parameter);
         return KPResult.success();
@@ -122,7 +120,6 @@ public class MenuController {
     @KPApiJsonlParam({
             @ApiModelProperty(name = "menuId", value = "菜单Id", required = true)
     })
-    @ResponseBody
     public KPResult doStatus(@RequestBody JSONObject parameter) {
         menuService.doCopy(parameter);
         return KPResult.success();

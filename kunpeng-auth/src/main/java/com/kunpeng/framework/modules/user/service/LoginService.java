@@ -6,6 +6,7 @@ import com.kunpeng.framework.common.cache.ProjectCache;
 import com.kunpeng.framework.common.enums.LoginUserTypeEnum;
 import com.kunpeng.framework.common.properties.RedisSecurityConstant;
 import com.kunpeng.framework.configruation.properties.KunPengFrameworkConfig;
+import com.kunpeng.framework.constant.MinioConstant;
 import com.kunpeng.framework.enums.YesNoEnum;
 import com.kunpeng.framework.exception.KPServiceException;
 import com.kunpeng.framework.modules.project.po.ProjectPO;
@@ -16,6 +17,7 @@ import com.kunpeng.framework.modules.user.po.customer.LoginUserBO;
 import com.kunpeng.framework.modules.user.po.customer.LoginUserTypeBO;
 import com.kunpeng.framework.modules.user.po.customer.UserLoginCustomerPO;
 import com.kunpeng.framework.utils.kptool.KPJsonUtil;
+import com.kunpeng.framework.utils.kptool.KPMinioUtil;
 import com.kunpeng.framework.utils.kptool.KPRedisUtil;
 import com.kunpeng.framework.utils.kptool.KPStringUtil;
 import com.kunpeng.framework.utils.kptool.KPVerifyUtil;
@@ -87,6 +89,8 @@ public class LoginService {
             loginCustomerPO.setRoles(loginUserBO.getRoleKeys());
         loginCustomerPO.setPermissions(loginUserBO.getPermissions());
 
+        loginCustomerPO.setAvatar(KPMinioUtil.getUrl(MinioConstant.AUTH_BUCKET_NAME, loginCustomerPO.getAvatar(), 168));
+
         return loginCustomerPO;
     }
 
@@ -143,6 +147,7 @@ public class LoginService {
             loginCustomerPO.setRoles(loginUserBO.getRoleKeys());
         loginCustomerPO.setPermissions(loginUserBO.getPermissions());
 
+        loginCustomerPO.setAvatar(KPMinioUtil.getUrl(MinioConstant.AUTH_BUCKET_NAME, loginCustomerPO.getAvatar(), 168));
         return loginCustomerPO;
     }
 

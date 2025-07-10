@@ -99,7 +99,6 @@ public class DeptController {
     @KPApiJsonlParam({
             @ApiModelProperty(name = "deptId", value = "部门Id", required = true),
     })
-    @ResponseBody
     public KPResult doStatus(@RequestBody JSONObject parameter) {
         deptService.doStatus(parameter);
         return KPResult.success();
@@ -110,7 +109,6 @@ public class DeptController {
     @ApiOperation(value = "设置排序", notes="权限 auth:dept:do:set:sort")
     @PostMapping(value = "/do/set/sort")
     @KPVerifyNote
-    @ResponseBody
     public KPResult doSetSort(@RequestBody List<DeptSortParamPO> deptSortParamList) {
         deptService.doSetSort(deptSortParamList);
         return KPResult.success();

@@ -33,7 +33,7 @@ public class LoginRecordPO extends ParentBO {
     @TableField("user_name")
     private String userName;
 
-    @ApiModelProperty("登录类型 1账号登录 2 授权登录 3免密登录 4泛微单点登录")
+    @ApiModelProperty("登录类型 1账号登录 2 授权登录 3免密登录")
     @TableField("login_type")
     private Integer loginType;
 

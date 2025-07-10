@@ -15,10 +15,11 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
-@Controller
+@RestController
 @RequestMapping("/api/router")
 @Api(tags = "API-路由相关接口", value = "API-路由相关接口")
 @ApiSupport(order = 0)
@@ -33,7 +34,6 @@ public class RouterController {
     @KPApiJsonlParam({
         @ApiModelProperty(name = "projectCode", value = "项目编号", required = true, example = "XM001"),
     })
-    @ResponseBody
     public KPResult<List<JSONObject>> queryPureAdminRouters(@RequestBody JSONObject parameter){
         return KPResult.success(menuPureAdminService.queryRouters(parameter));
     }

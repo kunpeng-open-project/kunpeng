@@ -1,5 +1,10 @@
 package com.kunpeng.framework.entity.bo;
 
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
+import lombok.Data;
+import lombok.experimental.Accessors;
+
 import java.io.Serializable;
 
 /**
@@ -8,55 +13,29 @@ import java.io.Serializable;
  * @Date 2022/1/6 9:30
  * @return
  **/
+@Data
+@Accessors(chain = true)
+@ApiModel(value="FilePO对象", description="文件信息")
 public class FileUploadBO implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
+    @ApiModelProperty(value = "文件名称")
     private String fileName;
 
+    @ApiModelProperty(value = "文件大小")
     private Long fileSize;
 
+    @ApiModelProperty(value = "文件类型")
     private String fileType;
 
-    //保存路径
+    @ApiModelProperty(value = "存储路径")
     private String filePath;
 
     public FileUploadBO(String fileName, Long fileSize, String fileType, String filePath){
         this.fileName = fileName;
         this.fileSize = fileSize;
         this.fileType = fileType;
-        this.filePath = filePath;
-    }
-
-    public String getFileName() {
-        return this.fileName;
-    }
-
-    public void setFileName(String fileName) {
-        this.fileName = fileName;
-    }
-
-    public Long getFileSize() {
-        return this.fileSize;
-    }
-
-    public void setFileSize(Long fileSize) {
-        this.fileSize = fileSize;
-    }
-
-    public String getFileType() {
-        return this.fileType;
-    }
-
-    public void setFileType(String fileType) {
-        this.fileType = fileType;
-    }
-
-    public String getFilePath() {
-        return this.filePath;
-    }
-
-    public void setFilePath(String filePath) {
         this.filePath = filePath;
     }
 }

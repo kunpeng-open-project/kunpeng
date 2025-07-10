@@ -48,7 +48,6 @@ public class LoginController {
         @ApiModelProperty(name = "jobNumber", value = "工号(账号和工号二选一)", required = true),
         @ApiModelProperty(name = "projectId", value = "项目id", required = true)
     })
-    @ResponseBody
 //    @ApiIgnore
     public KPResult<UserLoginCustomerPO> exemptLogin(@RequestBody JSONObject parameter) {
         return KPResult.success(loginService.exemptLogin(parameter));
@@ -61,7 +60,6 @@ public class LoginController {
         @ApiModelProperty(name = "appId", value = "appId", required = true),
         @ApiModelProperty(name = "appSecret", value = "appSecret", required = true)
     })
-    @ResponseBody
     public KPResult<AuthorizationCustomerPO> authorizationLogin(@RequestBody JSONObject parameter) {
         return KPResult.success(loginService.authorization(parameter));
     }
@@ -69,7 +67,6 @@ public class LoginController {
 
     @GetMapping("/logout")
     @ApiOperation(value = "退出登录")
-    @ResponseBody
     public KPResult logout() {
         return KPResult.success();
     }

@@ -37,7 +37,6 @@ public class InterfaceCallController {
 
     @ApiOperation(value = "查询接口日志的项目名称")
     @PostMapping("/project/name")
-    @ResponseBody
     public KPResult<List<DictionaryBO>> queryProject(){
         return KPResult.success(interfaceLogService.queryProjectName());
     }

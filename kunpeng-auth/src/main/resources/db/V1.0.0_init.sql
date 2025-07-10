@@ -635,7 +635,7 @@ CREATE TABLE `auth_login_record`
     `alr_id`           varchar(36) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL COMMENT '登录记录id',
     `user_id`          varchar(36) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL COMMENT '用户Id',
     `user_name`        varchar(68) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL COMMENT '用户账号 1 用户的工号 2 appid',
-    `login_type`       tinyint(0) NULL DEFAULT NULL COMMENT '登录类型 1账号登录 2 授权登录 3免密登录 4泛微单点登录',
+    `login_type`       tinyint(0) NULL DEFAULT NULL COMMENT '登录类型 1账号登录 2 授权登录 3免密登录',
     `project_id`       varchar(36) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL COMMENT '登录的项目',
     `user_agent`       varchar(500) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL COMMENT '登录浏览器信息',
     `user_referer`     varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL COMMENT '用户操作来源',
@@ -728,13 +728,13 @@ CREATE TABLE `auth_dict_type`
 DROP TABLE IF EXISTS `auth_dict_data`;
 CREATE TABLE `auth_dict_data`
 (
-    `dict_data_id`    char(36) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL COMMENT '字典编码ID',
+    `dict_data_id`     char(36) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL COMMENT '字典编码ID',
     `dict_type_id`     char(36) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL COMMENT '字典类型ID',
     `sort`             int                                                           DEFAULT '0' COMMENT '字典排序',
     `label`            varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL COMMENT '字典标签',
     `value`            varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL COMMENT '字典键值',
-    `dict_type`             varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL COMMENT '字典类型',
-    `selected`          int                                                           DEFAULT NULL COMMENT '是否默认选中 1是 0否',
+    `dict_type`        varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL COMMENT '字典类型',
+    `selected`         int                                                           DEFAULT NULL COMMENT '是否默认选中 1是 0否',
     `status`           int                                                           DEFAULT NULL COMMENT '状态 0 停用 1 正常',
     `create_date`      datetime                                                      DEFAULT NULL COMMENT '创建时间',
     `create_user_id`   varchar(36) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci  DEFAULT NULL COMMENT '创建用户id',
@@ -751,15 +751,6 @@ CREATE TABLE `auth_dict_data`
     KEY                `selected` (`selected`),
     KEY                `status` (`status`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='字典数据表';
-
-
-
-
-
-
-
-
-
 
 
 

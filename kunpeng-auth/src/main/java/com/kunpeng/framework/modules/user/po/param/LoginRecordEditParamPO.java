@@ -40,9 +40,9 @@ public class LoginRecordEditParamPO {
     @KPMaxLength(max = 68, errMeg = "用户账号 1 用户的工号 2 appid不能超过68个字符")
     private String userName;
 
-    @ApiModelProperty(value = "登录类型 1账号登录 2 授权登录 3免密登录 4泛微单点登录", example = "0", required = true)
+    @ApiModelProperty(value = "登录类型 1账号登录 2 授权登录 3免密登录", example = "0", required = true)
     @TableField("login_type")
-    @KPNotNull(errMeg = "请输入登录类型 1账号登录 2 授权登录 3免密登录 4泛微单点登录")
+    @KPNotNull(errMeg = "请输入登录类型 1账号登录 2 授权登录 3免密登录")
     private Integer loginType;
 
     @ApiModelProperty(value = "登录的项目", example = "登录的项目", required = true)

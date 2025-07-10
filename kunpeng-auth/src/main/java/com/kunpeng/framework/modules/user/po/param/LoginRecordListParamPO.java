@@ -25,7 +25,7 @@ public class LoginRecordListParamPO extends PageBO {
     @TableField("user_name")
     private String userName;
 
-    @ApiModelProperty(value = "登录类型 1账号登录 2 授权登录 3免密登录 4泛微单点登录")
+    @ApiModelProperty(value = "登录类型 1账号登录 2 授权登录 3免密登录")
     @TableField("login_type")
     private Integer loginType;
 

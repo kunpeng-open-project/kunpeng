@@ -96,7 +96,6 @@ public class DictTypeController {
     @KPApiJsonlParam({
             @ApiModelProperty(name = "dictTypeId", value = "字典类型Id", required = true),
     })
-    @ResponseBody
     public KPResult doStatus(@RequestBody JSONObject parameter) {
         dictTypeService.doStatus(parameter);
         return KPResult.success();

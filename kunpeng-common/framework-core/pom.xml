@@ -86,12 +86,11 @@
             <artifactId>spring-cloud-starter-alibaba-nacos-discovery</artifactId>
         </dependency>
 
+        <dependency>
+            <groupId>io.minio</groupId>
+            <artifactId>minio</artifactId>
+        </dependency>
 
-
-
-
-
-        <!--      五角星  shengji 2-->
         <!--alibaba的json-->
         <dependency>
             <groupId>com.alibaba.fastjson2</groupId>

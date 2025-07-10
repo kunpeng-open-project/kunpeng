@@ -97,7 +97,6 @@ public class PostController {
     @KPApiJsonlParam({
             @ApiModelProperty(name = "postId", value = "岗位Id", required = true),
     })
-    @ResponseBody
     public KPResult doStatus(@RequestBody JSONObject parameter) {
         postService.doStatus(parameter);
         return KPResult.success();

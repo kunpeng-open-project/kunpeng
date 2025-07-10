@@ -10,6 +10,7 @@ import com.kunpeng.framework.common.cache.ProjectCache;
 import com.kunpeng.framework.common.enums.LoginUserStatusEnum;
 import com.kunpeng.framework.common.properties.KunPengUserProperties;
 import com.kunpeng.framework.common.properties.RedisSecurityConstant;
+import com.kunpeng.framework.constant.MinioConstant;
 import com.kunpeng.framework.constant.ReturnFinishedMessageConstant;
 import com.kunpeng.framework.controller.server.EhcacheService;
 import com.kunpeng.framework.entity.bo.KPResult;
@@ -37,6 +38,7 @@ import com.kunpeng.framework.modules.user.po.param.UserEditParamPO;
 import com.kunpeng.framework.modules.user.po.param.UserListParamPO;
 import com.kunpeng.framework.modules.user.util.UserUtil;
 import com.kunpeng.framework.utils.kptool.KPJsonUtil;
+import com.kunpeng.framework.utils.kptool.KPMinioUtil;
 import com.kunpeng.framework.utils.kptool.KPRedisUtil;
 import com.kunpeng.framework.utils.kptool.KPServiceUtil;
 import com.kunpeng.framework.utils.kptool.KPStringUtil;
@@ -69,8 +71,8 @@ public class UserService extends ServiceImpl<UserMapper, UserPO> {
     @Autowired
     private UserRoleMapper userRoleMapper;
 
-   @Autowired
-   private KunPengUserProperties kunPengUserProperties;
+    @Autowired
+    private KunPengUserProperties kunPengUserProperties;
 
     /**
      * @Author lipeng
@@ -128,7 +130,13 @@ public class UserService extends ServiceImpl<UserMapper, UserPO> {
 
         Page page = PageHelper.startPage(userListParamPO.getPageNum(), userListParamPO.getPageSize(), userListParamPO.getOrderBy(UserPO.class));
         page.setCountColumn("distinct user_id");
-        return this.baseMapper.selectJoinList(UserListCustomerPO.class, wrapper);
+        List<UserListCustomerPO> row = this.baseMapper.selectJoinList(UserListCustomerPO.class, wrapper);
+
+        row.forEach(userListCustomerPO -> {
+            userListCustomerPO.setAvatar(KPMinioUtil.getUrl(MinioConstant.AUTH_BUCKET_NAME, userListCustomerPO.getAvatar(), 168));
+        });
+
+        return row;
     }
 
 
@@ -525,4 +533,58 @@ public class UserService extends ServiceImpl<UserMapper, UserPO> {
     }
 
 
+    /**
+     * @Author lipeng
+     * @Description 修改密码
+     * @Date 2025/7/7
+     * @param parameter
+     * @return void
+     **/
+    public void updatePassword(JSONObject parameter) {
+        KPVerifyUtil.notNull(parameter.getString("userId"), "请输入用户id！");
+        KPVerifyUtil.notNull(parameter.getString("oldPassword"), "请输入老密码！");
+        KPVerifyUtil.notNull(parameter.getString("newPassword"), "请输入新密码！");
+        KPVerifyUtil.notNull(parameter.getString("okPassword"), "请输入确认密码！");
+        KPVerifyUtil.length(parameter.getString("newPassword"), 6, 18, "新密码须6~18个字符！");
+
+        if (parameter.getString("oldPassword").equals(parameter.getString("newPassword")))
+            throw new KPServiceException("新密码和老密码一致！");
+
+        if (!parameter.getString("newPassword").equals(parameter.getString("okPassword")))
+            throw new KPServiceException("新密码与确认密码不一致！");
+
+        UserPO userPO = this.baseMapper.selectById(parameter.getString("userId"));
+        if (userPO == null) throw new KPServiceException("用户不存在！");
+
+        if (!new BCryptPasswordEncoder().matches(parameter.getString("oldPassword"), userPO.getPassword()))
+            throw new KPServiceException("老密码不正确, 如果忘记老密码，请联系管理人员重置密码");
+
+        userPO.setPassword(new BCryptPasswordEncoder().encode(parameter.getString("newPassword")));
+
+        if (this.baseMapper.updateById(userPO) == 0)
+            throw new KPServiceException(ReturnFinishedMessageConstant.ERROR);
+    }
+
+    public void updateMessage(JSONObject parameter) {
+        UserPO userParameter = KPJsonUtil.toJavaObjectNotEmpty(parameter, UserPO.class);
+        KPVerifyUtil.notNull(userParameter.getUserId(), "请输入用户id");
+        KPVerifyUtil.length(userParameter.getNickName(), 1, 30, "用户昵称须1~30个字符");
+        KPVerifyUtil.maxLength(userParameter.getPhoneNumber(), 11, "手机号码不能超过11个字符");
+        KPVerifyUtil.notNull(userParameter.getSex(), "请选择用户性别");
+        KPVerifyUtil.maxLength(userParameter.getEmail(), 50, "用户邮箱不能超过50个字符");
+
+        UserPO userPO = this.baseMapper.selectById(userParameter.getUserId());
+        if (userPO == null) throw new KPServiceException("用户不存在");
+
+        UserPO updateUser = new UserPO()
+                .setUserId(userParameter.getUserId())
+                .setNickName(userParameter.getNickName())
+                .setPhoneNumber(userParameter.getPhoneNumber())
+                .setSex(userParameter.getSex())
+                .setEmail(userParameter.getEmail())
+                .setAvatar(KPMinioUtil.copyTemporaryFile("userHead/" + userPO.getJobNumber(), userParameter.getAvatar(), MinioConstant.AUTH_BUCKET_NAME));
+
+        if (this.baseMapper.updateById(updateUser) == 0)
+            throw new KPServiceException(ReturnFinishedMessageConstant.ERROR);
+    }
 }

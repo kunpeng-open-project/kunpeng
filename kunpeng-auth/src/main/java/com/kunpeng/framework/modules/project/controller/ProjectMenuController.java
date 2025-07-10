@@ -38,7 +38,6 @@ public class ProjectMenuController {
     @ApiOperation(value = "设置权限", notes="权限 auth:project:menu:setting:install")
     @PostMapping(value = "/setting/install")
     @KPVerifyNote
-    @ResponseBody
     public KPResult doMenuInstall(@RequestBody ProjectMenuInstallParamPO projectMenuInstallParamPO) {
         projectMenuService.doMenuInstall(projectMenuInstallParamPO);
         return KPResult.success();
@@ -51,7 +50,6 @@ public class ProjectMenuController {
             @ApiModelProperty(name = "projectId", value = "项目Id", required = true, example = "af0ccec3d65f7571d75a0a4fdf597407"),
             @ApiModelProperty(name = "purviewProjectId", value = "权限项目Id", required = true, example = "af0ccec3d65f7571d75a0a4fdf597407")
     })
-    @ResponseBody
     public KPResult<List<String>> queryMenuInstall(@RequestBody JSONObject parameter) {
         return KPResult.success(projectMenuService.queryMenuInstall(parameter));
     }

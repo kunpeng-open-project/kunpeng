@@ -79,7 +79,6 @@ public class InterfaceLogController {
     @PreAuthorize("hasPermission('/auth/interface/log/clear/cache','auth:interface:log:clear:cache')")
     @ApiOperation(value = "清空接口缓存", notes = "权限 auth:interface:log:clear:cache")
     @PostMapping("/clear/cache")
-    @ResponseBody
     public KPResult clearCache(){
         interfaceLogService.clearCache();
         return KPResult.success();

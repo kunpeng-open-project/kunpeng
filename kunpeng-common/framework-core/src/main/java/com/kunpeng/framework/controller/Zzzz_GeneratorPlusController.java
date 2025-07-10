@@ -23,7 +23,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
  * @return
  **/
 @Controller
-@RequestMapping("/open/entrance/admin")
+@RequestMapping("/entrance/admin")
 @Api(value = "逆向工程-开发人员", tags = "逆向工程-开发人员")
 @ApiSupport(author = "李鹏",order = -9999)
 public class Zzzz_GeneratorPlusController {

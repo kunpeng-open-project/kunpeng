@@ -3,11 +3,9 @@ package com.kunpeng.framework.modules.user.controller;
 import com.alibaba.fastjson2.JSONObject;
 import com.github.xiaoymin.knife4j.annotations.ApiSupport;
 import com.kunpeng.framework.annotation.KPApiJsonlParam;
-import com.kunpeng.framework.annotation.KPApiJsonlParamMode;
 import com.kunpeng.framework.annotation.verify.KPVerifyNote;
 import com.kunpeng.framework.entity.bo.KPResult;
 import com.kunpeng.framework.modules.user.po.LoginRecordPO;
-import com.kunpeng.framework.modules.user.po.param.LoginRecordEditParamPO;
 import com.kunpeng.framework.modules.user.po.param.LoginRecordListParamPO;
 import com.kunpeng.framework.modules.user.service.LoginRecordService;
 import io.swagger.annotations.Api;
@@ -18,9 +16,8 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
-
-import java.util.List;
 
 /**
 * @Author lipeng
@@ -56,35 +53,47 @@ public class LoginRecordController {
         return KPResult.success(loginRecordService.queryDetailsById(parameter));
     }
 
-
-    @PreAuthorize("hasPermission('/auth/login/record/save','auth:login:record:save')")
-    @ApiOperation(value = "新增用户登录记录", notes="权限 auth:login:record:save")
-    @PostMapping("/save")
-    @KPVerifyNote
-    @KPApiJsonlParamMode(component = LoginRecordEditParamPO.class, ignores = "alrId")
-    public KPResult<LoginRecordPO> save(@RequestBody LoginRecordEditParamPO loginRecordEditParamPO){
-        loginRecordService.saveLoginRecord(loginRecordEditParamPO);
-        return KPResult.success();
-    }
-
-
-    @PreAuthorize("hasPermission('/auth/login/record/update','auth:login:record:update')")
-    @ApiOperation(value = "修改用户登录记录", notes="权限 auth:login:record:update")
-    @PostMapping("/update")
-    @KPVerifyNote
-    public KPResult<LoginRecordPO> update(@RequestBody LoginRecordEditParamPO loginRecordEditParamPO){
-        loginRecordService.updateLoginRecord(loginRecordEditParamPO);
-        return KPResult.success();
-    }
-
-
-    @PreAuthorize("hasPermission('/auth/login/record/batch/remove','auth:login:record:batch:remove')")
-    @ApiOperation(value = "批量删除用户登录记录", notes="权限 auth:login:record:batch:remove")
-    @PostMapping("/batch/remove")
+    @ApiOperation(value = "查询本人登录记录列表", response = LoginRecordPO.class)
+    @PostMapping(value = "/oneself/list")
     @KPApiJsonlParam({
-        @ApiModelProperty(name = "ids", value = "登录记录id", required = true, dataType = "list")
+            @ApiModelProperty(name = "projectCode", value = "项目编号", required = true, example = "XM001"),
+            @ApiModelProperty(name = "pageNum", value = "当前页", required = true, example = "1"),
+            @ApiModelProperty(name = "pageSize", value = "条数", required = true, example = "10"),
+            @ApiModelProperty(name = "orderBy", value = "排序规则 如 id desc name asc")
     })
-    public KPResult batchRemove(@RequestBody List<String> ids){
-        return KPResult.success(loginRecordService.batchRemove(ids));
+    public KPResult queryOneselfList(@RequestBody JSONObject parameter) {
+        return KPResult.list(loginRecordService.queryOneselfList(parameter));
     }
+
+
+//    @PreAuthorize("hasPermission('/auth/login/record/save','auth:login:record:save')")
+//    @ApiOperation(value = "新增用户登录记录", notes="权限 auth:login:record:save")
+//    @PostMapping("/save")
+//    @KPVerifyNote
+//    @KPApiJsonlParamMode(component = LoginRecordEditParamPO.class, ignores = "alrId")
+//    public KPResult<LoginRecordPO> save(@RequestBody LoginRecordEditParamPO loginRecordEditParamPO){
+//        loginRecordService.saveLoginRecord(loginRecordEditParamPO);
+//        return KPResult.success();
+//    }
+//
+//
+//    @PreAuthorize("hasPermission('/auth/login/record/update','auth:login:record:update')")
+//    @ApiOperation(value = "修改用户登录记录", notes="权限 auth:login:record:update")
+//    @PostMapping("/update")
+//    @KPVerifyNote
+//    public KPResult<LoginRecordPO> update(@RequestBody LoginRecordEditParamPO loginRecordEditParamPO){
+//        loginRecordService.updateLoginRecord(loginRecordEditParamPO);
+//        return KPResult.success();
+//    }
+//
+//
+//    @PreAuthorize("hasPermission('/auth/login/record/batch/remove','auth:login:record:batch:remove')")
+//    @ApiOperation(value = "批量删除用户登录记录", notes="权限 auth:login:record:batch:remove")
+//    @PostMapping("/batch/remove")
+//    @KPApiJsonlParam({
+//        @ApiModelProperty(name = "ids", value = "登录记录id", required = true, dataType = "list")
+//    })
+//    public KPResult batchRemove(@RequestBody List<String> ids){
+//        return KPResult.success(loginRecordService.batchRemove(ids));
+//    }
 }
