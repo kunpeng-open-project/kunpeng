@@ -587,4 +587,8 @@ public class UserService extends ServiceImpl<UserMapper, UserPO> {
         if (this.baseMapper.updateById(updateUser) == 0)
             throw new KPServiceException(ReturnFinishedMessageConstant.ERROR);
     }
+
+    public static void main(String[] args) {
+        System.out.println(new BCryptPasswordEncoder().encode("admin123"));
+    }
 }

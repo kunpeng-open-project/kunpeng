@@ -101,7 +101,16 @@ public class CommonUtil {
      * @return T
      **/
     public static final <T> T toJavaObject(String obj, Class<T> clazz){
-        return JSON.toJavaObject(obj, clazz);
+        try {
+            return JSON.toJavaObject(obj, clazz);
+        } catch (Exception ex) {
+            try {
+                return JSON.toJavaObject(JSON.toJSONString(obj), clazz);
+            }catch (Exception e){
+                log.error("json转Java对象失败：" + e.getMessage());
+                throw new RuntimeException("数据转换异常！");
+            }
+        }
     }
 
     /**

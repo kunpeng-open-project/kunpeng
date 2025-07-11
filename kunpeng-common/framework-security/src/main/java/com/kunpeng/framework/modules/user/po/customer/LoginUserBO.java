@@ -41,13 +41,13 @@ public class LoginUserBO implements UserDetails {
     private AuthUserPO user;
 
     //角色列表
-    private List<AuthRolePO> roles;
+    private List<AuthRolePO> roles = new ArrayList<>();;
 
     //权限列表
-    private List<String> roleKeys;
+    private List<String> roleKeys = new ArrayList<>();;
 
     //权限列表
-    private List<String> permissions;
+    private List<String> permissions = new ArrayList<>();
 
     //用户部门
     private List<LoginUserDeptPO> deptList = new ArrayList<>();

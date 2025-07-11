@@ -25,6 +25,7 @@ import com.kunpeng.framework.utils.kptool.KPVerifyUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
@@ -73,12 +74,12 @@ public class MenuPureAdminService {
                 .orderByAsc(MenuPO::getSort);
 
         if (!Arrays.asList("admin", "admin1").contains(loginUserBO.getUsername())) {
-            if (KPStringUtil.isEmpty(loginUserBO.getRoles())) throw new KPServiceException("沒有菜单权限");
+            if (KPStringUtil.isEmpty(loginUserBO.getRoles())) return new ArrayList<>(); //throw new KPServiceException("沒有菜单权限");
             LambdaQueryWrapper<RoleMenuPO> roleMenuWrapper = Wrappers.lambdaQuery();
             roleMenuWrapper.in(RoleMenuPO::getRoleId, loginUserBO.getRoles().stream().map(AuthRolePO::getRoleId).collect(Collectors.toList()))
                     .eq(RoleMenuPO::getProjectId, projectPO.getProjectId());
             List<String> menuIds = roleMenuMapper.selectList(roleMenuWrapper).stream().map(RoleMenuPO::getMenuId).collect(Collectors.toList());
-            if (menuIds.size() == 0) throw new KPServiceException("沒有菜单权限");
+            if (menuIds.size() == 0)  return new ArrayList<>(); //throw new KPServiceException("沒有菜单权限");
             wrapper.in(MenuPO::getMenuId, menuIds);
         }
 

@@ -14,9 +14,6 @@ spring:
         group: DEFAULT_GROUP
         file-extension: yaml
         prefix: gateway
-    sentinel: #sentinel 限流
-      transport:
-        dashboard: 127.0.0.1:8999
 logging:
   level:
     org.springframework.cloud.gateway: TRACE

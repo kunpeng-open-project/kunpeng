@@ -65,6 +65,7 @@ public class InterfaceCallRecord {
 
 
     private static String getInterfaceName(HttpServletRequest req) {
+        if (req.getRequestURI().contains("/error")) return "异常地址error";
         HandlerMethod handlerMethod = CommonUtil.queryHandlerMethod(req);
         String name = "";
         if (handlerMethod != null) {
