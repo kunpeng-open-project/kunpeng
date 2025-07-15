@@ -141,7 +141,7 @@ public class ProjectCache {
      * @param
      * @return java.util.List<com.kunpeng.framework.modules.project.po.ProjectPO>
      **/
-    private static List<ProjectPO> getProjectList() {
+    public static List<ProjectPO> getProjectList() {
         List<ProjectPO> projectList = null;
         if (KPRedisUtil.hasKey(key)) {
 //            projectList = KPJsonUtil.toJavaObjectList(KPRedisUtil.get(key), ProjectPO.class);

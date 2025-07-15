@@ -13,7 +13,7 @@ import lombok.experimental.Accessors;
 /**
  * @Author lipeng
  * @Description 用户登录记录表
- * @Date 2025-06-10
+ * @Date 2025-07-15
 **/
 @Data
 @Accessors(chain = true)
@@ -56,6 +56,10 @@ public class LoginRecordPO extends ParentBO {
     @ApiModelProperty("登录IP")
     @TableField("login_ip")
     private String loginIp;
+
+    @ApiModelProperty("登录IP地址")
+    @TableField("login_ip_address")
+    private String loginIpAddress;
 
     @ApiModelProperty("登录结果")
     @TableField("login_result")

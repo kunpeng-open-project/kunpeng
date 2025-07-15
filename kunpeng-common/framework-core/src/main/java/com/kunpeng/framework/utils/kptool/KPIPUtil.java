@@ -1,12 +1,14 @@
 package com.kunpeng.framework.utils.kptool;
 
 import com.alibaba.fastjson2.JSONObject;
+import com.kunpeng.framework.exception.KPUtilException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.servlet.http.HttpServletRequest;
 import java.math.BigDecimal;
 import java.net.InetAddress;
+import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
@@ -660,5 +662,29 @@ public final class KPIPUtil {
         } catch (UnknownHostException e) {
         }
         return "127.0.0.1";
+    }
+
+    public static boolean isPortOccupied(String host, int port) {
+        try (Socket socket = new Socket(host, port)) {
+            return true; // 连接成功，端口被占用
+        } catch (Exception e) {
+            return false; // 连接失败，端口未被占用或无法访问
+        }
+    }
+
+    /**
+     * 从指定端口开始，自动查找可用端口
+     * @param host 主机名
+     * @param startPort 起始端口号
+     * @return 可用的端口号，若范围内无可用端口则返回-1
+     */
+    public static int findAvailablePort(String host, int startPort) {
+        if (startPort < 0) throw new KPUtilException("端口无效: " + startPort);
+
+        for (int port = startPort; port <= 65535; port++) {
+            if (!isPortOccupied(host, port))  return port;
+        }
+
+        return -1; // 没有找到可用端口
     }
 }

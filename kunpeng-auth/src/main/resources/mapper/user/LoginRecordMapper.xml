@@ -20,12 +20,13 @@
         <result column="user_referer" property="userReferer" />
         <result column="user_plat_form" property="userPlatForm" />
         <result column="login_ip" property="loginIp" />
+        <result column="login_ip_address" property="loginIpAddress" />
         <result column="login_result" property="loginResult" />
     </resultMap>
 
     <!-- 表字段结果列 -->
     <sql id="Base_Column_List">
-        alr_id, user_id, user_name, login_type, project_id, user_agent, user_referer, user_plat_form, login_ip, login_result
+        alr_id, user_id, user_name, login_type, project_id, user_agent, user_referer, user_plat_form, login_ip, login_ip_address, login_result
     </sql>
 
     <!-- 通用查询结果列 -->

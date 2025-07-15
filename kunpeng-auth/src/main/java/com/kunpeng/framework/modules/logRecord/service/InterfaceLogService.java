@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.github.pagehelper.PageHelper;
+import com.kunpeng.framework.common.cache.ProjectCache;
 import com.kunpeng.framework.common.properties.RedisSecurityConstant;
 import com.kunpeng.framework.entity.bo.DictionaryBO;
 import com.kunpeng.framework.modules.logRecord.enums.JournalStatusEnum;
@@ -127,6 +128,15 @@ public class InterfaceLogService extends ServiceImpl<InterfaceLogMapper, Interfa
         });
 
         if (body.size() != 0) KPRedisUtil.set(redisKeyByProject, body, 2, TimeUnit.HOURS);
+
+        //如果没有任何记录 就查询项目 避免前端报错
+        if (body.size()==0){
+            ProjectCache.getProjectList().forEach(projectPO -> {
+                body.add(new DictionaryBO()
+                        .setLabel(projectPO.getProjectName())
+                        .setValue(projectPO.getProjectName()));
+            });
+        }
         return body;
     }
 
