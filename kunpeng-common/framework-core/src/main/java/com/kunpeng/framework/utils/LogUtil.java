@@ -5,6 +5,7 @@ import com.kunpeng.framework.utils.kptool.KPDateUtil;
 import com.kunpeng.framework.utils.kptool.KPIPUtil;
 import com.kunpeng.framework.utils.kptool.KPJSONFactoryUtil;
 import com.kunpeng.framework.utils.kptool.KPRequsetUtil;
+import com.kunpeng.framework.utils.kptool.KPStringUtil;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -62,6 +63,22 @@ public class LogUtil {
      * @Date 2024/2/5
      **/
     public String interfaceRecordLog(String url, String method, HttpServletRequest req, String parameter, String result, Long disposeDate) {
+        if (KPStringUtil.isEmpty(req)) {
+            return new KPJSONFactoryUtil()
+                    .put("url", url)
+                    .put("name", this.getInterfaceName(req))
+                    .put("method", method)
+                    .put("parameters", parameter)
+                    .put("result", result)
+                    .put("projectName", kunPengFrameworkConfig.getProjectName())
+                    .put("callTime", KPDateUtil.dateFormat(new Date(), KPDateUtil.DATE_TIME_PATTERN))
+                    .put("disposeTime", disposeDate)
+                    .put("platForm", "")
+                    .put("clinetIp", KPStringUtil.isEmpty(KPIPUtil.getClinetIP()) ? KPIPUtil.getHostIp() : KPIPUtil.getClinetIP())
+                    .buildString();
+        }
+
+
         return new KPJSONFactoryUtil()
                 .put("url", url)
                 .put("name", this.getInterfaceName(req))
@@ -71,9 +88,9 @@ public class LogUtil {
                 .put("projectName", kunPengFrameworkConfig.getProjectName())
                 .put("callTime", KPDateUtil.dateFormat(new Date(), KPDateUtil.DATE_TIME_PATTERN))
                 .put("disposeTime", disposeDate)
-                .put("platForm", req.getHeader("Sec-Ch-Ua-Platform") == null ? "" : req.getHeader("Sec-Ch-Ua-Platform").replaceAll("\"", ""))
+                .put(KPStringUtil.isNotEmpty(req), "platForm", req.getHeader("Sec-Ch-Ua-Platform") == null ? "" : req.getHeader("Sec-Ch-Ua-Platform").replaceAll("\"", ""))
                 .put("clinetIp", KPIPUtil.getClinetIP())
-                .put("userMessage", req.getAttribute("userMessage"))
+                .put(KPStringUtil.isNotEmpty(req), "userMessage", req.getAttribute("userMessage"))
                 .buildString();
     }
 

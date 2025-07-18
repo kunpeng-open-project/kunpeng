@@ -38,9 +38,14 @@ public class UserLoginIPHandle {
             if (!row.getInteger("code").equals(0)) continue;
 
             row = row.getJSONObject("data");
+
             loginRecordMapper.updateById(new LoginRecordPO()
                     .setAlrId(loginRecordPO.getAlrId())
-                    .setLoginIpAddress((row.getString("country") + row.getString("region") + row.getString("city")).replaceAll("X", ""))
+                    .setLoginIpAddress(new StringBuilder(row.getString("country"))
+                            .append(row.getString("region"))
+                            .append(row.getString("city").equals(row.getString("region")) ? "" : row.getString("city"))
+                            .toString()
+                            .replaceAll("X", ""))
             );
             KPThreadUtil.sleep(1000);
         }

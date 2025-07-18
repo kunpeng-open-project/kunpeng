@@ -100,6 +100,7 @@ public final class KPStringUtil {
 
 	public static final boolean isEmpty(Object obj){
 		try {
+			if (obj == null) return true;
 			return KPStringUtil.isEmpty(obj.toString());
 		}catch(Exception ex){}
 		return obj == null;
