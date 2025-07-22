@@ -69,6 +69,14 @@ public class KPResult<T> implements Serializable {
     }
 
     public static <T> KPResult<T> list(List<T> list) {
+//        PageInfo pageInfo = new PageInfo<>(list);
+//        return (KPResult<T>) kpResult(new KPJSONFactoryUtil()
+//                .put("list", list) // 列表
+//                .put("total", pageInfo.getTotal()) // 总数
+//                .put("pageNum", pageInfo.getPageNum()) // 当前页
+//                .put("pageSize", pageInfo.getSize()) // 每页条数 当前页实际的记录数（可能小于 pageSize，比如最后一页数据不足一页）
+//                .put("pages", pageInfo.getPages()) // 总页数
+//                .build(), ResultCode.SUCCESS.code(), ResultCode.SUCCESS.message());
         return (KPResult<T>) kpResult(new PageSerializable<>(list), ResultCode.SUCCESS.code(), ResultCode.SUCCESS.message());
     }
 

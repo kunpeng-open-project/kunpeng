@@ -34,10 +34,7 @@ public class ProjectCache {
         ProjectPO projectPO = map.get(projectCode);
         if (projectPO != null) return projectPO;
 
-        clear();
-        projectList = getProjectList();
-        map = projectList.stream().collect(Collectors.toMap(ProjectPO::getProjectCode, e -> e));
-        return map.get(projectCode);
+        return null;
     }
 
 
@@ -56,10 +53,7 @@ public class ProjectCache {
         ProjectPO projectPO = map.get(appid);
         if (projectPO != null) return projectPO;
 
-        clear();
-        projectList = getProjectList();
-        map = projectList.stream().collect(Collectors.toMap(ProjectPO::getAppId, e -> e));
-        return map.get(appid);
+        return null;
     }
 
 
@@ -78,10 +72,7 @@ public class ProjectCache {
         ProjectPO projectPO = map.get(projectId);
         if (projectPO != null) return projectPO;
 
-        clear();
-        projectList = getProjectList();
-        map = projectList.stream().collect(Collectors.toMap(ProjectPO::getProjectId, e -> e));
-        return map.get(projectId);
+        return null;
     }
 
 
@@ -105,19 +96,6 @@ public class ProjectCache {
                 result.add(projectPO);
             }
         }
-
-        if (result.size() < projectIds.size()) {
-            clear();
-            projectList = getProjectList();
-            map = projectList.stream().collect(Collectors.toMap(ProjectPO::getProjectId, e -> e));
-            result = new ArrayList<>();
-            for (String projectId : projectIds) {
-                ProjectPO projectPO = map.get(projectId);
-                if (projectPO != null) {
-                    result.add(projectPO);
-                }
-            }
-        }
         return result;
     }
 
@@ -130,7 +108,7 @@ public class ProjectCache {
      * @return void
      **/
     public static void clear() {
-//        KPRedisUtil.remove(key);
+        KPRedisUtil.remove(key);
     }
 
 
