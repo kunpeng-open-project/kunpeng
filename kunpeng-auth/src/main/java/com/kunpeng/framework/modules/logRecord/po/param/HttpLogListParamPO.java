@@ -8,6 +8,7 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.experimental.Accessors;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 /**
@@ -46,7 +47,7 @@ public class HttpLogListParamPO extends PageBO {
 
     @ApiModelProperty("接口调用时间")
     @TableField("call_time")
-    private LocalDateTime callTime;
+    private LocalDate callTime;
 
     @ApiModelProperty("操作人id 或 项目id")
     @TableField("identification")

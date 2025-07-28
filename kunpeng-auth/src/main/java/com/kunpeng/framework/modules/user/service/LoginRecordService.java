@@ -46,7 +46,7 @@ public class LoginRecordService extends ServiceImpl<LoginRecordMapper, LoginReco
                 .eq(KPStringUtil.isNotEmpty(loginRecordListParamPO.getUserName()), "user_name", loginRecordListParamPO.getUserName())
                 .eq(KPStringUtil.isNotEmpty(loginRecordListParamPO.getLoginType()), "login_type", loginRecordListParamPO.getLoginType())
                 .eq(KPStringUtil.isNotEmpty(loginRecordListParamPO.getProjectId()), "project_id", loginRecordListParamPO.getProjectId())
-                .like(KPStringUtil.isNotEmpty(loginRecordListParamPO.getLoginIp()), "project_id", loginRecordListParamPO.getLoginIp())
+                .like(KPStringUtil.isNotEmpty(loginRecordListParamPO.getLoginIp()), "login_ip", loginRecordListParamPO.getLoginIp())
                 .between(KPStringUtil.isNotEmpty(loginRecordListParamPO.getLoginDate()), "create_date", KPLocalDateTimeUtil.getFirstDateTimeOfDay(loginRecordListParamPO.getLoginDate()), KPLocalDateTimeUtil.getLastDateTimeOfDay(loginRecordListParamPO.getLoginDate()))
                 .select(loginRecordListParamPO.getOptions().contains("distinct"), "SUBSTRING_INDEX(GROUP_CONCAT(alr_id ORDER BY create_date DESC),',',1) AS alr_id,user_name, max(create_date) as createDate")
                 .groupBy(loginRecordListParamPO.getOptions().contains("distinct"), "user_name");

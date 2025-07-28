@@ -15,7 +15,7 @@ public class GeneratorPO {
     @ApiModelProperty(value = "作者", required = true, example = "lipeng")
     private String author;
 
-    @ApiModelProperty(value = "数据库", required = true, allowableValues = "kunpeng_auth", allowEmptyValue = true)
+    @ApiModelProperty(value = "数据库", required = true, allowableValues = "kunpeng_auth,kunpeng_week_flow", allowEmptyValue = true)
     private String databaseName;
 
     @ApiModelProperty(value = "包名 默认 com.kunpeng.framework.modules", example = "com.kunpeng.framework.modules")

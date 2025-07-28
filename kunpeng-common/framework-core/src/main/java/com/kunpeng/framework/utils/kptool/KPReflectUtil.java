@@ -196,6 +196,31 @@ public final class KPReflectUtil {
     }
 
 
+    public static Object getMethod(Object obj, String methodName) {
+        try {
+            // 获取所有方法
+            Method method = obj.getClass().getMethod(methodName);
+            // 调用方法并获取返回值
+            return method.invoke(obj);
+        }catch (Exception ex){}
+        return null;
+    }
+
+    public static Object getMethod(String packageName, String className, String methodName) {
+        try {
+            // 通过类名获取Class对象
+            Class<?> clazz = Class.forName(packageName + "." + className);
+            // 创建类的实例（需要有无参构造方法）
+            Object instance = clazz.newInstance();
+            // 获取所有方法
+            Method method = clazz.getMethod(methodName);
+            // 调用方法并获取返回值
+            return method.invoke(instance);
+        }catch (Exception ex){}
+        return null;
+    }
+
+
 
     /**
      * @Author lipeng

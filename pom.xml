@@ -14,7 +14,7 @@
         <module>kunpeng-common</module>
         <module>kunpeng-common/framework-core</module>
         <module>kunpeng-common/framework-security</module>
-
+        <module>kunpeng-common/framework-feign</module>
     </modules>
 
 
