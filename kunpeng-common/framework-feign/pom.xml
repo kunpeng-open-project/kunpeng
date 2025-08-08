@@ -18,6 +18,24 @@
             <artifactId>framework-core</artifactId>
             <version>1.0-0-SNAPSHOT</version>
         </dependency>
+
+        <!--OpenFeign 核心依赖（必选）-->
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-starter-openfeign</artifactId>
+        </dependency>
+
+        <!-- 负载均衡依赖 lb负载-->
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-starter-loadbalancer</artifactId>
+        </dependency>
+
+        <!-- 5. 熔断降级依赖（可选，如使用 Sentinel） -->
+        <dependency>
+            <groupId>com.alibaba.cloud</groupId>
+            <artifactId>spring-cloud-starter-alibaba-sentinel</artifactId>
+        </dependency>
     </dependencies>
 
 
