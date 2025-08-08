@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.github.pagehelper.PageHelper;
 import com.kunpeng.framework.common.cache.DictCache;
+import com.kunpeng.framework.common.cache.ProjectCache;
 import com.kunpeng.framework.constant.ReturnFinishedMessageConstant;
 import com.kunpeng.framework.entity.bo.DictionaryBO;
 import com.kunpeng.framework.enums.YesNoEnum;
@@ -16,6 +17,7 @@ import com.kunpeng.framework.modules.dict.po.DictDataPO;
 import com.kunpeng.framework.modules.dict.po.DictTypePO;
 import com.kunpeng.framework.modules.dict.po.param.DictDataEditParamPO;
 import com.kunpeng.framework.modules.dict.po.param.DictDataListParamPO;
+import com.kunpeng.framework.modules.project.po.ProjectPO;
 import com.kunpeng.framework.utils.kptool.KPJsonUtil;
 import com.kunpeng.framework.utils.kptool.KPStringUtil;
 import com.kunpeng.framework.utils.kptool.KPVerifyUtil;
@@ -102,7 +104,6 @@ public class DictDataService extends ServiceImpl<DictDataMapper, DictDataPO> {
             dictDataPO.setSort(data.getSort()+1);
         }
 
-        dictDataPO.setDictType(dictTypePO.getDictType());
         if (this.baseMapper.insert(dictDataPO) == 0)
             throw new KPServiceException(ReturnFinishedMessageConstant.ERROR);
 
@@ -130,7 +131,6 @@ public class DictDataService extends ServiceImpl<DictDataMapper, DictDataPO> {
         ).size() > 0)
             throw new KPServiceException("数据键值已存在，请修改数据键值");
 
-        dictDataPO.setDictType(dictTypePO.getDictType());
         if (this.baseMapper.updateById(dictDataPO) == 0)
             throw new KPServiceException(ReturnFinishedMessageConstant.ERROR);
 
@@ -186,8 +186,12 @@ public class DictDataService extends ServiceImpl<DictDataMapper, DictDataPO> {
      **/
     public List<DictionaryBO> queryDictData(JSONObject parameter) {
         KPVerifyUtil.notNull(parameter.getString("dictType"), "请输入数据字典类型！");
+        KPVerifyUtil.notNull(parameter.getString("projectCode"), "请输入项目编号！");
 
-        List<DictDataPO> dictDataPOList = DictCache.getDictData(parameter.getString("dictType"));
+        ProjectPO projectPO = ProjectCache.getProjectByCode(parameter.getString("projectCode"));
+        if (KPStringUtil.isEmpty(projectPO)) throw new KPServiceException("项目不存在, 请输入正确的项目编号！");
+
+        List<DictDataPO> dictDataPOList = DictCache.getDictData(projectPO.getProjectCode(), parameter.getString("dictType"));
         if ( KPStringUtil.isEmpty(dictDataPOList) ) return new ArrayList<>();
 
 
@@ -203,13 +207,17 @@ public class DictDataService extends ServiceImpl<DictDataMapper, DictDataPO> {
      * @Author lipeng
      * @Description 批量查询数据字典
      * @Date 2025/7/4
-     * @param dictTypes
+     * @param parameter
      * @return java.util.Map<java.lang.String,java.util.List<com.kunpeng.framework.entity.bo.DictionaryBO>>
      **/
-    public Map<String, List<DictionaryBO>> queryDictDatas(List<String> dictTypes) {
-        KPVerifyUtil.notNull(dictTypes, "请输入数据字典类型集合！");
+    public Map<String, List<DictionaryBO>> queryDictDatas(JSONObject parameter) {
+        KPVerifyUtil.notNull(parameter.getJSONArray("dictTypes"), "请输入数据字典类型集合！");
+        KPVerifyUtil.notNull(parameter.getString("projectCode"), "请输入项目编号！");
 
-        Map<String, List<DictDataPO>> map = DictCache.getDictData(dictTypes);
+        ProjectPO projectPO = ProjectCache.getProjectByCode(parameter.getString("projectCode"));
+        if (KPStringUtil.isEmpty(projectPO)) throw new KPServiceException("项目不存在, 请输入正确的项目编号！");
+
+        Map<String, List<DictDataPO>> map = DictCache.getDictData(projectPO.getProjectCode(), parameter.getList("dictTypes", String.class));
         if ( map == null || map.size()==0 ) return new HashMap<>();
 
         Map<String, List<DictionaryBO>> body = new HashMap<>();

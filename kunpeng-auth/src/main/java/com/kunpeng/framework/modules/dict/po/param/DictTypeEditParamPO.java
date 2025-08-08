@@ -10,6 +10,8 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.experimental.Accessors;
 
+import java.util.List;
+
 /**
  * @Author lipeng
  * @Description 字典类型编辑入参
@@ -27,6 +29,11 @@ public class DictTypeEditParamPO {
     @KPNotNull(errMeg = "请输入字典类型ID")
     @KPMaxLength(max = 36, errMeg = "字典类型ID不能超过36个字符")
     private String dictTypeId;
+
+    @ApiModelProperty("项目Id")
+    @TableField("project_id")
+    @KPNotNull(errMeg = "请选择项目")
+    private List<String> projectIds;
 
     @ApiModelProperty(value = "字典名称", example = "字典名称", required = true)
     @TableField("dict_name")

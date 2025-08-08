@@ -98,7 +98,8 @@ public class DataController {
     @ApiOperation(value = "查询数据字典")
     @PostMapping(value = "/open/dict/data/list")
     @KPApiJsonlParam({
-        @ApiModelProperty(name = "dictType", value = "字典类型", example = "sex", required = true)
+        @ApiModelProperty(name = "dictType", value = "字典类型", example = "sex", required = true),
+        @ApiModelProperty(name = "projectCode", value = "项目编号", example = "authentication", required = true)
     })
     public KPResult<List<DictionaryBO>> queryDictData(@RequestBody JSONObject parameter) {
         return KPResult.success(dictDataService.queryDictData(parameter));
@@ -108,9 +109,10 @@ public class DataController {
     @ApiOperation(value = "批量查询数据字典")
     @PostMapping(value = "/open/dict/data/batch/list")
     @KPApiJsonlParam({
+            @ApiModelProperty(name = "projectCode", value = "项目编号", example = "authentication", required = true),
             @ApiModelProperty(name = "dictTypes", value = "字典类型集合", required = true, example = "[\"sex\",\"age\"]", dataType ="list")
     })
-    public KPResult<Map<String, List<DictionaryBO>>> queryDictDatas(@RequestBody List<String> dictTypes) {
-        return KPResult.success(dictDataService.queryDictDatas(dictTypes));
+    public KPResult<Map<String, List<DictionaryBO>>> queryDictDatas(@RequestBody JSONObject parameter) {
+        return KPResult.success(dictDataService.queryDictDatas(parameter));
     }
 }

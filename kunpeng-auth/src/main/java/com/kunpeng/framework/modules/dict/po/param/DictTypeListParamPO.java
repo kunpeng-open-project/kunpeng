@@ -17,6 +17,10 @@ import lombok.experimental.Accessors;
 @ApiModel(value = "DictTypeListParamPO对象", description = "字典类型列表查询入参")
 public class DictTypeListParamPO extends PageBO {
 
+    @ApiModelProperty("项目Id")
+    @TableField("project_id")
+    private String projectId;
+
     @ApiModelProperty("字典名称")
     @TableField("dict_name")
     private String dictName;

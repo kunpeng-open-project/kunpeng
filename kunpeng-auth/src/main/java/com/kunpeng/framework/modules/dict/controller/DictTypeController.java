@@ -7,6 +7,8 @@ import com.kunpeng.framework.annotation.KPApiJsonlParamMode;
 import com.kunpeng.framework.annotation.verify.KPVerifyNote;
 import com.kunpeng.framework.entity.bo.KPResult;
 import com.kunpeng.framework.modules.dict.po.DictTypePO;
+import com.kunpeng.framework.modules.dict.po.customer.DictTypeDetailsCustomerPO;
+import com.kunpeng.framework.modules.dict.po.customer.DictTypeListCustomerPO;
 import com.kunpeng.framework.modules.dict.po.param.DictTypeEditParamPO;
 import com.kunpeng.framework.modules.dict.po.param.DictTypeListParamPO;
 import com.kunpeng.framework.modules.dict.service.DictTypeService;
@@ -41,7 +43,7 @@ public class DictTypeController {
     @ApiOperation(value = "查询字典类型分页列表", notes = "权限 auth:dict:type:page:list")
     @PostMapping("/page/list")
     @KPVerifyNote
-    public KPResult<DictTypePO> queryPageList(@RequestBody DictTypeListParamPO dictTypeListParamPO){
+    public KPResult<DictTypeListCustomerPO> queryPageList(@RequestBody DictTypeListParamPO dictTypeListParamPO){
         return KPResult.list(dictTypeService.queryPageList(dictTypeListParamPO));
     }
 
@@ -52,7 +54,7 @@ public class DictTypeController {
     @KPApiJsonlParam({
         @ApiModelProperty(name = "dictTypeId", value = "字典类型ID", required = true)
     })
-    public KPResult<DictTypePO> queryDetailsById(@RequestBody JSONObject parameter){
+    public KPResult<DictTypeDetailsCustomerPO> queryDetailsById(@RequestBody JSONObject parameter){
         return KPResult.success(dictTypeService.queryDetailsById(parameter));
     }
 

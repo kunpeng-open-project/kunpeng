@@ -13,7 +13,7 @@ import lombok.experimental.Accessors;
 /**
  * @Author lipeng
  * @Description 字典数据表
- * @Date 2025-07-03
+ * @Date 2025-07-30 10:18:43
 **/
 @Data
 @Accessors(chain = true)
@@ -40,10 +40,6 @@ public class DictDataPO extends ParentBO {
     @ApiModelProperty("字典键值")
     @TableField("value")
     private String value;
-
-    @ApiModelProperty("字典类型")
-    @TableField("dict_type")
-    private String dictType;
 
     @ApiModelProperty("是否默认选中 1是 0否")
     @TableField("selected")

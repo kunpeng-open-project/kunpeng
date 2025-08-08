@@ -21,4 +21,4 @@ spring:
 
 logging:
   level:
-    com.kunpeng.framework.modules: debug
+    com.kunpeng.framework: debug
