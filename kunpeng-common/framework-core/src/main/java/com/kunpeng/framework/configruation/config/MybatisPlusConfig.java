@@ -6,9 +6,13 @@ import com.baomidou.mybatisplus.extension.plugins.inner.BlockAttackInnerIntercep
 import com.baomidou.mybatisplus.extension.plugins.inner.OptimisticLockerInnerInterceptor;
 import com.baomidou.mybatisplus.extension.plugins.inner.PaginationInnerInterceptor;
 import com.kunpeng.framework.configruation.interceptor.DeleteEhcacheSqiInnerceptor;
+import org.apache.ibatis.mapping.DatabaseIdProvider;
+import org.apache.ibatis.mapping.VendorDatabaseIdProvider;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
+
+import java.util.Properties;
 
 
 /**
@@ -53,6 +57,32 @@ public class MybatisPlusConfig {
     @Bean
     public MybatisPlusBathConfig sqlInjectorPlus(){
         return new MybatisPlusBathConfig();
+    }
+
+
+
+
+    /**
+     * @Author lipeng
+     * @Description 配置数据库类型识别器，用于区分不同数据库类型
+     * @Date 2025/8/26
+     * @param
+     * @return org.apache.ibatis.mapping.DatabaseIdProvider
+     **/
+    @Bean
+    public DatabaseIdProvider databaseIdProvider() {
+        VendorDatabaseIdProvider databaseIdProvider = new VendorDatabaseIdProvider();
+        Properties properties = new Properties();
+
+        // 数据库厂商名称与识别标识的映射
+        properties.setProperty("MySQL", "mysql");
+        properties.setProperty("PostgreSQL", "postgresql");
+        properties.setProperty("SQL Server", "sqlserver");
+        properties.setProperty("Oracle", "oracle");
+        properties.setProperty("H2", "h2"); // 支持H2内存数据库用于测试
+
+        databaseIdProvider.setProperties(properties);
+        return databaseIdProvider;
     }
 
 }

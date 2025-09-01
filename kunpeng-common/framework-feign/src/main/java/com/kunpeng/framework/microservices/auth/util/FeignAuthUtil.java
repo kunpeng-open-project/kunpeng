@@ -5,11 +5,17 @@ import com.kunpeng.framework.constant.ServerApplicationNameConConstant;
 import com.kunpeng.framework.entity.bo.KPResult;
 import com.kunpeng.framework.microservices.auth.interfaces.IDept;
 import com.kunpeng.framework.microservices.auth.interfaces.IPost;
+import com.kunpeng.framework.microservices.auth.interfaces.IUser;
+import com.kunpeng.framework.microservices.auth.po.DeptFeignPO;
+import com.kunpeng.framework.microservices.auth.po.PostFeignPO;
+import com.kunpeng.framework.microservices.auth.po.UserFeignPO;
 import com.kunpeng.framework.util.FeignVerifyUtil;
 import com.kunpeng.framework.utils.kptool.KPJSONFactoryUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+
+import java.util.List;
 
 @Component
 @Slf4j
@@ -19,6 +25,8 @@ public class FeignAuthUtil {
     private IPost post;
     @Autowired
     private IDept dept;
+    @Autowired
+    private IUser user;
 
     /**
      * @Author lipeng
@@ -27,9 +35,9 @@ public class FeignAuthUtil {
      * @param postId 岗位id
      * @return com.alibaba.fastjson2.JSONObject
      **/
-    public final JSONObject queryPostById(String postId) {
+    public final PostFeignPO queryPostById(String postId) {
         KPResult<JSONObject> row = post.queryPostById(new KPJSONFactoryUtil().put("postId", postId).build());
-        return FeignVerifyUtil.verifyBySingle(ServerApplicationNameConConstant.AUTH_NAME, row, "查询岗位信息");
+        return FeignVerifyUtil.verifyBySingle(ServerApplicationNameConConstant.AUTH_NAME, row, "查询岗位信息", PostFeignPO.class);
     }
 
 
@@ -40,8 +48,22 @@ public class FeignAuthUtil {
      * @param deptId
      * @return com.alibaba.fastjson2.JSONObject
      **/
-    public final JSONObject queryDeptById(String deptId) {
+    public final DeptFeignPO queryDeptById(String deptId) {
         KPResult<JSONObject> row = dept.queryDeptById(new KPJSONFactoryUtil().put("deptId", deptId).build());
-        return FeignVerifyUtil.verifyBySingle(ServerApplicationNameConConstant.AUTH_NAME, row, "查询部门信息");
+        return FeignVerifyUtil.verifyBySingle(ServerApplicationNameConConstant.AUTH_NAME, row, "查询部门信息", DeptFeignPO.class);
+    }
+
+
+
+    /**
+     * @Author lipeng
+     * @Description 根据用户id集合查询用户列表
+     * @Date 2025/8/26
+     * @param userIds
+     * @return com.alibaba.fastjson2.JSONObject
+     **/
+    public final List<UserFeignPO> queryUserListByIds(List<String> userIds) {
+        KPResult<JSONObject> row = user.queryUserListByIds(userIds);
+        return FeignVerifyUtil.verifyByList(ServerApplicationNameConConstant.AUTH_NAME, row, "根据用户id集合查询用户列表", UserFeignPO.class);
     }
 }

@@ -120,7 +120,9 @@ public class UserService extends ServiceImpl<UserMapper, UserPO> {
                 .eq(KPStringUtil.isNotEmpty(userListParamPO.getStatus()), UserPO::getStatus, userListParamPO.getStatus())
                 .eq(KPStringUtil.isNotEmpty(userListParamPO.getUserStatus()), UserPO::getUserStatus, userListParamPO.getUserStatus())
                 .in(KPStringUtil.isNotEmpty(userListParamPO.getDeptId()), UserDeptPO::getDeptId, deptList)
-                .in(KPStringUtil.isNotEmpty(userListParamPO.getRoleId()), UserRolePO::getRoleId, userListParamPO.getRoleId());
+                .in(KPStringUtil.isNotEmpty(userListParamPO.getRoleId()), UserRolePO::getRoleId, userListParamPO.getRoleId())
+                .notIn(KPStringUtil.isNotEmpty(userListParamPO.getNeUserIds()), UserPO::getUserId, userListParamPO.getNeUserIds())
+                .in(KPStringUtil.isNotEmpty(userListParamPO.getEqUserIds()), UserRolePO::getUserId, userListParamPO.getEqUserIds());
 
         if (KPStringUtil.isNotEmpty(userListParamPO.getName())) {
             wrapper.and(e -> e.like(UserPO::getRealName, userListParamPO.getName())
@@ -191,7 +193,8 @@ public class UserService extends ServiceImpl<UserMapper, UserPO> {
                 .eq(KPStringUtil.isNotEmpty(userListParamPO.getStatus()), UserPO::getStatus, userListParamPO.getStatus())
                 .eq(KPStringUtil.isNotEmpty(userListParamPO.getUserStatus()), UserPO::getUserStatus, userListParamPO.getUserStatus())
                 .in(KPStringUtil.isNotEmpty(userListParamPO.getDeptId()), UserDeptPO::getDeptId, deptList)
-                .in(KPStringUtil.isNotEmpty(userListParamPO.getRoleId()), UserRolePO::getRoleId, userListParamPO.getRoleId());
+                .in(KPStringUtil.isNotEmpty(userListParamPO.getRoleId()), UserRolePO::getRoleId, userListParamPO.getRoleId())
+                .notIn(KPStringUtil.isNotEmpty(userListParamPO.getNeUserIds()), UserPO::getUserId, userListParamPO.getNeUserIds());
 
         if (KPStringUtil.isNotEmpty(userListParamPO.getName())) {
             wrapper.and(e -> e.like(UserPO::getRealName, userListParamPO.getName())
@@ -590,5 +593,27 @@ public class UserService extends ServiceImpl<UserMapper, UserPO> {
 
     public static void main(String[] args) {
         System.out.println(new BCryptPasswordEncoder().encode("admin123"));
+    }
+
+
+    /**
+     * @Author lipeng
+     * @Description 根据用户id集合查询用户列表
+     * @Date 2025/8/26
+     * @param userIds
+     * @return java.util.List<com.kunpeng.framework.modules.user.po.UserPO>
+     **/
+    public List<UserPO> queryUserIdList(List<String> userIds) {
+        KPVerifyUtil.notNull(userIds, "用户id集合不能为空");
+
+        List<UserPO> row = this.baseMapper.selectList(Wrappers.lambdaQuery(UserPO.class)
+                .in(UserPO::getUserId, userIds)
+                .orderByDesc(UserPO::getCreateDate));
+
+        row.forEach(userListCustomerPO -> {
+            userListCustomerPO.setAvatar(KPMinioUtil.getUrl(MinioConstant.AUTH_BUCKET_NAME, userListCustomerPO.getAvatar(), 168));
+        });
+
+        return row;
     }
 }

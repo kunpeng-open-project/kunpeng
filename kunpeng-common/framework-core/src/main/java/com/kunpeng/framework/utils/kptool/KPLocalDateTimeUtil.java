@@ -41,12 +41,12 @@ public class KPLocalDateTimeUtil {
      * @param format
      * @return java.lang.String
      **/
-    public static String byString(LocalDateTime localDateTime, String format){
+    public static String toString(LocalDateTime localDateTime, String format){
         DateTimeFormatter df = DateTimeFormatter.ofPattern(format);
         return df.format(localDateTime);
     }
 
-    public static String byString(String localDateTime, String format){
+    public static String toString(String localDateTime, String format){
         DateTimeFormatter df = DateTimeFormatter.ofPattern(format);
         return df.format(LocalDateTime.parse(localDateTime, df));
     }
@@ -145,7 +145,7 @@ public class KPLocalDateTimeUtil {
      * @return java.lang.String
      **/
     public static String getDate() {
-        return byString(LocalDateTime.now(), KPLocalDateTimeUtil.DATE_PATTERN);
+        return toString(LocalDateTime.now(), KPLocalDateTimeUtil.DATE_PATTERN);
     }
 
 
@@ -157,7 +157,7 @@ public class KPLocalDateTimeUtil {
      * @return java.lang.String
      **/
     public static final String getTime() {
-        return byString(LocalDateTime.now(), KPLocalDateTimeUtil.DATE_TIME_PATTERN);
+        return toString(LocalDateTime.now(), KPLocalDateTimeUtil.DATE_TIME_PATTERN);
     }
 
 
@@ -307,4 +307,36 @@ public class KPLocalDateTimeUtil {
         return instant.atZone(zoneId).toLocalDateTime();
     }
 
+
+// TODO: 2025/8/12  加入
+    /**
+     * @Author lipeng
+     * @Description 获取当前年份的第一天（00:00:00）
+     * @Date 2024/8/12 补充方法
+     * @return java.time.LocalDateTime 当前年份第一天的起始时间
+     **/
+    public static LocalDateTime getFirstDayOfCurrentYear() {
+        // 获取当前日期
+        LocalDate currentDate = LocalDate.now();
+        // 定位到当前年份的第一天
+        LocalDate firstDayOfYear = currentDate.with(TemporalAdjusters.firstDayOfYear());
+        // 拼接当天的起始时间（00:00:00）
+        return LocalDateTime.of(firstDayOfYear, LocalTime.MIN);
+    }
+
+    /**
+     * @Author lipeng
+     * @Description 获取当前年份的最后一天（23:59:59.999）
+     * @Date 2024/8/12 补充方法
+     * @return java.time.LocalDateTime 当前年份最后一天的结束时间
+     **/
+    public static LocalDateTime getLastDayOfCurrentYear() {
+        // 获取当前日期
+        LocalDate currentDate = LocalDate.now();
+        // 定位到当前年份的最后一天
+        LocalDate lastDayOfYear = currentDate.with(TemporalAdjusters.lastDayOfYear());
+        // 拼接当天的结束时间（23:59:59.999）
+        return LocalDateTime.of(lastDayOfYear, LocalTime.MAX);
+    }
 }
+

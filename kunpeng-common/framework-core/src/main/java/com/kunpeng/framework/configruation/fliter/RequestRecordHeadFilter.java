@@ -1,5 +1,6 @@
 package com.kunpeng.framework.configruation.fliter;
 
+import com.alibaba.fastjson2.JSONArray;
 import com.alibaba.fastjson2.JSONObject;
 import com.kunpeng.framework.annotation.KPExcludeInterfaceJournal;
 import com.kunpeng.framework.configruation.config.MyRequestWrapper;
@@ -94,9 +95,15 @@ public class RequestRecordHeadFilter implements Filter {
 			}
 			log.info("请求参数： {}", parameter);
 		}catch (Exception ex){
-			parameter = KPJsonUtil.toJsonString(myRequestWrapper.getBody());
-			log.info("请求参数： {}", parameter);
-			log.info("请求参数获取异常： {}", ex.getMessage());
+			JSONArray JSONArray = parseIfArray(myRequestWrapper.getBody());
+			if (JSONArray==null){
+				parameter = KPJsonUtil.toJsonString(myRequestWrapper.getBody());
+				log.info("请求参数： {}", parameter);
+				log.info("请求参数获取异常： {}", ex.getMessage());
+			}else{
+				log.info("请求参数： {}", JSONArray);
+			}
+
 		}
 
 		try {
@@ -128,5 +135,32 @@ public class RequestRecordHeadFilter implements Filter {
 		}catch (Exception ex){}
 		log.info("---------- [请求本系统接口结束] ----------");
 		log.info("");
+	}
+
+	private static JSONArray parseIfArray(String input) {
+		// 空值直接返回null
+		if (input == null || input.trim().isEmpty()) {
+			return null;
+		}
+
+		try {
+			// 处理可能的外层引号
+			String processed = input.trim();
+			if (processed.startsWith("\"") && processed.endsWith("\"")) {
+				processed = processed.substring(1, processed.length() - 1);
+			}
+
+			// 处理转义符
+			processed = processed.replaceAll("\\\\\"", "\"");
+
+			// 尝试解析为JSON数组
+			JSONArray jsonArray = JSONArray.parseArray(processed);
+
+			// 解析成功且确实是数组（防御性判断）
+			return (jsonArray != null && !jsonArray.isEmpty()) ? jsonArray : null;
+		} catch (Exception e) {
+			// 解析失败，不是有效数组
+			return null;
+		}
 	}
 }

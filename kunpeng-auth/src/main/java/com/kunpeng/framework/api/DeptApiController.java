@@ -15,6 +15,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/api/dept")
 @Api(tags = "API-部门相关接口", value = "API-部门相关接口")
@@ -32,5 +34,15 @@ public class DeptApiController {
     })
     public KPResult<DeptPO> queryPostId(@RequestBody JSONObject parameter) {
         return KPResult.success(deptService.queryDetailsById(parameter));
+    }
+
+
+    @ApiOperation(value = "根据部门id集合查询部门列表")
+    @PostMapping("/dept/ids/list")
+    @KPApiJsonlParam({
+            @ApiModelProperty(name = "deptId", value = "部门Id集合", required = true, dataType = "list")
+    })
+    public KPResult<DeptPO> queryUserIdList(@RequestBody List<String> deptIds) {
+        return KPResult.list(deptService.queryUserIdList(deptIds));
     }
 }

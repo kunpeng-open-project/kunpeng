@@ -262,4 +262,19 @@ public class DeptService extends ServiceImpl<DeptMapper, DeptPO> {
         this.updateBatchById(deptPOList);
     }
 
+
+    /**
+     * @Author lipeng
+     * @Description 根据部门id集合查询部门列表
+     * @Date 2025/8/28 17:24
+     * @param deptIds
+     * @return java.util.List<com.kunpeng.framework.modules.dept.po.DeptPO>
+     **/
+    public List<DeptPO> queryUserIdList(List<String> deptIds) {
+        KPVerifyUtil.notNull(deptIds, "部门id集合不能为空");
+
+        return this.baseMapper.selectList(Wrappers.lambdaQuery(DeptPO.class)
+                .in(DeptPO::getDeptId, deptIds)
+                .orderByDesc(DeptPO::getCreateDate));
+    }
 }

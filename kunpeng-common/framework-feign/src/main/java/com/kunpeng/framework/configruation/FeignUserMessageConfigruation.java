@@ -10,6 +10,13 @@ import javax.servlet.http.HttpServletRequest;
 import java.util.Arrays;
 import java.util.Enumeration;
 
+
+/**
+ * @Author lipeng
+ * @Description Feign 内部调用传递用户凭证信息和所有请求头信息
+ * @Date 2025/8/8
+ * @return
+ **/
 @Configuration
 public class FeignUserMessageConfigruation implements RequestInterceptor {
     @Override

@@ -7,6 +7,8 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.experimental.Accessors;
 
+import java.util.List;
+
 /**
  * @Author lipeng
  * @Description 用户信息列表查询入参
@@ -20,6 +22,12 @@ public class UserListParamPO extends PageBO {
     @ApiModelProperty("用户账号")
     @TableField("user_name")
     private String userName;
+
+    @ApiModelProperty("屏蔽的用户id集合")
+    private List<String> neUserIds;
+
+    @ApiModelProperty("查询的用户id集合")
+    private List<String> eqUserIds;
 
     @ApiModelProperty("工号")
     @TableField("job_number")

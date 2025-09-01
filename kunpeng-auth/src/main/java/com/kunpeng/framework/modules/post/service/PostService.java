@@ -191,4 +191,21 @@ public class PostService extends ServiceImpl<PostMapper, PostPO> {
 
         return body;
     }
+
+
+
+    /**
+     * @Author lipeng
+     * @Description 根据岗位id集合查询岗位列表
+     * @Date 2025/8/28 16:55
+     * @param postIds
+     * @return java.util.List<com.kunpeng.framework.modules.post.po.PostPO>
+     **/
+    public List<PostPO> queryPostIdList(List<String> postIds) {
+        KPVerifyUtil.notNull(postIds, "岗位id集合不能为空");
+
+        return  this.baseMapper.selectList(Wrappers.lambdaQuery(PostPO.class)
+                .in(PostPO::getPostId, postIds)
+                .orderByDesc(PostPO::getCreateDate));
+    }
 }
