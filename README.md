@@ -8,9 +8,9 @@
 
 ## 在线体验
 
-- 官网地址(使用文档)：[http://kunpengtool.cn](http://kunpengtool.cn)
-- 演示地址：[http://kunpengtool.cn/auth](http://kunpengtool.cn/auth)
-- 接口文档：[http://kunpengtool.cn/gateway/doc.html](http://kunpengtool.cn/gateway/doc.html)
+- 官网地址(使用文档)：[http://kpopen.cn](http://kpopen.cn)
+- 演示地址：[http://kpopen.cn/auth](http://kpopen.cn/auth)
+- 接口文档：[http://kpopen.cn/gateway/doc.html](http://kpopen.cn/gateway/doc.html)
 
 
 ## 开源初衷

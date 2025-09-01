@@ -29,8 +29,8 @@ public class AuthenticationApplication {
         String[] details = {
                 "本地接口地址：http://127.0.0.1:9001/doc.html",
                 "本地Druid地址：http://127.0.0.1:9001/druid/index.html",
-                "正式接口地址：http://kunpengtool.cn/gateway/doc.html",
-                "正式前端地址：http://kunpengtool.cn/auth",
+                "正式接口地址：http://kpopen.cn/gateway/doc.html",
+                "正式前端地址：http://kpopen.cn/auth",
                 "测试接口地址：",
                 "测试前端地址："
         };
