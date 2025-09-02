@@ -52,8 +52,11 @@ public final class KPServiceUtil implements ApplicationContextAware {
 
     //通过class获取Bean.
     public static <T> T getBean(Class<T> clazz) {
-//        getApplicationContext().getBean(clazz);
-        return (T) getApplicationContext().getBean(KPStringUtil.initialsLowerCase(clazz.getSimpleName()), clazz);
+        try {
+            return (T) getApplicationContext().getBean(KPStringUtil.initialsLowerCase(clazz.getSimpleName()), clazz);
+        }catch (Exception ex){
+            return getApplicationContext().getBean(clazz);
+        }
     }
 
     //通过name,以及Clazz返回指定的Bean
