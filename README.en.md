@@ -1,10 +1,10 @@
-# Kunpeng Microservice Framework
+# yipeng Microservice Framework
 
 A lightweight microservice framework built on technical stacks such as SpringBoot, SpringCloud, and SpringCloud Alibaba, dedicated to providing developers with a full-stack solution for quick adoption.
 
 ## Project Introduction
 
-The Kunpeng Microservice Framework is an open-source project designed to meet the efficient development needs of development teams. It integrates current mainstream microservice technologies, providing a one-stop solution from code generation to service deployment, helping developers quickly build stable and efficient microservice applications.
+The yipeng Microservice Framework is an open-source project designed to meet the efficient development needs of development teams. It integrates current mainstream microservice technologies, providing a one-stop solution from code generation to service deployment, helping developers quickly build stable and efficient microservice applications.
 
 ## Online Experience
 
@@ -23,7 +23,7 @@ When searching for microservice frameworks suitable for developers at all levels
 - Complete interface call records, error logs, and call statistics
 - Open-source and modifiable core code for easy secondary development
 
-Therefore, the Kunpeng Microservice Framework was developed in spare time to meet these needs.
+Therefore, the yipeng Microservice Framework was developed in spare time to meet these needs.
 
 ## Core Features
 

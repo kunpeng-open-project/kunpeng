@@ -4,17 +4,17 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>com.kunpeng.framework</groupId>
-    <artifactId>kunpeng</artifactId>
-    <version>1.0-0-SNAPSHOT</version>
+    <groupId>com.yipeng.framework</groupId>
+    <artifactId>yipeng</artifactId>
+    <version>1.1-0-SNAPSHOT</version>
     <packaging>pom</packaging>
     <modules>
-        <module>kunpeng-gateway</module>
-        <module>kunpeng-auth</module>
-        <module>kunpeng-common</module>
-        <module>kunpeng-common/framework-core</module>
-        <module>kunpeng-common/framework-security</module>
-        <module>kunpeng-common/framework-feign</module>
+        <module>yipeng-gateway</module>
+        <module>yipeng-auth</module>
+        <module>yipeng-common</module>
+        <module>yipeng-common/framework-core</module>
+        <module>yipeng-common/framework-security</module>
+        <module>yipeng-common/framework-feign</module>
     </modules>
 
 

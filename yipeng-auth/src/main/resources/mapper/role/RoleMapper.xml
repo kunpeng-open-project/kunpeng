@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.kp.framework.modules.role.mapper.RoleMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.kp.framework.modules.role.po.RolePO">
+        <id column="role_id" property="roleId" />
+        <result column="create_date" property="createDate" />
+        <result column="create_user_id" property="createUserId" />
+        <result column="create_user_name" property="createUserName" />
+        <result column="update_date" property="updateDate" />
+        <result column="update_user_id" property="updateUserId" />
+        <result column="update_user_name" property="updateUserName" />
+        <result column="delete_flag" property="deleteFlag" />
+        <result column="role_name" property="roleName" />
+        <result column="role_code" property="roleCode" />
+        <result column="status" property="status" />
+        <result column="remark" property="remark" />
+    </resultMap>
+
+    <!-- 表字段结果列 -->
+    <sql id="Base_Column_List">
+        role_id, role_name, role_code, status, remark
+    </sql>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_Common_List">
+        create_date, create_user_id, create_user_name, update_date, update_user_id, update_user_name, delete_flag
+    </sql>
+
+</mapper>
