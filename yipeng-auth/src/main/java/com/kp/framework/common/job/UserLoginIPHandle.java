@@ -45,13 +45,14 @@ public class UserLoginIPHandle {
 
             row = row.getJSONObject("data");
 
+
             loginRecordMapper.updateById(new LoginRecordPO()
                     .setAlrId(loginRecordPO.getAlrId())
-                    .setLoginIpAddress(new StringBuilder(row.getString("country"))
-                            .append(row.getString("region"))
-                            .append(row.getString("city").equals(row.getString("region")) ? "" : row.getString("city"))
-                            .toString()
-                            .replaceAll("X", ""))
+                    .setLoginIpAddress(
+                            row.getString("isp").equals("内网IP") ? "内网IP" : new StringBuilder(row.getString("country"))
+                                    .append(row.getString("region"))
+                                    .append(row.getString("city").equals(row.getString("region")) ? "" : row.getString("city"))
+                                    .toString())
             );
             KPThreadUtil.sleep(2000);
         }
