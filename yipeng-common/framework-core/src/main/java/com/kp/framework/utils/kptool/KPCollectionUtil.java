@@ -23,7 +23,8 @@ import java.util.stream.Collectors;
  **/
 public final class KPCollectionUtil {
 
-    private KPCollectionUtil(){}
+    private KPCollectionUtil() {
+    }
 
     /**
      * @Author lipeng
@@ -35,7 +36,7 @@ public final class KPCollectionUtil {
      **/
     public static final boolean isContain(Integer str, List<Integer> arr) {
         for (Integer num : arr) {
-            if(str.equals(num))
+            if (str.equals(num))
                 return true;
         }
         return false;
@@ -43,7 +44,7 @@ public final class KPCollectionUtil {
 
     /**
      * @Author lipeng
-     * @Description  Long是否在数组中
+     * @Description Long是否在数组中
      * @Date 2021/12/23 11:21
      * @param str
      * @param arr
@@ -51,7 +52,7 @@ public final class KPCollectionUtil {
      **/
     public static final boolean isContain(Long str, List<Long> arr) {
         for (Long num : arr) {
-            if(str.equals(num))
+            if (str.equals(num))
                 return true;
         }
         return false;
@@ -59,7 +60,7 @@ public final class KPCollectionUtil {
 
     public static final boolean isContain(String str, List<String> arr) {
         for (String num : arr) {
-            if(str.contains(num))
+            if (str.contains(num))
                 return true;
         }
         return false;
@@ -76,9 +77,9 @@ public final class KPCollectionUtil {
      * @return java.lang.Integer
      **/
     public static Integer index(List<?> list, String field, String conditon) {
-        for (int i = 0; i < list.size(); i++){
+        for (int i = 0; i < list.size(); i++) {
             JSONObject json = KPJsonUtil.toJson(list.get(i));
-            String fieldValue = json.getString(field)==null?"":json.getString(field).trim();
+            String fieldValue = json.getString(field) == null ? "" : json.getString(field).trim();
             if (fieldValue.equals(conditon))
                 return i;
         }
@@ -118,7 +119,7 @@ public final class KPCollectionUtil {
 
             StringBuilder sb = new StringBuilder();
 
-            for (Field field : fields){
+            for (Field field : fields) {
                 if (map.get(field.getName()) == null) continue;
 
                 String fileName = "";
@@ -127,11 +128,10 @@ public final class KPCollectionUtil {
                     TableId tableId = field.getAnnotation(TableId.class);
                     if (tableId == null) continue;
                     fileName = tableId.value();
-                }else{
+                } else {
                     if (!tableField.exist()) continue;
                     fileName = tableField.value();
                 }
-
 
 
                 if (KPStringUtil.isNotEmpty(prefix))
@@ -139,10 +139,10 @@ public final class KPCollectionUtil {
                 if (KPStringUtil.isEmpty(prefix))
                     sb.append(fileName).append(",");
             }
-            return sb.toString().substring(0, sb.toString().length()-1);
-        }catch (KPServiceException ex){
+            return sb.toString().substring(0, sb.toString().length() - 1);
+        } catch (KPServiceException ex) {
             throw new KPServiceException(ex.getMessage());
-        }catch (Exception e){
+        } catch (Exception e) {
             throw new KPServiceException("获取补集异常");
         }
     }
@@ -157,7 +157,7 @@ public final class KPCollectionUtil {
      * @return 成功插入的总记录数
      */
     public static <T> boolean insertBatch(ParentMapper<T> baseMapper, List<T> list, int batchSize) {
-        if (KPStringUtil.isEmpty(list))  return true;
+        if (KPStringUtil.isEmpty(list)) return true;
 
         Integer totalSuccess = 0;
         // 将大List按batchSize分割成多个子List
@@ -165,6 +165,33 @@ public final class KPCollectionUtil {
         // 逐组插入并累加成功记录数
         for (List<T> batch : partitions) {
             int result = baseMapper.insertBatchSomeColumn(batch);
+            if (result > 0) totalSuccess += result;
+        }
+
+        if (totalSuccess.equals(list.size())) return true;
+        return false;
+    }
+
+
+    /**
+     * @Author lipeng
+     * @Description 批量插入数据，自动按指定大小分组
+     * @Date 2025/9/3 23:12
+     * @param baseMapper MyBatis-Plus的BaseMapper接口实例
+     * @param list 待插入的数据列表
+     * @param clazz 插入时需要转换的实体类
+     * @param batchSize  每组大小（默认100）
+     * @return boolean
+     **/
+    public static <T> boolean insertBatch(ParentMapper<T> baseMapper, List list, Class<T> clazz, int batchSize) {
+        if (KPStringUtil.isEmpty(list)) return true;
+
+        Integer totalSuccess = 0;
+        // 将大List按batchSize分割成多个子List
+        List<List> partitions = ListUtils.partition(list, batchSize);
+        // 逐组插入并累加成功记录数
+        for (List<T> batch : partitions) {
+            int result = baseMapper.insertBatchSomeColumn(KPJsonUtil.toJavaObjectList(batch, clazz));
             if (result > 0) totalSuccess += result;
         }
 

@@ -20,10 +20,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
-* @Author lipeng
-* @Description  系统外部接口调用记录相关接口
-* @Date 2025-05-21
-**/
+ * @Author lipeng
+ * @Description 系统外部接口调用记录相关接口
+ * @Date 2025-05-21
+ **/
 @RestController
 @RequestMapping("/auth/http/log")
 @Api(tags = "系统外部接口调用记录相关接口", value = "系统外部接口调用记录相关接口")
@@ -35,23 +35,23 @@ public class HttpLogController {
 
 
     @PreAuthorize("hasPermission('/auth/http/log/page/list', 'auth:http:log:page:list')")
-    @ApiOperation(value = "查询系统外部接口调用记录分页列表", notes = "权限 auth:http:log:page:list")
+    @ApiOperation(value = "查询系统外部接口调用记录分页列表", notes = "权限 auth:http:log:page:list", response = HttpLogPO.class)
     @PostMapping("/page/list")
     @KPVerifyNote
     @KPExcludeInterfaceJournal
-    public KPResult<HttpLogPO> queryPageList(@RequestBody HttpLogListParamPO httpLogListParamPO){
+    public KPResult<?> queryPageList(@RequestBody HttpLogListParamPO httpLogListParamPO) {
         return KPResult.list(httpLogService.queryPageList(httpLogListParamPO));
     }
 
 
     @PreAuthorize("hasPermission('/auth/http/log/details','auth:http:log:details')")
-    @ApiOperation(value = "根据查询详情", notes="权限 auth:http:log:details")
+    @ApiOperation(value = "根据查询详情", notes = "权限 auth:http:log:details")
     @PostMapping("/details")
     @KPApiJsonlParam({
-        @ApiModelProperty(name = "uuid", value = "接口记录主键", required = true)
+            @ApiModelProperty(name = "uuid", value = "接口记录主键", required = true)
     })
     @KPExcludeInterfaceJournal
-    public KPResult<HttpLogPO> queryDetailsById(@RequestBody JSONObject parameter){
+    public KPResult<HttpLogPO> queryDetailsById(@RequestBody JSONObject parameter) {
         return KPResult.success(httpLogService.queryDetailsById(parameter));
     }
 }

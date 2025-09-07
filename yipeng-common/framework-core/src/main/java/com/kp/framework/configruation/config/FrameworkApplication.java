@@ -1,5 +1,6 @@
 package com.kp.framework.configruation.config;
 
+import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import com.kp.framework.configruation.properties.KPFrameworkAsyncProperties;
 import com.kp.framework.configruation.properties.KPFrameworkTaskExecutorProperties;
 import com.kp.framework.configruation.properties.KPFrameworkTaskProperties;
@@ -18,7 +19,11 @@ import org.springframework.stereotype.Component;
 import javax.annotation.PostConstruct;
 import java.util.Arrays;
 import java.util.concurrent.Executor;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @Author 李鹏
@@ -45,12 +50,12 @@ public class FrameworkApplication implements AsyncConfigurer {
     }
 
 
-   /**
-    * @Author lipeng
-    * @Description 定时器调度线程
-    **/
+    /**
+     * @Author lipeng
+     * @Description 定时器调度线程
+     **/
     @Bean
-    public TaskScheduler taskScheduler(){
+    public TaskScheduler taskScheduler() {
         ThreadPoolTaskScheduler scheduler = new ThreadPoolTaskScheduler();
         //线程池大小
         scheduler.setPoolSize(kpFrameworkTaskProperties.getPoolSize());
@@ -60,28 +65,45 @@ public class FrameworkApplication implements AsyncConfigurer {
     }
 
 
-
     /**
      * @Author lipeng
-     * @Description  线程池配置
+     * @Description 线程池配置
      **/
-    @Bean(name = "threadPoolTaskExecutor")
-    public ThreadPoolTaskExecutor threadPoolTaskExecutor() {
-        ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
-        // 设置最大线程数，当队列满时可创建的最大线程数量
-        executor.setMaxPoolSize(kpFrameworkTaskExecutorProperties.getMaxPoolSize());
-        // 设置核心线程数，线程池初始创建的线程数量
-        executor.setCorePoolSize(kpFrameworkTaskExecutorProperties.getCorePoolSize());
-        // 设置任务队列容量，存放待执行任务的队列最大长度
-        executor.setQueueCapacity(kpFrameworkTaskExecutorProperties.getQueueCapacity());
-        // 设置线程空闲时间，超过此时间的空闲线程将被销毁
-        executor.setKeepAliveSeconds(kpFrameworkTaskExecutorProperties.getKeepAliveSeconds());
-        // 设置线程名称前缀，便于日志追踪和问题排查
-        executor.setThreadNamePrefix("kp-task-executor-timer");
-        // 设置拒绝策略，当线程池和队列都满时的处理方式
-        // CallerRunsPolicy表示由调用线程来执行该任务
-        executor.setRejectedExecutionHandler(new ThreadPoolExecutor.CallerRunsPolicy());
-        return executor;
+//    @Bean(name = "threadPoolTaskExecutor")
+//    public ThreadPoolTaskExecutor threadPoolTaskExecutor() {
+//        ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
+//        // 设置最大线程数，当队列满时可创建的最大线程数量
+//        executor.setMaxPoolSize(kpFrameworkTaskExecutorProperties.getMaxPoolSize());
+//        // 设置核心线程数，线程池初始创建的线程数量
+//        executor.setCorePoolSize(kpFrameworkTaskExecutorProperties.getCorePoolSize());
+//        // 设置任务队列容量，存放待执行任务的队列最大长度
+//        executor.setQueueCapacity(kpFrameworkTaskExecutorProperties.getQueueCapacity());
+//        // 设置线程空闲时间，超过此时间的空闲线程将被销毁
+//        executor.setKeepAliveSeconds(kpFrameworkTaskExecutorProperties.getKeepAliveSeconds());
+//        // 设置线程名称前缀，便于日志追踪和问题排查
+//        executor.setThreadNamePrefix("kp-task-executor-timer");
+//        // 设置拒绝策略，当线程池和队列都满时的处理方式
+//        // CallerRunsPolicy表示由调用线程来执行该任务
+//        executor.setRejectedExecutionHandler(new ThreadPoolExecutor.CallerRunsPolicy());
+//        return executor;
+//    }
+    @Bean(name = "kpExecutorService")
+    public ExecutorService kpExecutorService() {
+        // 1. 自定义 ThreadFactory：设置线程名前缀为 "kp-task-executor-timer"
+        ThreadFactory threadFactory = new ThreadFactoryBuilder()
+                .setNameFormat("kp-task-executor-timer-%d") // %d 会自动替换为线程编号（1、2、3...）
+                .setDaemon(false) // 非守护线程（默认false，确保任务执行完再退出）
+                .build();
+
+        return new ThreadPoolExecutor(
+                kpFrameworkTaskExecutorProperties.getCorePoolSize(), // 核心线程数
+                kpFrameworkTaskExecutorProperties.getMaxPoolSize(),  // 最大线程数
+                kpFrameworkTaskExecutorProperties.getKeepAliveSeconds(), // 非核心线程空闲时间
+                TimeUnit.SECONDS,            // 时间单位
+                new LinkedBlockingQueue<>(kpFrameworkTaskExecutorProperties.getQueueCapacity()), // 有界队列：满了排队（容量=queueCapacity）
+                threadFactory, // 传入自定义线程工厂（带名称前缀）
+                new ThreadPoolExecutor.CallerRunsPolicy()
+        );
     }
 
 

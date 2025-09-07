@@ -15,6 +15,13 @@ import org.springframework.stereotype.Component;
 
 import java.util.List;
 
+
+/**
+ * @Author lipeng
+ * @Description 获取ip的所在地
+ * @Date 2025/7/2
+ * @return
+ **/
 @Slf4j
 @Component
 public class UserLoginIPHandle {

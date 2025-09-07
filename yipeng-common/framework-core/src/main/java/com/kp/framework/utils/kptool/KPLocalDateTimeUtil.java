@@ -163,24 +163,25 @@ public class KPLocalDateTimeUtil {
 
 
 
+
     /**
      * @Author lipeng
-     * @Description 减去天数
-     * @Date 2023/12/7 15:57
-     * @param now 操作的日期
-     * @param days 要减去的天数
-     * @param format 格式化
-     * @return java.lang.String
+     * @Description 时间加或减去指定天数
+     * @Date 2025/9/3 20:27
+     * @param localDateTime 操作日期
+     * @param days 加上获取减去的天数 减用负数
+     * @return java.time.LocalDateTime
      **/
-    public static String minus(LocalDateTime now, int days, String format) {
-        LocalDateTime previous = now.plusDays(-days);
-        DateTimeFormatter spl = DateTimeFormatter.ofPattern(format);
-        return previous.format(spl);
+    public static LocalDateTime addDays(LocalDateTime localDateTime, int days) {
+        // 统一逻辑：正数用plusDays，负数转绝对值后用minusDays，0直接返回原时间
+        if (days > 0) {
+            return localDateTime.plusDays(days);
+        } else if (days < 0) {
+            return localDateTime.minusDays(Math.abs(days));
+        }
+        return localDateTime;
     }
-    public static LocalDateTime minus(LocalDateTime now, int days) {
-        LocalDateTime previous = now.plusDays(-days);
-        return previous;
-    }
+
 
 
 

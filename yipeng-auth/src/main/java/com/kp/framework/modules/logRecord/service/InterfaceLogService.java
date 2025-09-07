@@ -52,7 +52,7 @@ public class InterfaceLogService extends ServiceImpl<InterfaceLogMapper, Interfa
      * @param interfaceLogListParamPO
      * @return java.util.List<InterfaceLogPO>
      **/
-    public List<InterfaceLogPO> queryPageList(InterfaceLogListParamPO interfaceLogListParamPO) {
+    public List<?> queryPageList(InterfaceLogListParamPO interfaceLogListParamPO) {
         PageHelper.startPage(interfaceLogListParamPO.getPageNum(), interfaceLogListParamPO.getPageSize(), interfaceLogListParamPO.getOrderBy(InterfaceLogPO.class));
 
         if (interfaceLogListParamPO.getLevel().equals(JournalStatusEnum.NEWEST_JOURNAL.code())) {
@@ -73,7 +73,7 @@ public class InterfaceLogService extends ServiceImpl<InterfaceLogMapper, Interfa
             return this.baseMapper.selectList(queryWrapper);
         }
 
-        List<InterfaceLogHistoryPO> interfaceLogHistoryPOList = interfaceLogHistoryMapper.selectList(new LambdaQueryWrapper<>(InterfaceLogHistoryPO.class)
+        return interfaceLogHistoryMapper.selectList(new LambdaQueryWrapper<>(InterfaceLogHistoryPO.class)
                 .eq(KPStringUtil.isNotEmpty(interfaceLogListParamPO.getProjectName()), InterfaceLogHistoryPO::getProjectName, interfaceLogListParamPO.getProjectName())
                 .like(KPStringUtil.isNotEmpty(interfaceLogListParamPO.getUri()), InterfaceLogHistoryPO::getUri, interfaceLogListParamPO.getUri())
                 .eq(KPStringUtil.isNotEmpty(interfaceLogListParamPO.getName()), InterfaceLogHistoryPO::getName, interfaceLogListParamPO.getName())
@@ -87,8 +87,6 @@ public class InterfaceLogService extends ServiceImpl<InterfaceLogMapper, Interfa
                 .eq(KPStringUtil.isNotEmpty(interfaceLogListParamPO.getStatus()), InterfaceLogHistoryPO::getStatus, interfaceLogListParamPO.getStatus())
                 .like(KPStringUtil.isNotEmpty(interfaceLogListParamPO.getMessage()), InterfaceLogHistoryPO::getMessage, interfaceLogListParamPO.getMessage())
                 .between(KPStringUtil.isNotEmpty(interfaceLogListParamPO.getCallTime()), InterfaceLogHistoryPO::getCallTime, KPLocalDateTimeUtil.getFirstDateTimeOfDay(interfaceLogListParamPO.getCallTime()), KPLocalDateTimeUtil.getLastDateTimeOfDay(interfaceLogListParamPO.getCallTime())));
-
-        return KPJsonUtil.toJavaObjectList(interfaceLogHistoryPOList, InterfaceLogPO.class);
     }
 
 
@@ -130,7 +128,7 @@ public class InterfaceLogService extends ServiceImpl<InterfaceLogMapper, Interfa
         if (body.size() != 0) KPRedisUtil.set(redisKeyByProject, body, 2, TimeUnit.HOURS);
 
         //如果没有任何记录 就查询项目 避免前端报错
-        if (body.size()==0){
+        if (body.size() == 0) {
             ProjectCache.getProjectList().forEach(projectPO -> {
                 body.add(new DictionaryBO()
                         .setLabel(projectPO.getProjectName())
@@ -151,7 +149,10 @@ public class InterfaceLogService extends ServiceImpl<InterfaceLogMapper, Interfa
     public InterfaceLogPO queryDetailsById(JSONObject parameter) {
         InterfaceLogPO interfaceLogPO = KPJsonUtil.toJavaObject(parameter, InterfaceLogPO.class);
         KPVerifyUtil.notNull(interfaceLogPO.getUuid(), "请输入uuid");
-        return this.baseMapper.selectById(interfaceLogPO.getUuid());
+        InterfaceLogPO row = this.baseMapper.selectById(interfaceLogPO.getUuid());
+        if (row != null) return row;
+
+        return KPJsonUtil.toJavaObject(interfaceLogHistoryMapper.selectById(interfaceLogPO.getUuid()), InterfaceLogPO.class);
     }
 
 
@@ -215,7 +216,6 @@ public class InterfaceLogService extends ServiceImpl<InterfaceLogMapper, Interfa
     }
 
 
-
     /**
      * @Author lipeng
      * @Description 查询接口日志的项目名称
@@ -269,7 +269,6 @@ public class InterfaceLogService extends ServiceImpl<InterfaceLogMapper, Interfa
         KPRedisUtil.set(redisKey, KPJsonUtil.toJsonString(result), 2, TimeUnit.HOURS);
         return result;
     }
-
 
 
 }

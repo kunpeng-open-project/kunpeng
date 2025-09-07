@@ -22,6 +22,12 @@ public class MqProperties {
     private Integer interfaceConsumeNum = 100;
 
     //# http记录日志 消费条数（多少条入一次数据库）
-    private Integer httpConsumeNum = 20;
+    private Integer httpConsumeNum = 30;
+
+    // 接口记录日志归档天数 多少天以前的归档
+    private Integer interfaceArchiveDay = 30;
+
+    // http记录日志归档天数 多少天以前的归档
+    private Integer httpArchiveDay = 30;
 
 }

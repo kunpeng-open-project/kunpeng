@@ -38,11 +38,11 @@ public class InterfaceLogController {
 
 
     @PreAuthorize("hasPermission('/auth/interface/log/page/list', 'auth:interface:log:page:list')")
-    @ApiOperation(value = "查询系统内部接口调用记录分页列表", notes = "权限 auth:interface:log:page:list")
+    @ApiOperation(value = "查询系统内部接口调用记录分页列表", notes = "权限 auth:interface:log:page:list", response = InterfaceLogPO.class)
     @PostMapping("/page/list")
     @KPVerifyNote
     @KPExcludeInterfaceJournal
-    public KPResult<InterfaceLogPO> queryPageList(@RequestBody InterfaceLogListParamPO interfaceLogListParamPO){
+    public KPResult<?> queryPageList(@RequestBody InterfaceLogListParamPO interfaceLogListParamPO){
         return KPResult.list(interfaceLogService.queryPageList(interfaceLogListParamPO));
     }
 

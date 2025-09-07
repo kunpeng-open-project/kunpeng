@@ -150,6 +150,18 @@ public final class KPRequsetUtil {
         RequestContextHolder.setRequestAttributes(requestAttributes,true);
     }
 
+    /**
+     * @Author lipeng
+     * @Description 新增：清理请求上下文方法
+     * @Date 2025/9/2 23:38
+     * @param
+     * @return void
+     **/
+    public static void clearRequest() {
+        // 移除当前线程的 RequestAttributes（清除 ThreadLocal 中的值）
+        RequestContextHolder.resetRequestAttributes();
+    }
+
 
 
     /**

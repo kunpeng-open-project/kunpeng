@@ -22,13 +22,13 @@ import org.springframework.context.annotation.Configuration;
 public class KPFrameworkTaskExecutorProperties {
 
     //核心线程池大小
-    private Integer corePoolSize = 6;
+    private Integer corePoolSize = 3;
 
     //最大可创建的线程数
-    private Integer maxPoolSize = 200;
+    private Integer maxPoolSize = 8;
 
     //队列最大长度
-    private Integer queueCapacity = 200;
+    private Integer queueCapacity = 300;
 
     //线程池维护线程所允许的空闲时间 单位秒
     private Integer keepAliveSeconds = 300;

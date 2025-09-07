@@ -37,7 +37,7 @@ public class HttpLogService extends ServiceImpl<HttpLogMapper, HttpLogPO> {
      * @param httpLogListParamPO
      * @return java.util.List<HttpLogPO>
      **/
-    public List<HttpLogPO> queryPageList(HttpLogListParamPO httpLogListParamPO) {
+    public List<?> queryPageList(HttpLogListParamPO httpLogListParamPO) {
         PageHelper.startPage(httpLogListParamPO.getPageNum(), httpLogListParamPO.getPageSize(), httpLogListParamPO.getOrderBy(HttpLogPO.class));
 
         if (httpLogListParamPO.getLevel().equals(JournalStatusEnum.NEWEST_JOURNAL.code())) {
@@ -58,7 +58,7 @@ public class HttpLogService extends ServiceImpl<HttpLogMapper, HttpLogPO> {
             return this.baseMapper.selectList(queryWrapper);
         }
 
-        List<HttpLogHistoryPO> httpLogHistoryPOList = httpLogHistoryMapper.selectList(new LambdaQueryWrapper<>(HttpLogHistoryPO.class)
+        return httpLogHistoryMapper.selectList(new LambdaQueryWrapper<>(HttpLogHistoryPO.class)
                 .eq(KPStringUtil.isNotEmpty(httpLogListParamPO.getProjectName()), HttpLogHistoryPO::getProjectName, httpLogListParamPO.getProjectName())
                 .like(KPStringUtil.isNotEmpty(httpLogListParamPO.getUri()), HttpLogHistoryPO::getUri, httpLogListParamPO.getUri())
                 .eq(KPStringUtil.isNotEmpty(httpLogListParamPO.getName()), HttpLogHistoryPO::getName, httpLogListParamPO.getName())
@@ -72,8 +72,6 @@ public class HttpLogService extends ServiceImpl<HttpLogMapper, HttpLogPO> {
                 .eq(KPStringUtil.isNotEmpty(httpLogListParamPO.getStatus()), HttpLogHistoryPO::getStatus, httpLogListParamPO.getStatus())
                 .like(KPStringUtil.isNotEmpty(httpLogListParamPO.getMessage()), HttpLogHistoryPO::getMessage, httpLogListParamPO.getMessage())
                 .between(KPStringUtil.isNotEmpty(httpLogListParamPO.getCallTime()), HttpLogHistoryPO::getCallTime, KPLocalDateTimeUtil.getFirstDateTimeOfDay(httpLogListParamPO.getCallTime()), KPLocalDateTimeUtil.getLastDateTimeOfDay(httpLogListParamPO.getCallTime())));
-
-        return KPJsonUtil.toJavaObjectList(httpLogHistoryPOList, HttpLogPO.class);
     }
 
 
@@ -87,6 +85,10 @@ public class HttpLogService extends ServiceImpl<HttpLogMapper, HttpLogPO> {
     public HttpLogPO queryDetailsById(JSONObject parameter) {
         HttpLogPO httpLogPO = KPJsonUtil.toJavaObject(parameter, HttpLogPO.class);
         KPVerifyUtil.notNull(httpLogPO.getUuid(), "请输入uuid");
-        return this.baseMapper.selectById(httpLogPO.getUuid());
+
+        HttpLogPO row = this.baseMapper.selectById(httpLogPO.getUuid());
+        if (row != null) return row;
+
+        return KPJsonUtil.toJavaObject(httpLogHistoryMapper.selectById(httpLogPO.getUuid()), HttpLogPO.class);
     }
 }
