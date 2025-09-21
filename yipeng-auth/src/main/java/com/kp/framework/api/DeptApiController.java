@@ -27,22 +27,23 @@ public class DeptApiController {
     private DeptService deptService;
 
 
+
     @ApiOperation(value = "根据部门Id查询部门信息")
-    @PostMapping("/query/dept/id")
+    @PostMapping("/query/id")
     @KPApiJsonlParam({
             @ApiModelProperty(name = "deptId", value = "部门Id", required = true)
     })
-    public KPResult<DeptPO> queryPostId(@RequestBody JSONObject parameter) {
+    public KPResult<DeptPO> queryDeptId(@RequestBody JSONObject parameter) {
         return KPResult.success(deptService.queryDetailsById(parameter));
     }
 
 
     @ApiOperation(value = "根据部门id集合查询部门列表")
-    @PostMapping("/dept/ids/list")
+    @PostMapping("/query/ids/list")
     @KPApiJsonlParam({
             @ApiModelProperty(name = "deptId", value = "部门Id集合", required = true, dataType = "list")
     })
-    public KPResult<DeptPO> queryUserIdList(@RequestBody List<String> deptIds) {
-        return KPResult.list(deptService.queryUserIdList(deptIds));
+    public KPResult<List<DeptPO>> queryDeptIdList(@RequestBody List<String> deptIds) {
+        return KPResult.success(deptService.queryDeptIdList(deptIds));
     }
 }

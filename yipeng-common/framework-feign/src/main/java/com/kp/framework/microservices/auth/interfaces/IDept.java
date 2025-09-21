@@ -10,6 +10,8 @@ import org.springframework.core.annotation.Order;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
+import java.util.List;
+
 @Order(Integer.MAX_VALUE)
 @FeignClient(name = ServerApplicationNameConConstant.AUTH_APPLICATION_NAME, contextId = "auth", fallback = DeptFallback.class, configuration = FeignUserMessageConfigruation.class)
 public interface IDept {
@@ -21,6 +23,17 @@ public interface IDept {
      * @param parameter
      * @return com.kp.framework.entity.bo.KPResult<com.alibaba.fastjson2.JSONObject>
      **/
-    @PostMapping(value = "/api/dept/query/dept/id", headers = {"content-type=application/json"})
+    @PostMapping(value = "/api/dept/query/id", headers = {"content-type=application/json"})
     KPResult<JSONObject> queryDeptById(@RequestBody JSONObject parameter);
+
+
+    /**
+     * @Author lipeng
+     * @Description 根据部门id集合查询部门列表
+     * @Date 2025/9/16
+     * @param deptIds
+     * @return com.kp.framework.entity.bo.KPResult<java.util.List<com.alibaba.fastjson2.JSONObject>>
+     **/
+    @PostMapping(value = "/api/dept/query/ids/list", headers = {"content-type=application/json"})
+    KPResult<List<JSONObject>> queryDeptIdList(@RequestBody List<String> deptIds);
 }

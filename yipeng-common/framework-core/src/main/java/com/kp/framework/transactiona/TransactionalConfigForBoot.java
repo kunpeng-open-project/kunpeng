@@ -59,6 +59,8 @@ public class TransactionalConfigForBoot {
         source.addTransactionalMethod("remove*", txAttr_REQUIRED);
         source.addTransactionalMethod("delete", txAttr_REQUIRED);
         source.addTransactionalMethod("delete*", txAttr_REQUIRED);
+        source.addTransactionalMethod("discard", txAttr_REQUIRED);
+        source.addTransactionalMethod("discard*", txAttr_REQUIRED);
         source.addTransactionalMethod("batch", txAttr_REQUIRED);
         source.addTransactionalMethod("batch*", txAttr_REQUIRED);
         source.addTransactionalMethod("do", txAttr_REQUIRED);

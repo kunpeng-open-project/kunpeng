@@ -53,17 +53,17 @@ public class FeignVerifyUtil {
 //        return listResult.getData().get(0);
 //    }
 
-    /**
-     * @Description 简单校验是否调用成功
-     * @Date 2022/6/23 20:17
-     * @param result
-     * @param interfaceName
-     * @return void
-     **/
-    public final static void verifySingleIsSucceed(String serviceName, KPResult result, String interfaceName) {
-        if (!result.getCode().equals(200))
-            throw new KPServiceException(KPStringUtil.format("【调用{0}】-{0}接口异常！", serviceName, interfaceName));
-    }
+//    /**
+//     * @Description 简单校验是否调用成功
+//     * @Date 2022/6/23 20:17
+//     * @param result
+//     * @param interfaceName
+//     * @return void
+//     **/
+//    public final static void verifySingleIsSucceed(String serviceName, KPResult result, String interfaceName) {
+//        if (!result.getCode().equals(200))
+//            throw new KPServiceException(KPStringUtil.format("【调用{0}】-{0}接口异常！", serviceName, interfaceName));
+//    }
 
     /**
      * @Description 校验数据并返回查询到的对象
@@ -74,7 +74,7 @@ public class FeignVerifyUtil {
      **/
     public final static <T> T verifyBySingle(String serviceName, KPResult result, String interfaceName, Class<T> clazz) {
         if (!result.getCode().equals(200))
-            throw new KPServiceException(KPStringUtil.format("【调用{0}】-{0}接口异常！", serviceName, interfaceName));
+            throw new KPServiceException(KPStringUtil.format("【调用{0}】-{1}接口异常！", serviceName, interfaceName));
 
 //        if (result.getData() == null)
 //            throw new KPServiceException(KPStringUtil.format("【调用{0}】-{0}接口，未查询到有效信息！", serviceName,interfaceName));
@@ -82,11 +82,28 @@ public class FeignVerifyUtil {
         return KPJsonUtil.toJavaObject(result.getData(), clazz);
     }
 
-    public static <T> List<T> verifyByList(String serviceName, KPResult result, String interfaceName, Class<T> clazz) {
+    public static <T> List<T> verifyPageList(String serviceName, KPResult result, String interfaceName, Class<T> clazz) {
         if (!result.getCode().equals(200))
-            throw new KPServiceException(KPStringUtil.format("【调用{0}】-{0}接口异常！", serviceName, interfaceName));
+            throw new KPServiceException(KPStringUtil.format("【调用{0}】-{1}接口异常！", serviceName, interfaceName));
 
         JSONArray jsonArray = KPJsonUtil.toJson(result.getData()).getJSONArray("list");
+        if (jsonArray == null) return new ArrayList<>(); // 若list字段不存在，返回空列表
+
+//        return jsonArray.stream().map(element -> (JSONObject) element).collect(Collectors.toList());
+//        return jsonArray.stream()
+//                .map(element -> KPJsonUtil.toJavaObject(((JSONObject) element).toString(), clazz))
+//                .collect(Collectors.toList());
+        return KPJsonUtil.toJavaObjectList(jsonArray, clazz);
+    }
+
+
+
+
+    public static <T> List<T> verifyList(String serviceName, KPResult result, String interfaceName, Class<T> clazz) {
+        if (!result.getCode().equals(200))
+            throw new KPServiceException(KPStringUtil.format("【调用{0}】-{1}接口异常！", serviceName, interfaceName));
+
+        JSONArray jsonArray = KPJsonUtil.toJson(result).getJSONArray("data");
         if (jsonArray == null) return new ArrayList<>(); // 若list字段不存在，返回空列表
 
 //        return jsonArray.stream().map(element -> (JSONObject) element).collect(Collectors.toList());

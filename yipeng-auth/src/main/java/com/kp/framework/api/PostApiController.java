@@ -28,7 +28,7 @@ public class PostApiController {
 
 
     @ApiOperation(value = "根据岗位Id查询岗位信息")
-    @PostMapping("/query/post/id")
+    @PostMapping("/query/id")
     @KPApiJsonlParam({
             @ApiModelProperty(name = "postId", value = "岗位Id", required = true)
     })
@@ -38,11 +38,11 @@ public class PostApiController {
 
 
     @ApiOperation(value = "根据岗位id集合查询岗位列表")
-    @PostMapping("/post/ids/list")
+    @PostMapping("/query/ids/list")
     @KPApiJsonlParam({
             @ApiModelProperty(name = "postId", value = "岗位Id集合", required = true, dataType = "list")
     })
-    public KPResult<PostPO> queryUserIdList(@RequestBody List<String> postIds) {
-        return KPResult.list(postService.queryPostIdList(postIds));
+    public KPResult<List<PostPO>> queryPostIdList(@RequestBody List<String> postIds) {
+        return KPResult.success(postService.queryPostIdList(postIds));
     }
 }

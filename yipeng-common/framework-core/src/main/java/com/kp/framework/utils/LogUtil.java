@@ -34,7 +34,7 @@ public class LogUtil {
      **/
     public String interfaceRecordLog(HttpServletRequest req, String parameter, String result, Long disposeDate) {
         return new KPJSONFactoryUtil()
-                .put("url", req.getRequestURL())
+                .put("url", req.getRequestURL().toString())
                 .put("uri", req.getRequestURI())
                 .put("name", this.getInterfaceName(req))
                 .put("method", req.getMethod())

@@ -270,7 +270,7 @@ public class DeptService extends ServiceImpl<DeptMapper, DeptPO> {
      * @param deptIds
      * @return java.util.List<com.kp.framework.modules.dept.po.DeptPO>
      **/
-    public List<DeptPO> queryUserIdList(List<String> deptIds) {
+    public List<DeptPO> queryDeptIdList(List<String> deptIds) {
         KPVerifyUtil.notNull(deptIds, "部门id集合不能为空");
 
         return this.baseMapper.selectList(Wrappers.lambdaQuery(DeptPO.class)

@@ -53,13 +53,14 @@ public class UserLoginIPHandle {
             row = row.getJSONObject("data");
 
 
+            String loginIpAddress = new StringBuilder(row.getString("country"))
+                    .append(row.getString("region"))
+                    .append(row.getString("city").equals(row.getString("region")) ? "" : row.getString("city"))
+                    .toString().replaceAll("X", "");
+
             loginRecordMapper.updateById(new LoginRecordPO()
                     .setAlrId(loginRecordPO.getAlrId())
-                    .setLoginIpAddress(
-                            row.getString("isp").equals("内网IP") ? "内网IP" : new StringBuilder(row.getString("country"))
-                                    .append(row.getString("region"))
-                                    .append(row.getString("city").equals(row.getString("region")) ? "" : row.getString("city"))
-                                    .toString())
+                    .setLoginIpAddress(row.getString("isp").equals("内网IP") ? "内网IP" : KPStringUtil.isEmpty(loginIpAddress) ? "内网IP" : loginIpAddress)
             );
             KPThreadUtil.sleep(2000);
         }

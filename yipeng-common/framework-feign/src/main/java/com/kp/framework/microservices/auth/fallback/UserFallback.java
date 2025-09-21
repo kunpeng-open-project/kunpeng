@@ -14,7 +14,7 @@ import java.util.List;
 public class UserFallback implements IUser {
 
     @Override
-    public KPResult<JSONObject> queryUserListByIds(List<String> userIds) {
+    public KPResult<List<JSONObject>> queryUserListByIds(List<String> userIds) {
         log.error("从鉴权系统查询用户列表信息失败！：{}", userIds);
         return KPResult.fail("【调用鉴权系统接口失败】从鉴权系统查询用户列表信息失败，请稍后再试");
     }

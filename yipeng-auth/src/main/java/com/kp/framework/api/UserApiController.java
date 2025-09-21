@@ -39,11 +39,11 @@ public class UserApiController {
 
 
     @ApiOperation(value = "根据用户id集合查询用户列表")
-    @PostMapping("/user/ids/list")
+    @PostMapping("/ids/list")
     @KPApiJsonlParam({
             @ApiModelProperty(name = "userIds", value = "用户Id集合", required = true, dataType = "list")
     })
-    public KPResult<UserPO> queryUserIdList(@RequestBody List<String> userIds) {
-        return KPResult.list(userService.queryUserIdList(userIds));
+    public KPResult<List<UserPO>> queryUserIdList(@RequestBody List<String> userIds) {
+        return KPResult.success(userService.queryUserIdList(userIds));
     }
 }

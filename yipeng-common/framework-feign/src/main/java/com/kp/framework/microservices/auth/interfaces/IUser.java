@@ -23,6 +23,6 @@ public interface IUser {
      * @param userIds
      * @return com.kp.framework.entity.bo.KPResult<com.alibaba.fastjson2.JSONObject>
      **/
-    @PostMapping(value = "/api/user/user/ids/list", headers = {"content-type=application/json"})
-    KPResult<JSONObject> queryUserListByIds(@RequestBody List<String> userIds);
+    @PostMapping(value = "/api/user/ids/list", headers = {"content-type=application/json"})
+    KPResult<List<JSONObject>> queryUserListByIds(@RequestBody List<String> userIds);
 }
