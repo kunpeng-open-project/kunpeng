@@ -35,10 +35,10 @@ import java.util.stream.Collectors;
 public class InterfaceLogHistoryHandle {
 
 
-    @Resource
+    @Autowired
     private InterfaceLogHistoryMapper interfaceLogHistoryMapper;
 
-    @Resource
+    @Autowired
     private InterfaceLogMapper interfaceLogMapper;
 
     @Resource(name = "kpExecutorService")

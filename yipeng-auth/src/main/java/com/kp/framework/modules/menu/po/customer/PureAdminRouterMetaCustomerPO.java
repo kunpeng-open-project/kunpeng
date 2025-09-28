@@ -61,7 +61,7 @@ public class PureAdminRouterMetaCustomerPO {
             this.showLink = YesNoEnum.YES.code().equals(menu.getVisible());
         if (KPStringUtil.isNotEmpty(menu.getIsCache()))
             this.keepAlive = YesNoEnum.YES.code().equals(menu.getIsCache());
-        if (MenuTypeEnum.MENU.code().equals(menu.getMenuType()) && KPStringUtil.isNotEmpty(menu.getParentId()))
+        if (MenuTypeEnum.MENU.code().equals(menu.getMenuType()) && !menu.getParentId().equals("0"))
             this.showParent = true;
 
         //设置自带权限

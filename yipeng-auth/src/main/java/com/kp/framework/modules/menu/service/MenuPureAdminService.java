@@ -104,7 +104,7 @@ public class MenuPureAdminService {
 
             switch (FrameStatusEnum.getCodeValue(menu.getFrameStatus())) {
                 case INSIDE: //内部
-                    if (MenuTypeEnum.MENU.code().equals(menu.getMenuType()) && KPStringUtil.isEmpty(menu.getChildren()) && KPStringUtil.isEmpty(menu.getParentId())) {
+                    if (MenuTypeEnum.MENU.code().equals(menu.getMenuType()) && KPStringUtil.isEmpty(menu.getChildren()) && menu.getParentId().equals("0")) {
                         //顶级菜单
 //                        router.setPath("/" + menu.getRoutePath().substring(0,  menu.getRoutePath().lastIndexOf("/")));
                         router.setPath("/" + menu.getRoutePath());
@@ -149,7 +149,7 @@ public class MenuPureAdminService {
                     break;
                 case OUTER_CHAIN: //外链
                     router.setName(menu.getRouteComponent());
-                    router.setPath(menu.getRoutePath());
+                    router.setPath("/" + menu.getRoutePath());
                     router.setMeta(new PureAdminRouterMetaCustomerPO(menu, auths));
                     //有子菜单
                     if (KPStringUtil.isNotEmpty(menu.getChildren()))

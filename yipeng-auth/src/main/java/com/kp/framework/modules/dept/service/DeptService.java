@@ -23,6 +23,7 @@ import com.kp.framework.modules.user.mapper.UserDeptMapper;
 import com.kp.framework.modules.user.po.UserDeptPO;
 import com.kp.framework.modules.user.po.UserPO;
 import com.kp.framework.utils.kptool.KPJsonUtil;
+import com.kp.framework.utils.kptool.KPServiceUtil;
 import com.kp.framework.utils.kptool.KPStringUtil;
 import com.kp.framework.utils.kptool.KPVerifyUtil;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -183,6 +184,9 @@ public class DeptService extends ServiceImpl<DeptMapper, DeptPO> {
 
         if (this.baseMapper.updateById(deptPO) == 0)
             throw new KPServiceException(ReturnFinishedMessageConstant.ERROR);
+
+        // 异步更新子部门的层级信息
+        KPServiceUtil.getBean(DeptUtil.class).asyncUpdateChildrenDeptInfo(deptPO.getDeptId());
     }
 
 

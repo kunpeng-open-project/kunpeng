@@ -84,8 +84,8 @@ public class DataPermissionsInnerceptor implements InnerInterceptor {
                 mpBs.sql(modifiedSql);
             }
         }catch (Exception ex){
-            log.error("[数据权限设置异常] {}", ex.getMessage());
-            log.info("[数据权限设置异常] 如果是在线程里面， 请在开启线程前 调用 KPRequsetUtil.setRequest");
+//            log.error("[数据权限设置异常] {}", ex.getMessage());
+//            log.info("[数据权限设置异常] 如果是在线程里面， 请在开启线程前 调用 KPRequsetUtil.setRequest");
         }
         InnerInterceptor.super.beforeQuery(executor, ms, parameter, rowBounds, resultHandler, boundSql);
     }

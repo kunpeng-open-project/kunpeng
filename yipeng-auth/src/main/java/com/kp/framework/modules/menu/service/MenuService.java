@@ -20,6 +20,7 @@ import com.kp.framework.modules.menu.po.param.MenuListParamPO;
 import com.kp.framework.modules.menu.po.param.MenuSortParamPO;
 import com.kp.framework.modules.menu.util.MenuUtil;
 import com.kp.framework.utils.kptool.KPJsonUtil;
+import com.kp.framework.utils.kptool.KPServiceUtil;
 import com.kp.framework.utils.kptool.KPStringUtil;
 import com.kp.framework.utils.kptool.KPVerifyUtil;
 import org.springframework.stereotype.Service;
@@ -114,6 +115,7 @@ public class MenuService extends ServiceImpl<MenuMapper, MenuPO> {
      * @param menuEditParamPO
      * @return void
      **/
+
     public void saveMenu(MenuEditParamPO menuEditParamPO) {
         if (ProjectCache.getProjectByProjectId(menuEditParamPO.getProjectId()) == null)
             throw new KPServiceException("项目不存在");
@@ -180,7 +182,13 @@ public class MenuService extends ServiceImpl<MenuMapper, MenuPO> {
 
         if (this.baseMapper.updateById(menuPO) == 0)
             throw new KPServiceException(ReturnFinishedMessageConstant.ERROR);
+
+        KPServiceUtil.getBean(MenuUtil.class).asyncUpdateChildrenAncestors(menuPO.getMenuId(), menuPO.getProjectId());
     }
+
+
+
+
 
 
     /**

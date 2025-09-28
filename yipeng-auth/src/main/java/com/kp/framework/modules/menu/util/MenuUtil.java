@@ -1,14 +1,21 @@
 package com.kp.framework.modules.menu.util;
 
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.kp.framework.entity.bo.DictionaryChildrenBO;
 import com.kp.framework.exception.KPServiceException;
 import com.kp.framework.modules.menu.enums.MenuTypeEnum;
+import com.kp.framework.modules.menu.mapper.MenuMapper;
 import com.kp.framework.modules.menu.po.MenuPO;
 import com.kp.framework.modules.menu.po.customer.MenuCustomerPO;
 import com.kp.framework.modules.menu.po.param.MenuEditParamPO;
 import com.kp.framework.modules.menu.po.param.MenuListParamPO;
 import com.kp.framework.utils.kptool.KPStringUtil;
+import com.kp.framework.utils.kptool.KPThreadUtil;
 import com.kp.framework.utils.kptool.KPVerifyUtil;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Async;
+import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -17,7 +24,12 @@ import java.util.Objects;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+@Component
 public class MenuUtil {
+
+
+    @Autowired
+    private MenuMapper menuMapper;
 
 
     /**
@@ -150,5 +162,52 @@ public class MenuUtil {
         return MenuTypeEnum.INTERFACE.code().equals(menu.getMenuType()) ||
                 (menu.getChildren() != null && !menu.getChildren().isEmpty())
                 ? menu : null;
+    }
+
+
+
+    /**
+     * @Author lipeng
+     * @Description 异步更新子菜单的ancestors
+     * @Date 2025/9/25
+     * @param movedMenuId 被移动的菜单ID
+     * @param projectId 项目ID
+     * @return void
+     **/
+    @Async
+    @Transactional
+    public void asyncUpdateChildrenAncestors(String movedMenuId, String projectId) {
+        // 等待2秒，确保主方法事务已经提交 防止出现数据错乱
+        KPThreadUtil.sleep(2000);
+        // 获取被移动菜单的最新信息
+        MenuPO movedMenu = menuMapper.selectById(movedMenuId);
+        if (movedMenu == null) return;
+
+        // 递归更新所有子菜单的ancestors
+        updateDescendantsAncestors(movedMenuId, movedMenu.getAncestors(), projectId);
+    }
+
+
+    /**
+     * 递归更新子孙菜单的ancestors
+     */
+    private void updateDescendantsAncestors(String parentMenuId, String parentAncestors, String projectId) {
+        // 查询直接子菜单
+        List<MenuPO> childrenMenus = menuMapper.selectList(Wrappers.lambdaQuery(MenuPO.class)
+                .eq(MenuPO::getParentId, parentMenuId)
+                .eq(MenuPO::getProjectId, projectId));
+        if (childrenMenus.size() ==0) return;
+        childrenMenus.forEach(menuPO -> {
+            // 计算新的ancestors：父级ancestors + 父级ID
+            String newChildAncestors = parentAncestors + "," + parentMenuId;
+
+            // 只更新ancestors字段
+            menuMapper.updateById(new MenuPO()
+                    .setMenuId(menuPO.getMenuId())
+                    .setAncestors(newChildAncestors));
+
+            // 递归更新孙子菜单
+            updateDescendantsAncestors(menuPO.getMenuId(), newChildAncestors, projectId);
+        });
     }
 }

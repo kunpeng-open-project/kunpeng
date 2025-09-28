@@ -35,10 +35,10 @@ import java.util.stream.Collectors;
 public class HttpHistoryHandle {
 
 
-    @Resource
+    @Autowired
     private HttpLogHistoryMapper httpLogHistoryMapper;
 
-    @Resource
+    @Autowired
     private HttpLogMapper httpLogMapper;
 
     @Resource(name = "kpExecutorService")

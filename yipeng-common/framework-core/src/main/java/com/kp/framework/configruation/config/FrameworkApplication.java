@@ -142,6 +142,9 @@ public class FrameworkApplication implements AsyncConfigurer {
         // 可避免任务丢失，同时给线程池留出处理现有任务的时间
         executor.setRejectedExecutionHandler(new ThreadPoolExecutor.CallerRunsPolicy());
 
+        // 添加 TaskDecorator 传递请求上下文
+        executor.setTaskDecorator(new MyRequestAttributes());
+
         // 初始化执行器：必须调用此方法使配置生效
         // 会创建核心线程并启动线程池
         executor.initialize();
@@ -153,14 +156,15 @@ public class FrameworkApplication implements AsyncConfigurer {
 
 //    @Override
 //    public Executor getAsyncExecutor() {
-////        ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
-////        // 设置核心线程数、最大线程数、队列容量等参数
-////        executor.setCorePoolSize(5);
-////        executor.setMaxPoolSize(10);
-////        executor.setQueueCapacity(200);
-////        executor.setThreadNamePrefix("Async");
-////        executor.initialize();
-////        return executor;
+
+    ////        ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
+    ////        // 设置核心线程数、最大线程数、队列容量等参数
+    ////        executor.setCorePoolSize(5);
+    ////        executor.setMaxPoolSize(10);
+    ////        executor.setQueueCapacity(200);
+    ////        executor.setThreadNamePrefix("Async");
+    ////        executor.initialize();
+    ////        return executor;
 //
 //        ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
 //        executor.setCorePoolSize(5);  // 核心线程数 - 线程池创建时初始化的线程数
@@ -197,5 +201,4 @@ public class FrameworkApplication implements AsyncConfigurer {
 //        executor.initialize();
 //        return executor;
 //    }
-
 }
