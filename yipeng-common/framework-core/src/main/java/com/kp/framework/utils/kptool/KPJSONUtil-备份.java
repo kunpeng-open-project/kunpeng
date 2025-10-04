@@ -1,4 +1,4 @@
-//package com.kp.framework.utils.kptool;
+package com.kp.framework.utils.kptool;//package com.kp.framework.utils.kptool;
 //
 //import com.alibaba.fastjson.JSON;
 //import com.alibaba.fastjson.JSONArray;

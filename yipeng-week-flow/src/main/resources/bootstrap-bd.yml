@@ -1,0 +1,24 @@
+server:
+spring:
+  cloud:
+    nacos:
+      username: username
+      password: password
+      discovery:
+        server-addr: http://127.0.0.1:8848
+        namespace: b502bb03-dd78-4078-8934-951beb952915
+      config:
+        server-addr: http://127.0.0.1:8848
+        namespace: b502bb03-dd78-4078-8934-951beb952915
+        group: DEFAULT_GROUP
+        file-extension: yaml
+        prefix: weekFlow
+        extension-configs:
+          - data-id: yipeng.core.yaml
+            group: DEFAULT_GROUP
+            refresh: true
+
+logging:
+  level:
+    feign.client: DEBUG
+    com.kp.framework.modules: debug

@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.kp.framework.modules.monthly.mapper.customer.MonthlyReportCustomerMapper">
+
+    <!-- 开启二级缓存 -->
+    <cache type="org.mybatis.caches.ehcache.LoggingEhcache"/>
+
+    <select id="countByReviewMonthStatus" resultType="com.kp.framework.modules.monthly.po.customer.MonthlyReportStatisticsCustomerPO">
+        SELECT COUNT(1)                                                                AS totalCount,
+               COALESCE(SUM(CASE WHEN STATUS = 2 THEN 1 ELSE 0 END), 0)                AS pendingReviewCount,
+               COALESCE(SUM(CASE WHEN STATUS = 3 THEN 1 ELSE 0 END), 0)                AS notStartedCount,
+               COALESCE(SUM(CASE WHEN STATUS = 4 THEN 1 ELSE 0 END), 0)                AS rejectedCount,
+               COALESCE(SUM(CASE WHEN STATUS = 5 THEN 1 ELSE 0 END), 0)                AS inProgressCount,
+               COALESCE(SUM(CASE WHEN STATUS = 6 THEN 1 ELSE 0 END), 0)                AS completedCount,
+               COALESCE(SUM(CASE WHEN STATUS = 7 THEN 1 ELSE 0 END), 0)                AS overdueCount,
+               COALESCE(SUM(CASE WHEN STATUS IN (3, 4, 5, 6, 7) THEN 1 ELSE 0 END), 0) AS validTaskCount
+        FROM week_monthly_report ${ew.customSqlSegment}
+    </select>
+    <!--
+
+        <select id="countByReviewMonthStatus" resultType="com.kp.framework.modules.monthly.po.customer.MonthlyReportStatisticsCustomerPO">
+            SELECT
+                COUNT(1)                                          AS totalCount,          &#45;&#45; 新增：统计全部计划数量
+                SUM(CASE WHEN status = 2 THEN 1 ELSE 0 END)       AS pendingReviewCount,  &#45;&#45; 保留：待审核数量
+                SUM(CASE WHEN status = 3 THEN 1 ELSE 0 END)       AS approvedCount,       &#45;&#45; 保留：已通过数量
+                SUM(CASE WHEN status = 4 THEN 1 ELSE 0 END)       AS rejectedCount        &#45;&#45; 保留：已驳回数量
+            FROM week_monthly_report ${ew.customSqlSegment}
+        </select>
+    -->
+
+</mapper>

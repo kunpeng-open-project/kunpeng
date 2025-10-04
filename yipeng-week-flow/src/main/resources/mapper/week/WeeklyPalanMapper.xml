@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.kp.framework.modules.week.mapper.WeeklyPalanMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.kp.framework.modules.week.po.WeeklyPalanPO">
+        <id column="weekly_id" property="weeklyId" />
+        <result column="create_date" property="createDate" />
+        <result column="create_user_id" property="createUserId" />
+        <result column="create_user_name" property="createUserName" />
+        <result column="update_date" property="updateDate" />
+        <result column="update_user_id" property="updateUserId" />
+        <result column="update_user_name" property="updateUserName" />
+        <result column="delete_flag" property="deleteFlag" />
+        <result column="monthly_id" property="monthlyId" />
+        <result column="monthly_plan_date" property="monthlyPlanDate" />
+        <result column="task_title" property="taskTitle" />
+        <result column="task_describe" property="taskDescribe" />
+        <result column="task_user_id" property="taskUserId" />
+        <result column="task_week" property="taskWeek" />
+        <result column="task_start_date" property="taskStartDate" />
+        <result column="task_end_date" property="taskEndDate" />
+        <result column="task_priority" property="taskPriority" />
+        <result column="task_status" property="taskStatus" />
+        <result column="remark" property="remark" />
+    </resultMap>
+
+    <!-- 表字段结果列 -->
+    <sql id="Base_Column_List">
+        weekly_id, monthly_id, monthly_plan_date, task_title, task_describe, task_user_id, task_week, task_start_date, task_end_date, task_priority, task_status, remark
+    </sql>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_Common_List">
+        create_date, create_user_id, create_user_name, update_date, update_user_id, update_user_name, delete_flag
+    </sql>
+
+</mapper>

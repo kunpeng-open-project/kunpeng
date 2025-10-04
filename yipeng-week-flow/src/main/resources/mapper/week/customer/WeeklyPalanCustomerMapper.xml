@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.kp.framework.modules.week.mapper.customer.WeeklyPalanCustomerMapper">
+
+    <!-- 开启二级缓存 -->
+    <cache type="org.mybatis.caches.ehcache.LoggingEhcache"/>
+
+    <select id="queryWeeklyPalanCustomer" resultType="com.kp.framework.modules.week.po.customer.WeeklyPalanCustomerCustomerPO">
+        SELECT task_week                                                     AS taskWeek,
+               COUNT(1)                                                      AS totalTaskCount,
+               COALESCE(SUM(CASE WHEN task_status = 3 THEN 1 ELSE 0 END), 0) AS completedTaskCount
+        FROM week_weekly_palan ${ew.customSqlSegment}
+        GROUP BY task_week
+    </select>
+
+    <select id="queryWeeklyNumber" resultType="com.kp.framework.modules.week.po.customer.WeellyTaskSummaryCustomerPO">
+        SELECT COUNT(1)                                                      AS totalTaskCount,
+               COALESCE(SUM(CASE WHEN task_status = 1 THEN 1 ELSE 0 END), 0) AS notStartedCount,
+               COALESCE(SUM(CASE WHEN task_status = 2 THEN 1 ELSE 0 END), 0) AS inProgressCount,
+               COALESCE(SUM(CASE WHEN task_status = 3 THEN 1 ELSE 0 END), 0) AS completedCount,
+               COALESCE(SUM(CASE WHEN task_status = 4 THEN 1 ELSE 0 END), 0) AS abandonedCount
+        FROM week_weekly_palan ${ew.customSqlSegment}
+    </select>
+</mapper>

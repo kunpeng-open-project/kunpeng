@@ -11,6 +11,7 @@
     <modules>
         <module>yipeng-gateway</module>
         <module>yipeng-auth</module>
+        <module>yipeng-week-flow</module>
         <module>yipeng-common</module>
         <module>yipeng-common/framework-core</module>
         <module>yipeng-common/framework-security</module>
