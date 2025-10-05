@@ -24,7 +24,7 @@ public class KPServiceException extends RuntimeException {
     }
 
 
-    @Deprecated
+//    @Deprecated
     public KPServiceException(Integer code, String message){
         super(message);
         this.code = code;

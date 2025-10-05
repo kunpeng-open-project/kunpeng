@@ -106,12 +106,7 @@ public class JwtAuthenticationTokenFilter extends OncePerRequestFilter {
             // TODO: 2025/4/21 qeqww
             this.setUserMessage(loginUserBO, loginUserTypeBO, request);
 
-            //普通登录
-            if (loginUserTypeBO.getLoginType().equals(LoginUserTypeEnum.COMMON.code())) {
-                //token 延迟30分钟 过期  用户只要操作 一直往后延
-                CommonUtil.expire(RedisSecurityConstant.REDIS_AUTHENTICATION_TOKEN + loginUserTypeBO.getProjectCode() + ":" + loginUserTypeBO.getIdentification(), kpTokenProperties.getExpireTime());
-                CommonUtil.expire(RedisSecurityConstant.REDIS_AUTHENTICATION_LOGINUSER_MESSAGE + loginUserTypeBO.getProjectCode() + ":" + loginUserTypeBO.getIdentification(), kpTokenProperties.getExpireTime());
-            } else {
+            if (loginUserTypeBO.getLoginType().equals(LoginUserTypeEnum.AUTHORIZATION.code())){
                 //授权登录只能访问open 和 api 对外接口
                 if (!(request.getRequestURI().startsWith("/open") || request.getRequestURI().startsWith("/api"))) {
                     JSONObject body = new JSONObject()
@@ -120,6 +115,11 @@ public class JwtAuthenticationTokenFilter extends OncePerRequestFilter {
                     CommonUtil.writeJson(body, projectName);
                     return;
                 }
+            }else{
+                //普通登录
+                //token 延迟30分钟 过期  用户只要操作 一直往后延
+                CommonUtil.expire(RedisSecurityConstant.REDIS_AUTHENTICATION_TOKEN + loginUserTypeBO.getProjectCode() + ":" + loginUserTypeBO.getIdentification(), kpTokenProperties.getExpireTime());
+                CommonUtil.expire(RedisSecurityConstant.REDIS_AUTHENTICATION_LOGINUSER_MESSAGE + loginUserTypeBO.getProjectCode() + ":" + loginUserTypeBO.getIdentification(), kpTokenProperties.getExpireTime());
             }
         }
         chain.doFilter(request, response);

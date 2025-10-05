@@ -24,13 +24,13 @@ public class KPPassConfig {
 
     public List<String> getUrls() {
         List<String> urls2 = this.urls;
-        if (!urls2.contains("/auth/user/login")){
+        if (!urls2.contains("/auth/user/login")) {
             urls2.addAll(Arrays.asList(
-                    "/auth/user/login", "/auth/user/exempt/login", "/auth/user/authorization/login", "/auth/user/swagger/login",
-                    "/entrance/admin/**","/minio/file/**",
+                    "/auth/user/login", "/auth/user/exempt/login", "/auth/user/sso/login", "/auth/user/authorization/login", "/auth/user/swagger/login",
+                    "/entrance/admin/**", "/minio/file/**",
                     "/actuator/**",
-                    "/*.html","/**/*.html","/**/*.css","/*.css","/**/*.js","/*.js","/*.ico",
-                    "/swagger/**","/swagger-ui.html","/swagger-resources/**","/*/api-docs","/doc.html","/webjars/**",
+                    "/*.html", "/**/*.html", "/**/*.css", "/*.css", "/**/*.js", "/*.js", "/*.ico",
+                    "/swagger/**", "/swagger-ui.html", "/swagger-resources/**", "/*/api-docs", "/doc.html", "/webjars/**",
                     "/druid/**",
                     "/open/**"
             ));

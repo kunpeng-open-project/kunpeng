@@ -30,7 +30,7 @@ public class LoginUserTypeBO  {
     @ApiModelProperty("项目编号")
     private String projectCode;
 
-    @ApiModelProperty(value = "登录类型 1 普通账号登录 2 授权登录 3免密登录")
+    @ApiModelProperty(value = "登录类型 1 普通账号登录 2 授权登录 3免密登录 4单点登录")
     private Integer loginType;
 
 }

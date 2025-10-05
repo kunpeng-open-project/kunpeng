@@ -10,7 +10,8 @@ public enum LoginUserTypeEnum {
 
     COMMON(1, "账号登录"),
     AUTHORIZATION(2, "授权登录"),
-    NOT_PASWORD(3, "免密登录");
+    NOT_PASWORD(3, "免密登录"),
+    SSO_LOGIN(4, "单点登录");
 
     private String message;
 
@@ -30,8 +31,8 @@ public enum LoginUserTypeEnum {
     }
 
 
-    public static LoginUserTypeEnum getCode(Integer code){
-        for(LoginUserTypeEnum value : values()){
+    public static LoginUserTypeEnum getCode(Integer code) {
+        for (LoginUserTypeEnum value : values()) {
             if (value.code.equals(code)) {
                 return value;
             }

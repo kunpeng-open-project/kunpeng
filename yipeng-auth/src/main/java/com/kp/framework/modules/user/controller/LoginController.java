@@ -52,6 +52,17 @@ public class LoginController {
         return KPResult.success(loginService.exemptLogin(parameter));
     }
 
+    @PostMapping("/sso/login")
+    @ApiOperation(value = "单点登录")
+    @KPApiJsonlParam({
+            @ApiModelProperty(name = "accessToken", value = "请求登录系统的token", required = true),
+            @ApiModelProperty(name = "projectCode", value = "项目编号", required = true, example = "authentication"),
+    })
+//    @ApiIgnore
+    public KPResult<UserLoginCustomerPO> ssoLogin(@RequestBody JSONObject parameter) {
+        return KPResult.success(loginService.ssoLogin(parameter));
+    }
+
 
     @PostMapping("/authorization/login")
     @ApiOperation(value = "授权登录", notes = "★ 请注意 ★， <br/>&nbsp;&nbsp;&nbsp;&nbsp; token不允许频繁调用，请自己缓存有效token，请勿每次请求接口都获取token <br/>&nbsp;&nbsp;&nbsp;&nbsp; 获取授权token有调用限制，目前每天最多允许100次，超过100次将获取不到token， 为了您的业务正常进行，请本地缓存token <br/>&nbsp;&nbsp;&nbsp;&nbsp; 如果100次不够使用，请联系管理员重新设置最大调用次数")

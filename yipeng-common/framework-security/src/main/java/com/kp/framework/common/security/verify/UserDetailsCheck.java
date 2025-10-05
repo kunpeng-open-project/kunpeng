@@ -95,7 +95,7 @@ public class UserDetailsCheck implements UserDetailsService {
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         LoginUserTypeBO loginUserTypeBO = CommonUtil.toJavaObject(username, LoginUserTypeBO.class);
 
-        if (Arrays.asList(LoginUserTypeEnum.COMMON.code(), LoginUserTypeEnum.NOT_PASWORD.code()).contains(loginUserTypeBO.getLoginType())) {
+        if (Arrays.asList(LoginUserTypeEnum.COMMON.code(), LoginUserTypeEnum.NOT_PASWORD.code(), LoginUserTypeEnum.SSO_LOGIN.code()).contains(loginUserTypeBO.getLoginType())) {
             AuthLoginRecordPO loginRecordPO = new AuthLoginRecordPO(loginUserTypeBO.getProjectId(), loginUserTypeBO.getIdentification(), loginUserTypeBO.getLoginType());
             try {
                 LoginUserBO loginUserBO = this.common(loginUserTypeBO, loginRecordPO);
@@ -200,6 +200,7 @@ public class UserDetailsCheck implements UserDetailsService {
                 }
                 break;
             case NOT_PASWORD: //免密登录
+            case SSO_LOGIN: //单点登录
                 //这样做为了登录的时候使用
 //                UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(KPJsonUtil.toJson(loginUserTypeBO), "notPasswordAutomaticLogon");
 //                // 该方法会去调用UserDetailsServiceImpl.loadUserByUsername

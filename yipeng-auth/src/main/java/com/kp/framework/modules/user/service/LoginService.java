@@ -3,8 +3,10 @@ package com.kp.framework.modules.user.service;
 import com.alibaba.fastjson2.JSONObject;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.kp.framework.common.cache.ProjectCache;
+import com.kp.framework.common.enums.AuthCodeEnum;
 import com.kp.framework.common.enums.LoginUserTypeEnum;
 import com.kp.framework.common.properties.RedisSecurityConstant;
+import com.kp.framework.common.util.KPJWTUtil;
 import com.kp.framework.configruation.properties.KPFrameworkConfig;
 import com.kp.framework.constant.MinioConstant;
 import com.kp.framework.enums.YesNoEnum;
@@ -196,5 +198,56 @@ public class LoginService {
                 .setProjectName(loginUserBO.getName())
                 .setRemainingNum(projectPO.getTokenGainMaxNum() - loginNum)
                 .setPermissions(loginUserBO.getPermissions());
+    }
+
+
+    /**
+     * @Author lipeng
+     * @Description 单点登录
+     * @Date 2025/10/4
+     * @param parameter
+     * @return com.kp.framework.modules.user.po.customer.UserLoginCustomerPO
+     **/
+    public UserLoginCustomerPO ssoLogin(JSONObject parameter) {
+        KPVerifyUtil.notNull(parameter.getString("accessToken"), "请输入token！");
+        KPVerifyUtil.notNull(parameter.getString("projectCode"), "请输入项目编号！");
+
+        String token = parameter.getString("accessToken");
+
+        //根据项目编号 查询项目
+        ProjectPO projectPO = ProjectCache.getProjectByCode(parameter.getString("projectCode"));
+        if (projectPO == null)
+            throw new KPServiceException("该项目不存在！");
+        if (projectPO.getStatus().equals(YesNoEnum.NO.code()))
+            throw new KPServiceException("该项目已停用！");
+
+        //从token中获取用户信息
+        if (!KPJWTUtil.verifyToken(token))
+            throw new KPServiceException(AuthCodeEnum.FAILURE_TOKEN.code(), AuthCodeEnum.FAILURE_TOKEN.message());
+
+        LoginUserTypeBO loginUserTypeBO = KPJsonUtil.toJavaObject(KPJWTUtil.parseToken(token).asString(), LoginUserTypeBO.class);
+        loginUserTypeBO.setLoginType(LoginUserTypeEnum.SSO_LOGIN.code())
+                .setCheck("notPasswordAutomaticLogon")
+                .setProjectId(projectPO.getProjectId())
+                .setProjectCode(projectPO.getProjectCode());
+
+        UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(KPJsonUtil.toJson(loginUserTypeBO), "notPasswordAutomaticLogon");
+        // 该方法会去调用UserDetailsServiceImpl.loadUserByUsername
+        Authentication authentication = authenticationManager.authenticate(authenticationToken);
+        if (authentication == null) throw new KPServiceException("登录校验失败");
+        //获取用户信息
+        LoginUserBO loginUserBO = (LoginUserBO) authentication.getPrincipal();
+//        LoginUserBO loginUserBO = (LoginUserBO) userDetailsCheck.loadUserByUsername(KPJsonUtil.toJsonString(loginUserTypeBO));
+        if (loginUserBO == null) throw new KPServiceException("登录校验失败");
+        UserLoginCustomerPO loginCustomerPO = KPJsonUtil.toJavaObject(loginUserBO.getUser(), UserLoginCustomerPO.class);
+        loginCustomerPO.setAccessToken(KPRedisUtil.getString(RedisSecurityConstant.REDIS_AUTHENTICATION_TOKEN + loginUserTypeBO.getProjectCode() + ":" + loginUserTypeBO.getIdentification()));
+        //刷新的token  未启用
+        //        loginCustomerPO.setRefreshToken(KPRedisUtil.get(RedisSecurityConstant.REDIS_AUTHENTICATION_REFRESHTOKEN + loginUserTypeBO.getIdentification() + ":" + loginUserTypeBO.getProjectId()));
+        if (KPStringUtil.isNotEmpty(loginUserBO.getRoles()))
+            loginCustomerPO.setRoles(loginUserBO.getRoleKeys());
+        loginCustomerPO.setPermissions(loginUserBO.getPermissions());
+
+        loginCustomerPO.setAvatar(KPMinioUtil.getUrl(MinioConstant.AUTH_BUCKET_NAME, loginCustomerPO.getAvatar(), 168));
+        return loginCustomerPO;
     }
 }
