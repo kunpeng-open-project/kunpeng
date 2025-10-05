@@ -122,6 +122,8 @@ public class WelcomeService {
                 loginRecordCustomerPO.setBody(projectName + " 授权登录成功");
             if (loginRecordPO.getLoginType().equals(LoginUserTypeEnum.NOT_PASWORD.code()))
                 loginRecordCustomerPO.setBody(loginRecordPO.getUserName() + " 免密登录" + projectName + "成功");
+            if (loginRecordPO.getLoginType().equals(LoginUserTypeEnum.SSO_LOGIN.code()))
+                loginRecordCustomerPO.setBody(loginRecordPO.getUserName() + " 单点登录" + projectName + "成功");
             loginRecordCustomerPOS.add(loginRecordCustomerPO);
         });
 
