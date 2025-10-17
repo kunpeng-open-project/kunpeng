@@ -15,6 +15,7 @@ import com.kp.framework.utils.kptool.KPStringUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.MethodParameter;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 import org.springframework.web.method.HandlerMethod;
 import sun.reflect.generics.reflectiveObjects.ParameterizedTypeImpl;
@@ -48,20 +49,26 @@ public class KPVerifyBuilder {
     private KPMaxLengthBuilder kpMaxLengthBuilder;
 
 
-
     public boolean verify(HttpServletRequest request, HandlerMethod handlerMethod) {
         // 获取所有方法参数
-        JSONObject json = KPRequsetUtil.getJSONParam(request);
+        JSONObject json = null;
+        if (request.getContentType().contains(MediaType.APPLICATION_JSON_VALUE)) {
+            json = KPRequsetUtil.getJSONParam(request);
+        } else if (request.getContentType().contains(MediaType.APPLICATION_FORM_URLENCODED_VALUE)) {
+            json = KPRequsetUtil.getParam(request);
+        } else {
+            return true;
+        }
 
         KPApiJsonlParamMode kpApiJsonlParamMode = handlerMethod.getMethodAnnotation(KPApiJsonlParamMode.class);
         //屏蔽的字段
         List<String> excludeList = new ArrayList();
         //包含的字段
         List<String> globalList = new ArrayList();
-        if (kpApiJsonlParamMode != null){
-            if (KPStringUtil.isNotEmpty(kpApiJsonlParamMode.includes())){
+        if (kpApiJsonlParamMode != null) {
+            if (KPStringUtil.isNotEmpty(kpApiJsonlParamMode.includes())) {
                 globalList = Arrays.asList(kpApiJsonlParamMode.includes().split(kpApiJsonlParamMode.separator()));
-            }else if(KPStringUtil.isNotEmpty(kpApiJsonlParamMode.ignores())){
+            } else if (KPStringUtil.isNotEmpty(kpApiJsonlParamMode.ignores())) {
                 excludeList = Arrays.asList(kpApiJsonlParamMode.ignores().split(kpApiJsonlParamMode.separator()));
             }
         }
@@ -69,17 +76,17 @@ public class KPVerifyBuilder {
         for (MethodParameter parameter : handlerMethod.getMethodParameters()) {
             Field[] fields = null;
             //入参最外层是list
-            if (parameter.getParameterType().getName().equalsIgnoreCase("java.util.List")){
+            if (parameter.getParameterType().getName().equalsIgnoreCase("java.util.List")) {
                 try {
                     fields = KPReflectUtil.getAllDeclaredFields((Class<?>) (((ParameterizedType) parameter.getGenericParameterType()).getActualTypeArguments()[0]), excludeList, globalList).stream().toArray(Field[]::new);
                 } catch (Exception e) {
                     log.info("[list参数校验异常]： {}", e.getMessage());
                 }
                 return this.verifyDispose(fields, KPJsonUtil.toJavaObjectList(((MyRequestWrapper) request).getBody(), JSONObject.class));
-            }else{
+            } else {
                 try {
                     fields = KPReflectUtil.getAllDeclaredFields(parameter.getParameterType(), excludeList, globalList).stream().toArray(Field[]::new);
-                }catch (Exception e){
+                } catch (Exception e) {
                     fields = parameter.getParameterType().getDeclaredFields();
                 }
                 return this.verifyDispose(fields, json);
@@ -87,7 +94,6 @@ public class KPVerifyBuilder {
         }
         return true;
     }
-
 
 
     /**
@@ -98,10 +104,10 @@ public class KPVerifyBuilder {
      * @param json
      * @return java.lang.Boolean
      **/
-    private Boolean verifyDispose(Field[] fields, JSONObject json){
+    private Boolean verifyDispose(Field[] fields, JSONObject json) {
         for (Field field : fields) {
             //表示是list 对象
-            if (field.getType() == List.class){
+            if (field.getType() == List.class) {
 
                 //先判断是否必传
                 KPNotNull kpNotNull = field.getAnnotation(KPNotNull.class);
@@ -109,7 +115,7 @@ public class KPVerifyBuilder {
                     try {
                         if (!kpNotNullBuilder.dispose(field, kpNotNull, json))
                             return false;
-                    }catch (NullPointerException ex){
+                    } catch (NullPointerException ex) {
                         throw new KPServiceException(field.getName() + "为空校验异常");
                     }
 
@@ -129,12 +135,12 @@ public class KPVerifyBuilder {
                             return false;
                     }
                 }
-            }else{
-                if (!field.getType().isPrimitive() && !field.getType().getName().contains("java.")){
+            } else {
+                if (!field.getType().isPrimitive() && !field.getType().getName().contains("java.")) {
                     //这是对象
                     if (!this.verifyDispose(field.getType().getDeclaredFields(), json.getJSONObject(field.getName())))
                         return false;
-                }else{
+                } else {
                     KPNotNull kpNotNull = field.getAnnotation(KPNotNull.class);
                     if (kpNotNull != null) {
                         if (!kpNotNullBuilder.dispose(field, kpNotNull, json))
@@ -159,8 +165,8 @@ public class KPVerifyBuilder {
     }
 
 
-    private Boolean verifyDispose(Field[] fields, List<JSONObject> jsons){
-        for (JSONObject json : jsons){
+    private Boolean verifyDispose(Field[] fields, List<JSONObject> jsons) {
+        for (JSONObject json : jsons) {
             if (!this.verifyDispose(fields, json))
                 return false;
         }

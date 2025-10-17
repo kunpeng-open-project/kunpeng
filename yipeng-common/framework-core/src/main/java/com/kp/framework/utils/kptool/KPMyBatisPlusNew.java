@@ -283,6 +283,10 @@ public class KPMyBatisPlusNew {
                             if (JdbcType.TINYINT == metaInfo.getJdbcType()) {
                                 return DbColumnType.INTEGER;
                             }
+                            // 处理 SMALLINT 转为 Integer
+                            if (JdbcType.SMALLINT == metaInfo.getJdbcType()) {
+                                return DbColumnType.INTEGER;
+                            }
                             return typeRegistry.getColumnType(metaInfo);
                         })
                 );

@@ -1,13 +1,17 @@
 package com.kp.framework.entity.bo;
 
 import com.kp.framework.entity.po.system.CpuPO;
+import com.kp.framework.entity.po.system.DiskIoPO;
 import com.kp.framework.entity.po.system.JvmPO;
 import com.kp.framework.entity.po.system.MemPO;
+import com.kp.framework.entity.po.system.NetIoPO;
 import com.kp.framework.entity.po.system.SysFilePO;
 import com.kp.framework.entity.po.system.SysPO;
 import com.kp.framework.utils.kptool.KPBigDecimalUtils;
 import com.kp.framework.utils.kptool.KPDateUtil;
 import com.kp.framework.utils.kptool.KPIPUtil;
+import com.kp.framework.utils.kptool.KPServiceUtil;
+import com.kp.framework.utils.kptool.KPThreadUtil;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -16,18 +20,26 @@ import lombok.NoArgsConstructor;
 import oshi.SystemInfo;
 import oshi.hardware.CentralProcessor;
 import oshi.hardware.GlobalMemory;
+import oshi.hardware.HWDiskStore;
 import oshi.hardware.HardwareAbstractionLayer;
+import oshi.hardware.NetworkIF;
 import oshi.software.os.FileSystem;
 import oshi.software.os.OSFileStore;
 import oshi.software.os.OperatingSystem;
 import oshi.util.Util;
 
+import javax.annotation.Resource;
 import java.lang.management.ManagementFactory;
 import java.math.RoundingMode;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.TimeUnit;
 
 
 /**
@@ -55,8 +67,20 @@ public class ServerBO {
     @ApiModelProperty(value = "服务器相关信息")
     private SysPO sys = new SysPO();
 
+    // 新增：总磁盘吞吐（不分盘符，单个对象）
+    @ApiModelProperty(value = "总磁盘吞吐信息（不分盘符）")
+    private DiskIoPO diskIo = new DiskIoPO();
+    // 新增：总网络速率（不分接口，单个对象）
+    @ApiModelProperty(value = "总网络速率信息（汇总所有有效接口）")
+    private NetIoPO netIo = new NetIoPO();
+
     @ApiModelProperty(value = "磁盘相关信息")
     private List<SysFilePO> sysFiles = new LinkedList<>();
+
+    @Resource(name = "kpExecutorService")
+    private ExecutorService kpExecutorService;
+
+
 
     public void setValueTo() {
         //解决Oshi获取CPU使用率与Windows任务管理器显示不匹配的问题
@@ -65,8 +89,21 @@ public class ServerBO {
 //        GlobalConfig.set(GlobalConfig.OSHI_OS_WINDOWS_CPU_UTILITY, true);
         SystemInfo systemInfo = new SystemInfo();
         HardwareAbstractionLayer hal = systemInfo.getHardware();
+
+        // 磁盘采集任务
+        CompletableFuture<Void> diskTask = CompletableFuture.runAsync(() -> {
+            setTotalDiskIoInfo(hal);
+        }, KPServiceUtil.getBean("kpExecutorService"));
+
+        // 网络采集任务
+        CompletableFuture<Void> netTask = CompletableFuture.runAsync(() -> {
+            setTotalNetIoInfo(hal);
+        }, KPServiceUtil.getBean("kpExecutorService"));
+
         // cup信息
-        setCpuInfo(hal.getProcessor());
+        CompletableFuture<Void> cpuTask = CompletableFuture.runAsync(() -> {
+            setCpuInfo(hal.getProcessor());
+        }, KPServiceUtil.getBean("kpExecutorService"));
         // 内存信息
         setMemInfo(hal.getMemory());
         // 服务器信息
@@ -75,6 +112,19 @@ public class ServerBO {
         setJvmInfo();
         // 磁盘信息
         setSysFiles(systemInfo.getOperatingSystem());
+
+
+
+        // 等待并行任务完成（最多等待1秒，与采样间隔一致）
+        try {
+            CompletableFuture.allOf(diskTask, netTask).get(60, TimeUnit.SECONDS);
+        } catch (Exception e) {
+            // 超时或异常时，用默认值避免接口报错（可选处理）
+            diskIo.setTotalReadRate("0.0 KB/秒");
+            diskIo.setTotalWriteRate("0.0 KB/秒");
+            netIo.setTotalDownRate("0.0 KB/秒");
+            netIo.setTotalUpRate("0.0 KB/秒");
+        }
     }
 
     /**
@@ -214,5 +264,112 @@ public class ServerBO {
         } else {
             return String.format("%d B", size);
         }
+    }
+
+
+    /**
+     * 设置总磁盘吞吐（汇总所有磁盘，计算每秒总读写速率）
+     */
+    private void setTotalDiskIoInfo(HardwareAbstractionLayer hal) {
+        // 1. 第一次采样
+        long firstTotalRead = 0;
+        long firstTotalWrite = 0;
+        List<HWDiskStore> diskStores = hal.getDiskStores();
+        for (HWDiskStore disk : diskStores) {
+            firstTotalRead += disk.getReadBytes();
+            firstTotalWrite += disk.getWriteBytes();
+        }
+
+        // 等待1秒（并行时与网络的等待重叠）
+        KPThreadUtil.sleep(OSHI_WAIT_SECOND);
+
+        // 2. 第二次采样
+        long secondTotalRead = 0;
+        long secondTotalWrite = 0;
+        List<HWDiskStore> secondDiskStores = hal.getDiskStores();
+        for (HWDiskStore disk : secondDiskStores) {
+            secondTotalRead += disk.getReadBytes();
+            secondTotalWrite += disk.getWriteBytes();
+        }
+
+        // 3. 动态单位计算
+        double totalReadRateKb = (secondTotalRead - firstTotalRead) / 1024.0;
+        double totalWriteRateKb = (secondTotalWrite - firstTotalWrite) / 1024.0;
+        String readRateWithUnit = totalReadRateKb >= 1024 ?
+                String.format("%.1f MB/秒", totalReadRateKb / 1024) :
+                String.format("%.1f KB/秒", totalReadRateKb);
+        String writeRateWithUnit = totalWriteRateKb >= 1024 ?
+                String.format("%.1f MB/秒", totalWriteRateKb / 1024) :
+                String.format("%.1f KB/秒", totalWriteRateKb);
+
+        diskIo.setTotalReadRate(readRateWithUnit);
+        diskIo.setTotalWriteRate(writeRateWithUnit);
+    }
+
+
+    // ---------------------- 新增：总网络速率采集（不分接口） ----------------------
+    /**
+     * 设置总网络速率（汇总所有有效接口，计算每秒总上下行速率）
+     */
+    private void setTotalNetIoInfo(HardwareAbstractionLayer hal) {
+        // 1. 第一次采样
+        List<NetworkIF> firstNetIFs = hal.getNetworkIFs();
+        Map<String, long[]> firstStatsMap = new HashMap<>();
+        for (NetworkIF net : firstNetIFs) {
+            String ifName = net.getName();
+            if (ifName.contains("lo") || ifName.contains("loopback") || ifName.contains("本地连接*")) {
+                continue;
+            }
+            if (net.getBytesRecv() < 0 || net.getBytesSent() < 0) {
+                continue;
+            }
+            try {
+                net.updateAttributes();
+            } catch (NoSuchMethodError e) {
+                // 忽略
+            }
+            firstStatsMap.put(ifName, new long[]{net.getBytesRecv(), net.getBytesSent()});
+        }
+
+        // 等待1秒（并行时与磁盘的等待重叠）
+        KPThreadUtil.sleep(OSHI_WAIT_SECOND);
+
+        // 2. 第二次采样
+        List<NetworkIF> secondNetIFs = hal.getNetworkIFs();
+        long totalDownBytes = 0;
+        long totalUpBytes = 0;
+        for (NetworkIF net : secondNetIFs) {
+            String ifName = net.getName();
+            if (!firstStatsMap.containsKey(ifName)) {
+                continue;
+            }
+            try {
+                net.updateAttributes();
+            } catch (NoSuchMethodError e) {
+                // 忽略
+            }
+            long[] firstStats = firstStatsMap.get(ifName);
+            long currentRecv = net.getBytesRecv();
+            long currentSent = net.getBytesSent();
+            if (currentRecv >= firstStats[0]) {
+                totalDownBytes += (currentRecv - firstStats[0]);
+            }
+            if (currentSent >= firstStats[1]) {
+                totalUpBytes += (currentSent - firstStats[1]);
+            }
+        }
+
+        // 3. 动态单位计算
+        double totalDownRateKb = totalDownBytes / 1024.0;
+        double totalUpRateKb = totalUpBytes / 1024.0;
+        String downRateWithUnit = totalDownRateKb >= 1024 ?
+                String.format("%.1f MB/秒", totalDownRateKb / 1024) :
+                String.format("%.1f KB/秒", totalDownRateKb);
+        String upRateWithUnit = totalUpRateKb >= 1024 ?
+                String.format("%.1f MB/秒", totalUpRateKb / 1024) :
+                String.format("%.1f KB/秒", totalUpRateKb);
+
+        netIo.setTotalDownRate(downRateWithUnit);
+        netIo.setTotalUpRate(upRateWithUnit);
     }
 }

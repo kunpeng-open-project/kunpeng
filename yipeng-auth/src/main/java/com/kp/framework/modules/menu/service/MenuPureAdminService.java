@@ -111,6 +111,7 @@ public class MenuPureAdminService {
                         router.setMeta(PureAdminRouterMetaCustomerPO.builder()
                                 .title(menu.getMenuName())
                                 .icon(menu.getIcon())
+                                .rank(menu.getSort())
                                 .build());
                         router.setChildren(Arrays.asList(
                                 PureAdminRouterCustomerPO.builder()

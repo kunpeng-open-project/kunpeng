@@ -11,10 +11,10 @@ import com.kp.framework.utils.LogUtil;
 import com.kp.framework.utils.kptool.KPJsonUtil;
 import com.kp.framework.utils.kptool.KPRabbitMqUtil;
 import com.kp.framework.utils.kptool.KPRequsetUtil;
-import com.kp.framework.utils.kptool.KPStringUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.annotation.Order;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.method.HandlerMethod;
@@ -59,7 +59,7 @@ public class RequestRecordHeadFilter implements Filter {
 
 		Instant start = Instant.now();
 		String uri = req.getRequestURI();
-		if (uri.contains(".") || uri.contains("swagger") || uri.contains("v2") || uri.contains("/pay/call/back") || uri.contains("/actuator")){
+		if (uri.contains(".") || uri.contains("swagger") || uri.contains("v2") || uri.contains("/actuator")){
 			chain.doFilter(req, res);
 		}else {
 			MyRequestWrapper myRequestWrapper = new MyRequestWrapper(req);
@@ -82,28 +82,32 @@ public class RequestRecordHeadFilter implements Filter {
 		String parameter = null, result = null;
 		long disposeDate = 0;
 		try {
-			String parameters = myRequestWrapper.getBody();
-			if (KPStringUtil.isNotEmpty(parameters)){
-				parameter = KPJsonUtil.toJson(myRequestWrapper.getBody()).toJSONString();
-			}else{
-				JSONObject row = KPRequsetUtil.getJSONParam();
-				if (row.size()!=0){
-					parameter = KPRequsetUtil.getJSONParam().toJSONString();
-				}else{
-					parameter = KPJsonUtil.toJsonString(myRequestWrapper.getParameterMap());
+			if (myRequestWrapper.getContentType().contains(MediaType.APPLICATION_JSON_VALUE)){
+				try {
+					parameter = KPJsonUtil.toJson(myRequestWrapper.getBody()).toJSONString();
+				}catch (Exception ex){
+					JSONArray JSONArray = parseIfArray(myRequestWrapper.getBody());
+					if (JSONArray==null){
+						parameter = KPJsonUtil.toJsonString(myRequestWrapper.getBody());
+					}else{
+						parameter = JSONArray.toJSONString();
+					}
 				}
+			}else if (myRequestWrapper.getContentType().contains(MediaType.APPLICATION_FORM_URLENCODED_VALUE)){
+				JSONObject row = KPRequsetUtil.getParam(myRequestWrapper);
+				if (!row.isEmpty()){
+					parameter = row.toJSONString();
+				}else{
+					parameter = new JSONObject().toJSONString();
+				}
+			}else if (myRequestWrapper.getContentType().contains(MediaType.MULTIPART_FORM_DATA_VALUE)){
+				parameter = "上传文件, 系统不记录";
+			}else {
+				parameter = myRequestWrapper.getContentType() + "类型，未获取到参数，目前只支持application/json和application/x-www-form-urlencoded";
 			}
 			log.info("请求参数： {}", parameter);
 		}catch (Exception ex){
-			JSONArray JSONArray = parseIfArray(myRequestWrapper.getBody());
-			if (JSONArray==null){
-				parameter = KPJsonUtil.toJsonString(myRequestWrapper.getBody());
-				log.info("请求参数： {}", parameter);
-				log.info("请求参数获取异常： {}", ex.getMessage());
-			}else{
-				log.info("请求参数： {}", JSONArray);
-			}
-
+			log.info("请求参数获取异常", ex.getMessage());
 		}
 
 		try {

@@ -1,9 +1,8 @@
 package com.kp.framework.common.security.filter;
 
-import com.alibaba.fastjson2.JSONObject;
 import com.kp.framework.common.enums.AuthCodeEnum;
-import com.kp.framework.common.util.CommonUtil;
-import org.springframework.beans.factory.annotation.Value;
+import com.kp.framework.common.util.BackUtil;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.stereotype.Component;
@@ -22,13 +21,11 @@ import java.io.IOException;
  **/
 @Component
 public class AuthenticationEntryPointImpl implements AuthenticationEntryPoint {
-    @Value("${kp.project-name}")
-    private String projectName;
+
+    @Autowired
+    private BackUtil backUtil;
     @Override
     public void commence(HttpServletRequest request, HttpServletResponse response, AuthenticationException authException) throws IOException {
-        JSONObject body = new JSONObject()
-                .fluentPut("code", AuthCodeEnum.NOT_LOGIN.code())
-                .fluentPut("message", AuthCodeEnum.NOT_LOGIN.message());
-        CommonUtil.writeJson(body, projectName);
+        backUtil.writeJson(AuthCodeEnum.NOT_LOGIN);
     }
 }

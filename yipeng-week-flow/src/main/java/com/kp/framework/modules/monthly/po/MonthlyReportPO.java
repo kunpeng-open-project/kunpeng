@@ -15,7 +15,7 @@ import java.time.LocalDate;
 /**
  * @Author lipeng
  * @Description 月度计划表
- * @Date 2025-09-15 14:03:44
+ * @Date 2025-09-15
 **/
 @Data
 @Accessors(chain = true)

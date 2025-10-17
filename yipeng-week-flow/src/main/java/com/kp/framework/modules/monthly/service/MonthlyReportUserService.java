@@ -8,7 +8,7 @@ import org.springframework.stereotype.Service;
 /**
  * @Author lipeng
  * @Description 月度计划责任人信息表 服务实现类
- * @Date 2025-07-25 15:09:06
+ * @Date 2025-07-25
 **/
 @Service
 public class MonthlyReportUserService extends ServiceImpl<MonthlyReportUserMapper, MonthlyReportUserPO> {
@@ -17,7 +17,7 @@ public class MonthlyReportUserService extends ServiceImpl<MonthlyReportUserMappe
 //    /**
 //     * @Author lipeng
 //     * @Description 查询月度计划责任人信息列表
-//     * @Date 2025-07-25 15:09:06
+//     * @Date 2025-07-25
 //     * @param monthlyReportUserListParamPO
 //     * @return java.util.List<MonthlyReportUserPO>
 //    **/
@@ -38,7 +38,7 @@ public class MonthlyReportUserService extends ServiceImpl<MonthlyReportUserMappe
 //    /**
 //     * @Author lipeng
 //     * @Description 根据月度计划责任人Id查询详情
-//     * @Date 2025-07-25 15:09:06
+//     * @Date 2025-07-25
 //     * @param parameter
 //     * @return MonthlyReportUserPO
 //    **/
@@ -52,7 +52,7 @@ public class MonthlyReportUserService extends ServiceImpl<MonthlyReportUserMappe
 //    /**
 //     * @Author lipeng
 //     * @Description 新增月度计划责任人信息
-//     * @Date 2025-07-25 15:09:06
+//     * @Date 2025-07-25
 //     * @param monthlyReportUserEditParamPO
 //     * @return void
 //    **/
@@ -67,7 +67,7 @@ public class MonthlyReportUserService extends ServiceImpl<MonthlyReportUserMappe
 //    /**
 //     * @Author lipeng
 //     * @Description 修改月度计划责任人信息
-//     * @Date 2025-07-25 15:09:06
+//     * @Date 2025-07-25
 //     * @param monthlyReportUserEditParamPO
 //     * @return void
 //    **/
@@ -82,7 +82,7 @@ public class MonthlyReportUserService extends ServiceImpl<MonthlyReportUserMappe
 //    /**
 //     * @Author lipeng
 //     * @Description 批量删除月度计划责任人信息
-//     * @Date 2025-07-25 15:09:06
+//     * @Date 2025-07-25
 //     * @param ids
 //     * @return String
 //    **/

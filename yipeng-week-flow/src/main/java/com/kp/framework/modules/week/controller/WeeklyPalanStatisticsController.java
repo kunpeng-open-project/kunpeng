@@ -21,7 +21,7 @@ import java.util.List;
 /**
  * @Author lipeng
  * @Description 周计划表相关接口
- * @Date 2025-09-20 22:11:23
+ * @Date 2025-09-20
  **/
 @RestController
 @RequestMapping("/week/weekly/palan/statistics")

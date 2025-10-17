@@ -41,6 +41,8 @@ public class SwaggerConfig {
 
     @Value("${env}")
     private String env;
+    @Value("${server.servlet.context-path:}")
+    private String contextPath = null;
 
     @Bean
     public Docket createRestApi() {
@@ -65,12 +67,21 @@ public class SwaggerConfig {
         // 初始匹配所有路径
         Predicate pathSelector = PathSelectors.ant("/**");
 
-        Object obj = KPReflectUtil.getMethod(KPServiceUtil.getBean("KPPassConfig"), "getUrls");
-        if (KPStringUtil.isNotEmpty(obj)){
-            for (String url : (List<String>) obj) {
-                pathSelector = pathSelector.and(PathSelectors.ant(url).negate());
+        try {
+            Object obj = KPReflectUtil.getMethod(KPServiceUtil.getBean("KPPassConfig"), "getUrls");
+            if (KPStringUtil.isNotEmpty(obj)){
+                for (String url : (List<String>) obj) {
+                    if(KPStringUtil.isEmpty(contextPath)){
+                        pathSelector = pathSelector.and(PathSelectors.ant(url).negate());
+                    }else{
+                        pathSelector = pathSelector.and(PathSelectors.ant(contextPath + url).negate());
+                    }
+                }
             }
-        }
+        }catch (Exception ex){}
+
+
+
 
         // 返回包含安全上下文的列表
         return Lists.newArrayList(new SecurityContext(Lists.newArrayList(defaultAuth()), pathSelector));

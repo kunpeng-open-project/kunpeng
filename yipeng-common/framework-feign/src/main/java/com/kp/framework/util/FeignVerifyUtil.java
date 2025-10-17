@@ -66,22 +66,33 @@ public class FeignVerifyUtil {
 //    }
 
     /**
+     * @Author lipeng
      * @Description 校验数据并返回查询到的对象
-     * @Date 2022/6/23 20:27
-     * @param result
-     * @param interfaceName
+     * @Date 20254/9/01
+     * @param serviceName 服务名名称
+     * @param result 接口返回值
+     * @param interfaceName 调用的接口名称
+     * @param clazz 返回的类型
      * @return T
      **/
     public final static <T> T verifyBySingle(String serviceName, KPResult result, String interfaceName, Class<T> clazz) {
         if (!result.getCode().equals(200))
             throw new KPServiceException(KPStringUtil.format("【调用{0}】-{1}接口异常！", serviceName, interfaceName));
 
-//        if (result.getData() == null)
-//            throw new KPServiceException(KPStringUtil.format("【调用{0}】-{0}接口，未查询到有效信息！", serviceName,interfaceName));
-
         return KPJsonUtil.toJavaObject(result.getData(), clazz);
     }
 
+
+    /**
+     * @Author lipeng
+     * @Description 校验带分页的list接口
+     * @Date 20254/9/01
+     * @param serviceName 服务名名称
+     * @param result 接口返回值
+     * @param interfaceName 调用的接口名称
+     * @param clazz 返回的类型
+     * @return java.util.List<T>
+     **/
     public static <T> List<T> verifyPageList(String serviceName, KPResult result, String interfaceName, Class<T> clazz) {
         if (!result.getCode().equals(200))
             throw new KPServiceException(KPStringUtil.format("【调用{0}】-{1}接口异常！", serviceName, interfaceName));
@@ -89,16 +100,22 @@ public class FeignVerifyUtil {
         JSONArray jsonArray = KPJsonUtil.toJson(result.getData()).getJSONArray("list");
         if (jsonArray == null) return new ArrayList<>(); // 若list字段不存在，返回空列表
 
-//        return jsonArray.stream().map(element -> (JSONObject) element).collect(Collectors.toList());
-//        return jsonArray.stream()
-//                .map(element -> KPJsonUtil.toJavaObject(((JSONObject) element).toString(), clazz))
-//                .collect(Collectors.toList());
         return KPJsonUtil.toJavaObjectList(jsonArray, clazz);
     }
 
 
 
 
+    /**
+     * @Author lipeng
+     * @Description 校验不带分页的list接口
+     * @Date 20254/9/01
+     * @param serviceName 服务名名称
+     * @param result 接口返回值
+     * @param interfaceName 调用的接口名称
+     * @param clazz 返回的类型
+     * @return java.util.List<T>
+     **/
     public static <T> List<T> verifyList(String serviceName, KPResult result, String interfaceName, Class<T> clazz) {
         if (!result.getCode().equals(200))
             throw new KPServiceException(KPStringUtil.format("【调用{0}】-{1}接口异常！", serviceName, interfaceName));
@@ -106,10 +123,6 @@ public class FeignVerifyUtil {
         JSONArray jsonArray = KPJsonUtil.toJson(result).getJSONArray("data");
         if (jsonArray == null) return new ArrayList<>(); // 若list字段不存在，返回空列表
 
-//        return jsonArray.stream().map(element -> (JSONObject) element).collect(Collectors.toList());
-//        return jsonArray.stream()
-//                .map(element -> KPJsonUtil.toJavaObject(((JSONObject) element).toString(), clazz))
-//                .collect(Collectors.toList());
         return KPJsonUtil.toJavaObjectList(jsonArray, clazz);
     }
 }

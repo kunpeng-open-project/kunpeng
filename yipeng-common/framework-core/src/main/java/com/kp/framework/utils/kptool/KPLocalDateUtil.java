@@ -110,7 +110,7 @@ public class KPLocalDateUtil {
      * @param days 要增加的天数（正数往后，负数往前）
      * @return 计算后的日期
      */
-    public static LocalDate plusDays(LocalDate date, long days) {
+    public static LocalDate addDays(LocalDate date, long days) {
         if (date == null) {
             return null;
         }
@@ -194,7 +194,7 @@ public class KPLocalDateUtil {
         return date.isAfter(start.minusDays(1)) && date.isBefore(end.plusDays(1));
     }
 
-// TODO 加入
+
 
     /**
      * @Author lipeng

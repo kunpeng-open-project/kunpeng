@@ -1,9 +1,8 @@
 package com.kp.framework.common.security.exception;
 
 
-import com.alibaba.fastjson2.JSONObject;
-import com.kp.framework.common.util.CommonUtil;
-import org.springframework.beans.factory.annotation.Value;
+import com.kp.framework.common.util.BackUtil;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.annotation.Order;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -20,8 +19,8 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 @Order(0)
 public class AccessDeniedExceptionHandler {
 
-    @Value("${kp.project-name}")
-    private String projectName;
+    @Autowired
+    private BackUtil backUtil;
 
     @ExceptionHandler(AccessDeniedException.class)
     public void accessDeniedException(AccessDeniedException e) throws AccessDeniedException {
@@ -30,9 +29,6 @@ public class AccessDeniedExceptionHandler {
 
     @ExceptionHandler(AuthenticationServiceException.class)
     public void ServiceExceptionHandler(AuthenticationServiceException e) {
-        JSONObject body = new JSONObject()
-                .fluentPut("code", e.getCode())
-                .fluentPut("message", e.getMessage());
-        CommonUtil.writeJson(body, projectName);;
+        backUtil.writeJson(e.getCode(), e.getMessage());
     }
 }

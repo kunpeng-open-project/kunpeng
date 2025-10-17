@@ -6,6 +6,7 @@ import com.kp.framework.common.enums.LoginUserTypeEnum;
 import com.kp.framework.common.properties.KPPassConfig;
 import com.kp.framework.common.properties.KPTokenProperties;
 import com.kp.framework.common.properties.RedisSecurityConstant;
+import com.kp.framework.common.util.BackUtil;
 import com.kp.framework.common.util.CommonUtil;
 import com.kp.framework.common.util.KPJWTUtil;
 import com.kp.framework.modules.user.po.customer.LoginUserBO;
@@ -13,7 +14,6 @@ import com.kp.framework.modules.user.po.customer.LoginUserTypeBO;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
@@ -45,8 +45,9 @@ public class JwtAuthenticationTokenFilter extends OncePerRequestFilter {
     @Autowired
     private KPPassConfig kpPassConfig;
 
-    @Value("${kp.project-name}")
-    private String projectName;
+    @Autowired
+    private BackUtil backUtil;
+
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain) throws ServletException, IOException {
@@ -64,10 +65,7 @@ public class JwtAuthenticationTokenFilter extends OncePerRequestFilter {
 
             //token 过期
             if (!KPJWTUtil.verifyToken(token)) {
-                JSONObject body = new JSONObject()
-                        .fluentPut("code", AuthCodeEnum.FAILURE_TOKEN.code())
-                        .fluentPut("message", AuthCodeEnum.FAILURE_TOKEN.message());
-                CommonUtil.writeJson(body, projectName);
+                backUtil.writeJson(AuthCodeEnum.FAILURE_TOKEN);
                 return;
             }
             LoginUserTypeBO loginUserTypeBO = CommonUtil.toJavaObject(KPJWTUtil.parseToken(token).asString(), LoginUserTypeBO.class);
@@ -75,27 +73,18 @@ public class JwtAuthenticationTokenFilter extends OncePerRequestFilter {
             //token 失效
             String redisToken = CommonUtil.get(RedisSecurityConstant.REDIS_AUTHENTICATION_TOKEN + loginUserTypeBO.getProjectCode() + ":" + loginUserTypeBO.getIdentification());
             if (StringUtils.isEmpty(redisToken)) {
-                JSONObject body = new JSONObject()
-                        .fluentPut("code", AuthCodeEnum.OVERDUE_TOKEN.code())
-                        .fluentPut("message", AuthCodeEnum.OVERDUE_TOKEN.message());
-                CommonUtil.writeJson(body, projectName);
+                backUtil.writeJson(AuthCodeEnum.OVERDUE_TOKEN);
                 return;
             } else {
                 if (!kpTokenProperties.getMultiAccess() && !redisToken.equals(token)) {
-                    JSONObject body = new JSONObject()
-                            .fluentPut("code", AuthCodeEnum.ACCOUNT_NUMBER_RAPE.code())
-                            .fluentPut("message", AuthCodeEnum.ACCOUNT_NUMBER_RAPE.message());
-                    CommonUtil.writeJson(body, projectName);
+                    backUtil.writeJson(AuthCodeEnum.ACCOUNT_NUMBER_RAPE);
                     return;
                 }
             }
 
             String userMessage = CommonUtil.get(RedisSecurityConstant.REDIS_AUTHENTICATION_LOGINUSER_MESSAGE + loginUserTypeBO.getProjectCode() + ":" + loginUserTypeBO.getIdentification());
             if (StringUtils.isEmpty(userMessage)) {
-                JSONObject body = new JSONObject()
-                        .fluentPut("code", AuthCodeEnum.INVALID_TOKEN.code())
-                        .fluentPut("message", AuthCodeEnum.INVALID_TOKEN.message());
-                CommonUtil.writeJson(body, projectName);
+                backUtil.writeJson(AuthCodeEnum.INVALID_TOKEN);
                 return;
             }
             LoginUserBO loginUserBO = CommonUtil.toJavaObject(userMessage, LoginUserBO.class);
@@ -103,19 +92,15 @@ public class JwtAuthenticationTokenFilter extends OncePerRequestFilter {
             authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
             SecurityContextHolder.getContext().setAuthentication(authenticationToken);
 
-            // TODO: 2025/4/21 qeqww
             this.setUserMessage(loginUserBO, loginUserTypeBO, request);
 
-            if (loginUserTypeBO.getLoginType().equals(LoginUserTypeEnum.AUTHORIZATION.code())){
+            if (loginUserTypeBO.getLoginType().equals(LoginUserTypeEnum.AUTHORIZATION.code())) {
                 //授权登录只能访问open 和 api 对外接口
                 if (!(request.getRequestURI().startsWith("/open") || request.getRequestURI().startsWith("/api"))) {
-                    JSONObject body = new JSONObject()
-                            .fluentPut("code", AuthCodeEnum.API_AUTHORIZATION.code())
-                            .fluentPut("message", AuthCodeEnum.API_AUTHORIZATION.message());
-                    CommonUtil.writeJson(body, projectName);
+                    backUtil.writeJson(AuthCodeEnum.API_AUTHORIZATION);
                     return;
                 }
-            }else{
+            } else {
                 //普通登录
                 //token 延迟30分钟 过期  用户只要操作 一直往后延
                 CommonUtil.expire(RedisSecurityConstant.REDIS_AUTHENTICATION_TOKEN + loginUserTypeBO.getProjectCode() + ":" + loginUserTypeBO.getIdentification(), kpTokenProperties.getExpireTime());

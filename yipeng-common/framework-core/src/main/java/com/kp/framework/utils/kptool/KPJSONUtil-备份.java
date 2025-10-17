@@ -1,4 +1,4 @@
-package com.kp.framework.utils.kptool;//package com.kp.framework.utils.kptool;
+//package com.kp.framework.utils.kptool;
 //
 //import com.alibaba.fastjson.JSON;
 //import com.alibaba.fastjson.JSONArray;
@@ -35,7 +35,6 @@ package com.kp.framework.utils.kptool;//package com.kp.framework.utils.kptool;
 //	 * @Param [json, clazz]
 //	 * @return T
 //	 **/
-//	// TODO: 2024/11/28 进行转换 去空
 //	public static final <T> T toJavaObject(JSON json, Class<T> clazz){
 //		try {
 //			return JSONObject.toJavaObject(json, clazz);

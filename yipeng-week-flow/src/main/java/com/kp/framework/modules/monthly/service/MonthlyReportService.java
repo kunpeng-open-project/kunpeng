@@ -49,7 +49,7 @@ import java.util.stream.Collectors;
 /**
  * @Author lipeng
  * @Description 月度计划表 服务实现类
- * @Date 2025-07-25 15:09:06
+ * @Date 2025-07-25
  **/
 @Service
 public class MonthlyReportService extends ServiceImpl<MonthlyReportMapper, MonthlyReportPO> {
@@ -63,7 +63,7 @@ public class MonthlyReportService extends ServiceImpl<MonthlyReportMapper, Month
     /**
      * @Author lipeng
      * @Description 查询月度计划列表
-     * @Date 2025-07-25 15:09:06
+     * @Date 2025-07-25
      * @param monthlyReportListParamPO
      * @return java.util.List<MonthlyReportPO>
      **/
@@ -102,7 +102,7 @@ public class MonthlyReportService extends ServiceImpl<MonthlyReportMapper, Month
     /**
      * @Author lipeng
      * @Description 根据月度计划Id查询详情
-     * @Date 2025-07-25 15:09:06
+     * @Date 2025-07-25
      * @param parameter
      * @return MonthlyReportPO
      **/
@@ -145,7 +145,7 @@ public class MonthlyReportService extends ServiceImpl<MonthlyReportMapper, Month
     /**
      * @Author lipeng
      * @Description 新增月度计划
-     * @Date 2025-07-25 15:09:06
+     * @Date 2025-07-25
      * @param monthlyReportEditParamPO
      * @return void
      **/
@@ -179,7 +179,7 @@ public class MonthlyReportService extends ServiceImpl<MonthlyReportMapper, Month
     /**
      * @Author lipeng
      * @Description 修改月度计划
-     * @Date 2025-07-25 15:09:06
+     * @Date 2025-07-25
      * @param monthlyReportEditParamPO
      * @return void
      **/
@@ -224,7 +224,7 @@ public class MonthlyReportService extends ServiceImpl<MonthlyReportMapper, Month
     /**
      * @Author lipeng
      * @Description 批量删除月度计划
-     * @Date 2025-07-25 15:09:06
+     * @Date 2025-07-25
      * @param ids
      * @return String
      **/
@@ -246,7 +246,7 @@ public class MonthlyReportService extends ServiceImpl<MonthlyReportMapper, Month
     /**
      * @Author lipeng
      * @Description 提交审核
-     * @Date 2025/8/30 22:02
+     * @Date 2025/8/30
      * @param ids
      * @return java.lang.String
      **/
@@ -343,7 +343,7 @@ public class MonthlyReportService extends ServiceImpl<MonthlyReportMapper, Month
     /**
      * @Author lipeng
      * @Description 批量审核
-     * @Date 2025/9/4 17:39
+     * @Date 2025/9/4
      * @param monthlyReportReviewParamPO
      * @return java.lang.String
      **/

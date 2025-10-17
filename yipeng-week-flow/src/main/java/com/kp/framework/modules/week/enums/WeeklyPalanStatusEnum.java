@@ -3,7 +3,7 @@ package com.kp.framework.modules.week.enums;
 /**
  * @Author lipeng
  * @Description 月计划状态
- * @Date 2025/8/30 21:50
+ * @Date 2025/8/30
  * @return
  **/
 public enum WeeklyPalanStatusEnum {

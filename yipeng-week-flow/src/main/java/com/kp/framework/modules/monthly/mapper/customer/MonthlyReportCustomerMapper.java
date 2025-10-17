@@ -24,7 +24,7 @@ public interface MonthlyReportCustomerMapper extends MonthlyReportMapper {
     /**
      * @Author lipeng
      * @Description 统计月度计划数量
-     * @Date 2025/9/15 15:12
+     * @Date 2025/9/15
      * @param queryWrapper
      * @return com.kp.framework.modules.monthly.po.customer.MonthlyReportStatisticsCustomerPO
      **/

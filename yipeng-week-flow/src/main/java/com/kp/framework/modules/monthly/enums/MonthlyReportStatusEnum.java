@@ -7,14 +7,14 @@ import java.util.Collection;
 /**
  * @Author lipeng
  * @Description 月计划状态
- * @Date 2025/8/30 21:50
+ * @Date 2025/8/30
  * @return
  **/
 public enum MonthlyReportStatusEnum {
     DRAFT(1, "草稿"),
     SUBMIT_FOR_REVIEW(2, "提交审核"),
-    REVIEW_REJECTED(4, "审核驳回"),
     REVIEW_PASSED_WAITING_FOR_SPLIT(3, "审核成功-待拆分"),
+    REVIEW_REJECTED(4, "审核驳回"),
     SPLITTED_IN_PROGRESS(5, "已拆分-进行中"),
     COMPLETED(6, "已完成"),
     OVERDUE(7, "逾期");

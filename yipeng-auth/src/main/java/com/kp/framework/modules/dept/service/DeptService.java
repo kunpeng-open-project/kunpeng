@@ -270,7 +270,7 @@ public class DeptService extends ServiceImpl<DeptMapper, DeptPO> {
     /**
      * @Author lipeng
      * @Description 根据部门id集合查询部门列表
-     * @Date 2025/8/28 17:24
+     * @Date 2025/8/28
      * @param deptIds
      * @return java.util.List<com.kp.framework.modules.dept.po.DeptPO>
      **/

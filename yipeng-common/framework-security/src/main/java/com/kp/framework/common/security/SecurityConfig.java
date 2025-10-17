@@ -72,7 +72,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         for (String url : kpPassConfig.getUrls()) registry.antMatchers(url).permitAll();
 
         registry.antMatchers(HttpMethod.OPTIONS).permitAll() //  允许跨域请求的OPTIONS请求
-                .antMatchers("/auth/dept/page/list").permitAll()
                 .anyRequest().authenticated()  //除上面外的所有请求全部需要鉴权认证
                 .and().headers().frameOptions().disable() // 禁用X-Frame-Options头，允许页面嵌入到iframe中
                 .and().sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS) // 设置会话管理策略为无状态，基于token认证，不需要session

@@ -38,7 +38,8 @@ import java.util.concurrent.TimeUnit;
 @Slf4j
 public class CommonUtil {
 
-    private static final RedisTemplate<String, Object> redisTemplate = ServiceUtil.getBean("redisTemplate", RedisTemplate.class);;
+    private static final RedisTemplate<String, Object> redisTemplate = ServiceUtil.getBean("redisTemplate", RedisTemplate.class);
+    ;
 
     /* *
      * @Author 李鹏
@@ -46,9 +47,8 @@ public class CommonUtil {
      * @Param [response, jsonData]
      * @return void
      **/
-    public static final void writeJson(JSONObject jsonData, String projectName) {
-        InterfaceCallRecord.record(jsonData.toString(), projectName);
-        HttpServletResponse response =((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getResponse();
+    public static final void writeJson(JSONObject jsonData) {
+        HttpServletResponse response = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getResponse();
         response.setStatus(200);
         response.setContentType("application/json;charset=utf-8");
         PrintWriter out = null;
@@ -63,19 +63,18 @@ public class CommonUtil {
         out.println(object);
         out.flush();
         out.close();
-
-
     }
 
 
-    public static final void remove(String key){
+    public static final void remove(String key) {
         try {
             redisTemplate.delete(key);
-        }catch (Exception e){
+        } catch (Exception e) {
             try {
                 redisTemplate.expire(key, 1, TimeUnit.MILLISECONDS);
                 Thread.sleep(500);
-            }catch (Exception ex){}
+            } catch (Exception ex) {
+            }
 
         }
     }
@@ -88,7 +87,7 @@ public class CommonUtil {
      * @Param [jsonString]
      * @return com.alibaba.fastjson.JSON
      **/
-    public static final JSONObject toJson(String jsonString){
+    public static final JSONObject toJson(String jsonString) {
         return JSONObject.parseObject(jsonString);
     }
 
@@ -100,13 +99,13 @@ public class CommonUtil {
      * @Param [jsonString, clazz]
      * @return T
      **/
-    public static final <T> T toJavaObject(String obj, Class<T> clazz){
+    public static final <T> T toJavaObject(String obj, Class<T> clazz) {
         try {
             return JSON.toJavaObject(obj, clazz);
         } catch (Exception ex) {
             try {
                 return JSON.toJavaObject(JSON.toJSONString(obj), clazz);
-            }catch (Exception e){
+            } catch (Exception e) {
                 log.error("json转Java对象失败：" + e.getMessage());
                 throw new RuntimeException("数据转换异常！");
             }
@@ -137,7 +136,7 @@ public class CommonUtil {
      * @param localDateTime
      * @return java.util.Date
      **/
-    public static Date LocalDateTimeByDate(LocalDateTime localDateTime){
+    public static Date LocalDateTimeByDate(LocalDateTime localDateTime) {
         return Date.from(localDateTime.atZone(ZoneId.systemDefault()).toInstant());
     }
 
@@ -164,8 +163,8 @@ public class CommonUtil {
      * @param date
      * @return java.time.LocalDateTime
      **/
-    public static LocalDateTime dateByLocalDateTime(Date date){
-        return LocalDateTime.ofInstant(date.toInstant(),ZoneId.systemDefault());
+    public static LocalDateTime dateByLocalDateTime(Date date) {
+        return LocalDateTime.ofInstant(date.toInstant(), ZoneId.systemDefault());
     }
 
 
@@ -246,16 +245,16 @@ public class CommonUtil {
         try {
             if (format.contains("'")) format = format.replaceAll("'", "''");
             format = MessageFormat.format(format, args);
-        }catch (Exception e){
+        } catch (Exception e) {
             for (int i = 0; i < args.length; i++) {
-                format = format.replace("{"+i+"}", args[i].toString());
+                format = format.replace("{" + i + "}", args[i].toString());
             }
         }
         return format;
     }
 
 
-    public static final String toJsonString(Object obj){
+    public static final String toJsonString(Object obj) {
         try {
             // 配置 JSONWriter 特性
             JSONWriter.Feature[] features = {
@@ -273,8 +272,10 @@ public class CommonUtil {
     public static final void set(String key, String value) {
         try {
             redisTemplate.opsForValue().set(key, value);
-        }catch (Exception e){}
+        } catch (Exception e) {
+        }
     }
+
     /**
      * 实现命令：SET key value EX seconds，设置key-value和超时时间（秒）
      *
@@ -285,14 +286,17 @@ public class CommonUtil {
     public static final void set(String key, Object value, long timeout) {
         try {
             redisTemplate.opsForValue().set(key, value, timeout, TimeUnit.SECONDS);
-        }catch (Exception e){}
+        } catch (Exception e) {
+        }
     }
 
     public static final void set(String key, Object value, long timeout, TimeUnit timeUnit) {
         try {
             redisTemplate.opsForValue().set(key, value, timeout, timeUnit);
-        }catch (Exception e){}
+        } catch (Exception e) {
+        }
     }
+
     /**
      * 实现命令：GET key，返回 key所关联的字符串值。
      *
@@ -302,15 +306,16 @@ public class CommonUtil {
     public static final String get(String key) {
         try {
             return (String) redisTemplate.opsForValue().get(key);
-        }catch (Exception e){}
+        } catch (Exception e) {
+        }
         return "";
     }
 
 
-    public static boolean hasKey(String key){
+    public static boolean hasKey(String key) {
         try {
             return redisTemplate.hasKey(key);
-        }catch (Exception ex){
+        } catch (Exception ex) {
             return false;
         }
     }
@@ -322,7 +327,7 @@ public class CommonUtil {
      * @param str
      * @return java.lang.String
      **/
-    public static final String initialsLowerCase(String str){
+    public static final String initialsLowerCase(String str) {
         if (Character.isLowerCase(str.charAt(0)))
             return str;
 
@@ -340,7 +345,8 @@ public class CommonUtil {
     public static void expire(String key, long timeout) {
         try {
             redisTemplate.expire(key, timeout, TimeUnit.SECONDS);
-        }catch (Exception e){}
+        } catch (Exception e) {
+        }
 
     }
 
@@ -414,10 +420,11 @@ public class CommonUtil {
         return boo != null && boo;
     }
 
-    public static void removeBacth(String key){
+    public static void removeBacth(String key) {
         try {
             redisTemplate.delete(redisTemplate.keys(key.concat("*")));
-        }catch (Exception e){}
+        } catch (Exception e) {
+        }
     }
 
 
@@ -428,14 +435,15 @@ public class CommonUtil {
      * @param req
      * @return org.springframework.web.method.HandlerMethod
      **/
-    public static HandlerMethod queryHandlerMethod(HttpServletRequest req){
+    public static HandlerMethod queryHandlerMethod(HttpServletRequest req) {
         try {
             RequestMappingHandlerMapping handlerMapping = ServiceUtil.getBean(RequestMappingHandlerMapping.class);
             HandlerExecutionChain handlerExecutionChain = handlerMapping.getHandler(req);
             if (handlerExecutionChain != null && handlerExecutionChain.getHandler() instanceof HandlerMethod) {
                 return (HandlerMethod) handlerExecutionChain.getHandler();
             }
-        } catch (Exception e) {}
+        } catch (Exception e) {
+        }
         return null;
     }
 }

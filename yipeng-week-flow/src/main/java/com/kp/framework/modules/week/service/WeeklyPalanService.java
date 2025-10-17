@@ -43,7 +43,7 @@ import java.util.stream.Collectors;
 /**
  * @Author lipeng
  * @Description 周计划表 服务实现类
- * @Date 2025-09-20 22:11:23
+ * @Date 2025-09-20
  **/
 @Service
 public class WeeklyPalanService extends ServiceImpl<WeeklyPalanMapper, WeeklyPalanPO> {
@@ -64,7 +64,7 @@ public class WeeklyPalanService extends ServiceImpl<WeeklyPalanMapper, WeeklyPal
 //    /**
 //     * @Author lipeng
 //     * @Description 查询周计划列表
-//     * @Date 2025-09-20 22:11:23
+//     * @Date 2025-09-20
 //     * @param weeklyPalanListParamPO
 //     * @return java.util.List<WeeklyPalanPO>
 //    **/
@@ -90,7 +90,7 @@ public class WeeklyPalanService extends ServiceImpl<WeeklyPalanMapper, WeeklyPal
     /**
      * @Author lipeng
      * @Description 根据周计划id查询详情
-     * @Date 2025-09-20 22:11:23
+     * @Date 2025-09-20
      * @param parameter
      * @return JSONObject
      **/
@@ -108,7 +108,7 @@ public class WeeklyPalanService extends ServiceImpl<WeeklyPalanMapper, WeeklyPal
     /**
      * @Author lipeng
      * @Description 新增周计划
-     * @Date 2025-09-20 22:11:23
+     * @Date 2025-09-20
      * @param weeklyPalanEditParamPO
      * @return void
      **/
@@ -155,7 +155,7 @@ public class WeeklyPalanService extends ServiceImpl<WeeklyPalanMapper, WeeklyPal
     /**
      * @Author lipeng
      * @Description 修改周计划
-     * @Date 2025-09-20 22:11:23
+     * @Date 2025-09-20
      * @param weeklyPalanEditParamPO
      * @return void
      **/
@@ -185,7 +185,7 @@ public class WeeklyPalanService extends ServiceImpl<WeeklyPalanMapper, WeeklyPal
 //    /**
 //     * @Author lipeng
 //     * @Description 批量删除周计划
-//     * @Date 2025-09-20 22:11:23
+//     * @Date 2025-09-20
 //     * @param ids
 //     * @return String
 //     **/
@@ -202,7 +202,7 @@ public class WeeklyPalanService extends ServiceImpl<WeeklyPalanMapper, WeeklyPal
     /**
      * @Author lipeng
      * @Description 查询我的周计划列表
-     * @Date 2025/9/20 22:14
+     * @Date 2025/9/20
      * @param parameter
      * @return java.util.Map<java.lang.String,java.util.List<com.kp.framework.modules.week.po.WeeklyPalanPO>>
      **/
@@ -228,7 +228,7 @@ public class WeeklyPalanService extends ServiceImpl<WeeklyPalanMapper, WeeklyPal
     /**
      * @Author lipeng
      * @Description 删除周计划
-     * @Date 2025/9/20 23:10
+     * @Date 2025/9/20
      * @param parameter
      * @return void
      **/
@@ -250,7 +250,7 @@ public class WeeklyPalanService extends ServiceImpl<WeeklyPalanMapper, WeeklyPal
     /**
      * @Author lipeng
      * @Description 废弃周计划
-     * @Date 2025/9/20 23:14
+     * @Date 2025/9/20
      * @param parameter
      * @return void
      **/
@@ -385,7 +385,7 @@ public class WeeklyPalanService extends ServiceImpl<WeeklyPalanMapper, WeeklyPal
     /**
      * @Author lipeng
      * @Description 查询周计划列表 不带分页
-     * @Date 2025/9/30 17:35
+     * @Date 2025/9/30
      * @param weeklyPalanListParamPO
      * @return java.util.List<com.kp.framework.modules.week.po.customer.WeeklyPalanListCustomerPO>
      **/
