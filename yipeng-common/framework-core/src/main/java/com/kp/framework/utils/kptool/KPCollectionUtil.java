@@ -5,12 +5,14 @@ import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.kp.framework.exception.KPServiceException;
 import com.kp.framework.mapper.ParentMapper;
+import lombok.experimental.UtilityClass;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.ListUtils;
 
 import java.lang.reflect.Field;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -21,49 +23,37 @@ import java.util.stream.Collectors;
  * @Date 2021/9/28 16:02
  * @return
  **/
+@UtilityClass
 public final class KPCollectionUtil {
 
-    private KPCollectionUtil() {
-    }
+
 
     /**
      * @Author lipeng
-     * @Description 数字是否在数组中
+     * @Description 检查一个元素是否存在于指定的列表中。
      * @Date 2021/2/20 16:06
-     * @param str 要比较的数字
-     * @param arr 是否存在的数组
-     * @return boolean
+     * @param element 要检查的元素 (可以为 null)
+     * @param list 要在其中搜索的列表
+     * @param <T>     元素的类型
+     * @return boolean 如果元素在列表中存在，则返回 true，否则返回 false
      **/
-    public static final boolean isContain(Integer str, List<Integer> arr) {
-        for (Integer num : arr) {
-            if (str.equals(num))
-                return true;
-        }
-        return false;
+    public static <T> boolean isEquals(T element, List<T> list) {
+        if (CollectionUtils.isEmpty(list))  return false;
+        return list.stream().anyMatch(item -> Objects.equals(element, item));
     }
+
 
     /**
      * @Author lipeng
-     * @Description Long是否在数组中
-     * @Date 2021/12/23 11:21
-     * @param str
-     * @param arr
+     * @Description 检查一个元素是否存在于指定的列表中。
+     * @Date 2025/11/28
+     * @param element
+     * @param list
      * @return boolean
      **/
-    public static final boolean isContain(Long str, List<Long> arr) {
-        for (Long num : arr) {
-            if (str.equals(num))
-                return true;
-        }
-        return false;
-    }
-
-    public static final boolean isContain(String str, List<String> arr) {
-        for (String num : arr) {
-            if (str.contains(num))
-                return true;
-        }
-        return false;
+    public static boolean isContain(String element, List<String> list) {
+        if (CollectionUtils.isEmpty(list))  return false;
+        return list.stream().anyMatch(element::contains);
     }
 
 
@@ -135,9 +125,9 @@ public final class KPCollectionUtil {
 
 
                 if (KPStringUtil.isNotEmpty(prefix))
-                    sb.append(prefix).append(".").append(fileName).append(",");
+                    sb.append(prefix).append(".").append(fileName).append(" as ") .append(field.getName()).append(",");
                 if (KPStringUtil.isEmpty(prefix))
-                    sb.append(fileName).append(",");
+                    sb.append(fileName).append(" as ") .append(field.getName()).append(",");
             }
             return sb.toString().substring(0, sb.toString().length() - 1);
         } catch (KPServiceException ex) {

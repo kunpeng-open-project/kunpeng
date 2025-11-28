@@ -37,44 +37,52 @@ public final class KPQRCodeUtil {
     private String logoLocalhostPath;//logo url地址
 
 
-    private KPQRCodeUtil(){}
-    public KPQRCodeUtil(String body){
-        this.body=body;
+    private KPQRCodeUtil() {
     }
-    public KPQRCodeUtil imageType(String imageType){
+
+    public KPQRCodeUtil(String body) {
+        this.body = body;
+    }
+
+    public KPQRCodeUtil imageType(String imageType) {
         this.imageType = imageType;
         return this;
     }
-    public KPQRCodeUtil width(Integer width){
+
+    public KPQRCodeUtil width(Integer width) {
         this.width = width;
         return this;
     }
-    public KPQRCodeUtil height(Integer height){
+
+    public KPQRCodeUtil height(Integer height) {
         this.height = height;
         return this;
     }
-    public KPQRCodeUtil margin(Integer margin){
+
+    public KPQRCodeUtil margin(Integer margin) {
         this.margin = margin;
         return this;
     }
-    public KPQRCodeUtil foreColor(Color foreColor){
+
+    public KPQRCodeUtil foreColor(Color foreColor) {
         this.foreColor = foreColor;
         return this;
     }
-    public KPQRCodeUtil backColor(Color backColor){
+
+    public KPQRCodeUtil backColor(Color backColor) {
         this.backColor = backColor;
         return this;
     }
-    public KPQRCodeUtil logoUrl(String logoUrl){
+
+    public KPQRCodeUtil logoUrl(String logoUrl) {
         this.logoUrl = logoUrl;
         return this;
     }
-    public KPQRCodeUtil logoLocalhostPath(String logoLocalhostPath){
+
+    public KPQRCodeUtil logoLocalhostPath(String logoLocalhostPath) {
         this.logoLocalhostPath = logoLocalhostPath;
         return this;
     }
-
-
 
 
     /**
@@ -84,24 +92,24 @@ public final class KPQRCodeUtil {
      * @param
      * @return com.daoben.framework.util.KPQRCodeUtil
      **/
-    public KPQRCodeUtil generate(){
+    public KPQRCodeUtil generate() {
         //设置二维码的大小
         QrConfig config = new QrConfig(this.width, this.height);
         // 设置边距，既二维码和背景之间的边距
         config.setMargin(this.margin);
         // 设置前景色，既二维码颜色（青色）
-        if (foreColor != null ) config.setForeColor(this.foreColor);
+        if (foreColor != null) config.setForeColor(this.foreColor);
         // 设置背景色（灰色）
         if (backColor != null) config.setBackColor(this.backColor);
         //设置logo
         String filePath = null;
-        if (KPStringUtil.isNotEmpty(this.logoUrl)){
+        if (KPStringUtil.isNotEmpty(this.logoUrl)) {
             String[] bb = this.logoUrl.split("[?]")[0].split("/");
             //得到最后一个分隔符后的名字
             String fileName = bb[bb.length - 1];
             //保存到本地的路径
-            filePath = System.getProperty("user.dir") + "/" +fileName;
-            config.setImg(KPFileUtil.getNetUrlHttp(this.logoUrl, filePath));
+            filePath = System.getProperty("user.dir") + "/" + fileName;
+            config.setImg(KPFileUtil.downloadFile(this.logoUrl, filePath));
         }
         if (KPStringUtil.isNotEmpty(this.logoLocalhostPath)) config.setImg(this.logoLocalhostPath);
 
@@ -124,7 +132,7 @@ public final class KPQRCodeUtil {
      * @param
      * @return java.awt.image.BufferedImage
      **/
-    public BufferedImage getBufferedImage(){
+    public BufferedImage getBufferedImage() {
         return this.bufferedImage;
     }
 
@@ -136,17 +144,17 @@ public final class KPQRCodeUtil {
      * @param downLoadFileNme
      * @return void
      **/
-    public void downLoad(String downLoadFileNme){
+    public void downLoad(String downLoadFileNme) {
         this.generate();
-        HttpServletResponse response =((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getResponse();
-        KPIOUtil.downLoad(downLoadFileNme + "." + this.imageType, response);
+        HttpServletResponse response = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getResponse();
+        KPIOUtil.setDownloadResponseHeader(downLoadFileNme + "." + this.imageType, response);
         try {
             ServletOutputStream os = response.getOutputStream();
             ImageIO.write(bufferedImage, this.imageType, os);
             os.flush();
             os.close();
         } catch (IOException e) {
-            throw new KPServiceException("生成二维码异常！"+ e.getMessage());
+            throw new KPServiceException("生成二维码异常！" + e.getMessage());
         }
     }
 

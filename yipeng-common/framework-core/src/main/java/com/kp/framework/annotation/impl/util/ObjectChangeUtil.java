@@ -1,4 +1,5 @@
 package com.kp.framework.annotation.impl.util;
+
 import com.alibaba.fastjson2.JSONObject;
 import com.baomidou.dynamic.datasource.toolkit.DynamicDataSourceContextHolder;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
@@ -35,6 +36,8 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 @Component
 @Slf4j
@@ -56,24 +59,34 @@ public class ObjectChangeUtil {
         String type = ""; //类型
         List<Object> oldObject = new ArrayList<>(); //旧值
 
-        switch (operateLog.operateType()){
+        switch (operateLog.operateType()) {
             case ObjectChangeLogOperateType.ADD:
                 type = ObjectChangeLogOperateType.ADD;
                 break;
+            case ObjectChangeLogOperateType.ADD_BATCH:
+                type = ObjectChangeLogOperateType.ADD_BATCH;
+                break;
             case ObjectChangeLogOperateType.DELETE:
                 type = ObjectChangeLogOperateType.DELETE;
+                //记录旧值
+                oldObject = this.getResult(proceedingJoinPoint, operateLog);
                 break;
             case ObjectChangeLogOperateType.UPDATE:
                 type = ObjectChangeLogOperateType.UPDATE;
                 //记录旧值
                 oldObject = this.getResult(proceedingJoinPoint, operateLog);
                 break;
+            case ObjectChangeLogOperateType.UPDATE_BATCH:
+                type = ObjectChangeLogOperateType.UPDATE_BATCH;
+                //记录旧值
+                oldObject = this.getResult(proceedingJoinPoint, operateLog);
+                break;
             case ObjectChangeLogOperateType.ADD_OR_UPDATE:
                 //记录旧值
                 oldObject = this.getResult(proceedingJoinPoint, operateLog);
-                if (oldObject.size() == 0){
+                if (oldObject.size() == 0) {
                     type = ObjectChangeLogOperateType.ADD;
-                }else{
+                } else {
                     type = ObjectChangeLogOperateType.UPDATE;
                 }
                 break;
@@ -103,25 +116,32 @@ public class ObjectChangeUtil {
     public void boAround(ProceedingJoinPoint proceedingJoinPoint, KPObjectChangeLogNote operateLog, JSONObject beforeJson) throws Throwable {
         HttpServletRequest request = KPRequsetUtil.getRequest();
         beforeJson.put("url", request.getRequestURL().toString());
-        beforeJson.put("IP", KPIPUtil.getClinetIP(request));
+        beforeJson.put("IP", KPIPUtil.getClientIP(request));
         beforeJson.put("userMessage", request.getAttribute("userMessage"));
 
 
         new Thread(() -> {
             try {
                 // 从切面织入点处通过反射机制获取织入点处的方法
-                switch (beforeJson.getString("type")){
+                switch (beforeJson.getString("type")) {
                     case ObjectChangeLogOperateType.ADD:
                         this.add(proceedingJoinPoint, operateLog, this.getResult(proceedingJoinPoint, operateLog), beforeJson);
                         break;
-                case ObjectChangeLogOperateType.DELETE:
-                    break;
-                case ObjectChangeLogOperateType.UPDATE:
-                    this.update(proceedingJoinPoint, operateLog, this.getResult(proceedingJoinPoint, operateLog), beforeJson);
-                    break;
-                case ObjectChangeLogOperateType.DELETE_ADD:
-                    this.deleteAdd(proceedingJoinPoint, operateLog, this.getResult(proceedingJoinPoint, operateLog), beforeJson);
-                    break;
+                    case ObjectChangeLogOperateType.ADD_BATCH:
+                        this.addBatch(proceedingJoinPoint, operateLog, this.getResult(proceedingJoinPoint, operateLog), beforeJson);
+                        break;
+                    case ObjectChangeLogOperateType.DELETE:
+                        this.delete(proceedingJoinPoint, operateLog, beforeJson);
+                        break;
+                    case ObjectChangeLogOperateType.UPDATE:
+                        this.update(proceedingJoinPoint, operateLog, this.getResult(proceedingJoinPoint, operateLog), beforeJson);
+                        break;
+                    case ObjectChangeLogOperateType.UPDATE_BATCH:
+                        this.updateBatch(proceedingJoinPoint, operateLog, this.getResult(proceedingJoinPoint, operateLog), beforeJson);
+                        break;
+                    case ObjectChangeLogOperateType.DELETE_ADD:
+                        this.deleteAdd(proceedingJoinPoint, operateLog, this.getResult(proceedingJoinPoint, operateLog), beforeJson);
+                        break;
                 }
             } catch (Exception e) {
                 log.info("自定义变更记录注解出现异常");
@@ -140,11 +160,14 @@ public class ObjectChangeUtil {
      * @return java.lang.Object
      **/
     private List<Object> getResult(ProceedingJoinPoint proceedingJoinPoint, KPObjectChangeLogNote objectChangeLog) {
-        String fileName = objectChangeLog.identification(), databaseFileName = objectChangeLog.identification();
-        if (objectChangeLog.identification().contains(",")){
-            String[] strs =  objectChangeLog.identification().split(",");
+        String fileName, databaseFileName;
+        if (objectChangeLog.identification().contains(",")) {
+            String[] strs = objectChangeLog.identification().split(",");
             fileName = strs[0];
             databaseFileName = strs[1];
+        } else {
+            fileName = objectChangeLog.identification();
+            databaseFileName = objectChangeLog.identification();
         }
 
         List<Object> onlys = new ArrayList<>();
@@ -152,12 +175,29 @@ public class ObjectChangeUtil {
             Object[] infos = proceedingJoinPoint.getArgs();
             for (Object info : infos) {
                 Object value = null;
-                if (info instanceof JSONObject){
+                if (info instanceof JSONObject) {
                     value = KPJsonUtil.toJson(info).get(fileName);
-                }else{
+                } else if (info instanceof List) {
+                    List<?> list = (List<?>) info;
+                    if (KPStringUtil.isNotEmpty(list)) {
+                        Object first = list.get(0);
+                        if (first instanceof String || first instanceof Number || first instanceof Boolean) {
+                            onlys.addAll(list);
+                        } else {
+                            try {
+                                List<Object> result = ((ArrayList<?>) info).stream()
+                                        .map(item -> KPReflectUtil.getField(item, fileName)) // 逐个反射获取字段值
+                                        .filter(Objects::nonNull) // 过滤null值
+                                        .collect(Collectors.toList()); // 收集为List
+                                onlys.addAll(result);
+                            } catch (Exception ex) {
+                            }
+                        }
+                    }
+                } else {
                     value = KPReflectUtil.getField(info, fileName);
                 }
-                if(value != null) onlys.add(value);
+                if (value != null) onlys.add(value);
             }
         }
 
@@ -197,23 +237,23 @@ public class ObjectChangeUtil {
                     Field field = null;
                     try {
                         field = oldObjects.get(i).getClass().getDeclaredField(key);
-                    }catch (Exception e){
+                    } catch (Exception e) {
                         //表单当前类没有找到 去父类找
                         field = oldObjects.get(i).getClass().getSuperclass().getDeclaredField(key);
                     }
 
                     ApiModelProperty dataName = field.getAnnotation(ApiModelProperty.class);
-                    Object oldValue = oldData.get(key)==null?"":oldData.get(key);
-                    Object newValue = newData.get(key)==null?"":newData.get(key);
+                    Object oldValue = oldData.get(key) == null ? "" : oldData.get(key);
+                    Object newValue = newData.get(key) == null ? "" : newData.get(key);
 
 
                     Map result = new HashMap();
                     result.put("filedName", key);
-                    result.put("identification", newData.get(operateLog.identification().contains(",")?operateLog.identification().split(",")[0]:operateLog.identification()));
+                    result.put("identification", newData.get(operateLog.identification().contains(",") ? operateLog.identification().split(",")[0] : operateLog.identification()));
                     result.put("oldValue", oldValue);
                     result.put("newValue", newValue);
 
-                    if (dataName != null){
+                    if (dataName != null) {
                         oldValue = this.translate(oldData.get(key), dataName.value());
                         newValue = this.translate(newData.get(key), dataName.value());
                         result.put("filedName", dataName.value());
@@ -250,11 +290,10 @@ public class ObjectChangeUtil {
             Integer number = Integer.valueOf((String) obj);
             Map<Integer, String> map = KPNumberUtil.queryNumberSplit(value);
             return map.get(number);
-        }catch (Exception ex){
+        } catch (Exception ex) {
             return obj;
         }
     }
-
 
 
     /**
@@ -267,15 +306,15 @@ public class ObjectChangeUtil {
      * @return void
      **/
     private void add(ProceedingJoinPoint proceedingJoinPoint, KPObjectChangeLogNote operateLog, List<Object> objects, JSONObject beforeJson) {
-        if (objects.size() ==0) return;
+        if (objects.size() == 0) return;
 
         MethodSignature signature = (MethodSignature) proceedingJoinPoint.getSignature();
 
-        for (Object obj : objects){
+        for (Object obj : objects) {
             JSONObject row = KPJsonUtil.toJson(obj);
             ObjectChangeLogBO objectChangeLogBO = new ObjectChangeLogBO();
             OperationUserMessageBO opUserMessageBO = beforeJson.getObject("userMessage", OperationUserMessageBO.class);
-            if (opUserMessageBO != null){
+            if (opUserMessageBO != null) {
                 objectChangeLogBO.setPhone(opUserMessageBO.getPhone());
                 objectChangeLogBO.setSerial(opUserMessageBO.getSerial());
                 objectChangeLogBO.setCreateUserName(opUserMessageBO.getName());
@@ -286,13 +325,14 @@ public class ObjectChangeUtil {
 
             objectChangeLogBO.setUuid(KPUuidUtil.getSimpleUUID());
             objectChangeLogBO.setParameter(KPJsonUtil.toJsonString(proceedingJoinPoint.getArgs()));
-            objectChangeLogBO.setIdentification(row.getString(operateLog.identification().contains(",")?operateLog.identification().split(",")[0]:operateLog.identification()));
+            objectChangeLogBO.setIdentification(row.getString(operateLog.identification().contains(",") ? operateLog.identification().split(",")[0] : operateLog.identification()));
             objectChangeLogBO.setOperateType(beforeJson.getString("type"));
             objectChangeLogBO.setBusinessType(operateLog.businessType());
             objectChangeLogBO.setUrl(beforeJson.getString("url"));
             objectChangeLogBO.setClassName(proceedingJoinPoint.getTarget().getClass().getName() + "." + signature.getMethod().getName());
             objectChangeLogBO.setClinetIp(beforeJson.getString("IP"));
             objectChangeLogBO.setProjectName(kpFrameworkConfig.getProjectName());
+            objectChangeLogBO.setChangeBody(KPJsonUtil.toJsonString(obj));
 
             objectChangeLogBO.setCreateDate(LocalDateTime.now());
             objectChangeLogBO.setUpdateDate(LocalDateTime.now());
@@ -304,6 +344,44 @@ public class ObjectChangeUtil {
         }
     }
 
+
+    private void addBatch(ProceedingJoinPoint proceedingJoinPoint, KPObjectChangeLogNote operateLog, List<Object> objects, JSONObject beforeJson) {
+        if (objects.size() == 0) return;
+
+        MethodSignature signature = (MethodSignature) proceedingJoinPoint.getSignature();
+
+
+        JSONObject row = KPJsonUtil.toJson(objects.get(0));
+        ObjectChangeLogBO objectChangeLogBO = new ObjectChangeLogBO();
+        OperationUserMessageBO opUserMessageBO = beforeJson.getObject("userMessage", OperationUserMessageBO.class);
+        if (opUserMessageBO != null) {
+            objectChangeLogBO.setPhone(opUserMessageBO.getPhone());
+            objectChangeLogBO.setSerial(opUserMessageBO.getSerial());
+            objectChangeLogBO.setCreateUserName(opUserMessageBO.getName());
+            objectChangeLogBO.setCreateUserId(opUserMessageBO.getId());
+            objectChangeLogBO.setUpdateUserId(opUserMessageBO.getId());
+            objectChangeLogBO.setUpdateUserName(opUserMessageBO.getName());
+        }
+
+        objectChangeLogBO.setUuid(KPUuidUtil.getSimpleUUID());
+        objectChangeLogBO.setParameter(KPJsonUtil.toJsonString(proceedingJoinPoint.getArgs()));
+        objectChangeLogBO.setIdentification(row.getString(operateLog.identification().contains(",") ? operateLog.identification().split(",")[0] : operateLog.identification()));
+        objectChangeLogBO.setOperateType(beforeJson.getString("type"));
+        objectChangeLogBO.setBusinessType(operateLog.businessType());
+        objectChangeLogBO.setUrl(beforeJson.getString("url"));
+        objectChangeLogBO.setClassName(proceedingJoinPoint.getTarget().getClass().getName() + "." + signature.getMethod().getName());
+        objectChangeLogBO.setClinetIp(beforeJson.getString("IP"));
+        objectChangeLogBO.setProjectName(kpFrameworkConfig.getProjectName());
+        objectChangeLogBO.setChangeBody(KPJsonUtil.toJavaObjectList(objects, JSONObject.class).toString());
+
+        objectChangeLogBO.setCreateDate(LocalDateTime.now());
+        objectChangeLogBO.setUpdateDate(LocalDateTime.now());
+        objectChangeLogBO.setDeleteFlag(DeleteFalgEnum.NORMAL.code());
+
+        DynamicDataSourceContextHolder.push(operateLog.saveDS());
+        KPServiceUtil.getBean(ObjectChangeMapper.class).saveObjectChange(operateLog.saveTableName(), objectChangeLogBO);
+        DynamicDataSourceContextHolder.poll();
+    }
 
     /**
      * @Author lipeng
@@ -329,12 +407,12 @@ public class ObjectChangeUtil {
             //改内容记录  唯一标识
             String changeBody = "", identification = ""; //唯一标识
             for (Map<String, Object> dataMap : list) {
-                changeBody += KPStringUtil.format("{0}由 {1} 修改为 {2} |", dataMap.get("filedName"), KPStringUtil.isEmpty(dataMap.get("oldValue"))?"空值":dataMap.get("oldValue"), KPStringUtil.isEmpty(dataMap.get("newValue"))?"空值":dataMap.get("newValue"));
+                changeBody += KPStringUtil.format("{0}由 {1} 修改为 {2} |", dataMap.get("filedName"), KPStringUtil.isEmpty(dataMap.get("oldValue")) ? "空值" : dataMap.get("oldValue"), KPStringUtil.isEmpty(dataMap.get("newValue")) ? "空值" : dataMap.get("newValue"));
                 identification = String.valueOf(dataMap.get("identification"));
             }
             ObjectChangeLogBO objectChangeLogBO = new ObjectChangeLogBO();
             OperationUserMessageBO opUserMessageBO = beforeJson.getObject("userMessage", OperationUserMessageBO.class);
-            if (opUserMessageBO != null){
+            if (opUserMessageBO != null) {
                 objectChangeLogBO.setPhone(opUserMessageBO.getPhone());
                 objectChangeLogBO.setSerial(opUserMessageBO.getSerial());
                 objectChangeLogBO.setCreateUserName(opUserMessageBO.getName());
@@ -344,7 +422,7 @@ public class ObjectChangeUtil {
             }
 
             objectChangeLogBO.setUuid(KPUuidUtil.getSimpleUUID());
-            objectChangeLogBO.setChangeBody(KPStringUtil.isEmpty(changeBody)?"":changeBody.substring(0, changeBody.length()-1));
+            objectChangeLogBO.setChangeBody(KPStringUtil.isEmpty(changeBody) ? "" : changeBody.substring(0, changeBody.length() - 1));
             objectChangeLogBO.setParameter(KPJsonUtil.toJsonString(proceedingJoinPoint.getArgs()));
             objectChangeLogBO.setIdentification(identification);
             objectChangeLogBO.setOperateType(beforeJson.getString("type"));
@@ -366,9 +444,92 @@ public class ObjectChangeUtil {
 
     /**
      * @Author lipeng
+     * @Description 批量修改处理逻辑
+     * @Date 2025/11/26 21:28
+     * @param proceedingJoinPoint
+     * @param operateLog
+     * @param newObject
+     * @param beforeJson
+     * @return void
+     **/
+    private void updateBatch(ProceedingJoinPoint proceedingJoinPoint, KPObjectChangeLogNote operateLog, List<Object> newObject, JSONObject beforeJson) {
+        MethodSignature signature = (MethodSignature) proceedingJoinPoint.getSignature();
+
+        String fileName;
+        if (operateLog.identification().contains(",")) {
+            fileName = operateLog.identification().split(",")[0];
+        } else {
+            fileName = operateLog.identification();
+        }
+
+        //加了  newObject.forEach(obj -> {  是为了批量操作的时候记录多条 不至于数据混乱 例如 批量用户解锁等
+        newObject.forEach(newData -> {
+            // 直接从原始对象获取匹配字段值（用反射工具类）
+            String newId = KPReflectUtil.getField(newData, fileName).toString();
+
+            // 遍历原始旧数据列表，匹配字段值（保留原始对象）
+            Object oldData = beforeJson.getJSONArray("oldObject").stream()
+                    .filter(pldData -> {
+                        String oldId = KPReflectUtil.getField(pldData, fileName).toString();
+                        return newId != null && newId.equals(oldId);
+                    })
+                    .findFirst()
+                    .orElse(null);
+
+            if (oldData == null) return;
+
+            //比较新数据与数据库原数据  第一次list 批量操作数据 如果不是批量操作 只有一天  第二个list 是改变的字段
+            List<List<Map<String, Object>>> returnList = this.defaultDealUpdate(Arrays.asList(newData), Arrays.asList(oldData), operateLog);
+            if (returnList.size() == 0) return;
+
+            for (List<Map<String, Object>> list : returnList) {
+                if (list.size() == 0) continue;
+
+
+                //改内容记录  唯一标识
+                String changeBody = "", identification = ""; //唯一标识
+                for (Map<String, Object> dataMap : list) {
+                    changeBody += KPStringUtil.format("{0}由 {1} 修改为 {2} |", dataMap.get("filedName"), KPStringUtil.isEmpty(dataMap.get("oldValue")) ? "空值" : dataMap.get("oldValue"), KPStringUtil.isEmpty(dataMap.get("newValue")) ? "空值" : dataMap.get("newValue"));
+                    identification = String.valueOf(dataMap.get("identification"));
+                }
+                ObjectChangeLogBO objectChangeLogBO = new ObjectChangeLogBO();
+                OperationUserMessageBO opUserMessageBO = beforeJson.getObject("userMessage", OperationUserMessageBO.class);
+                if (opUserMessageBO != null) {
+                    objectChangeLogBO.setPhone(opUserMessageBO.getPhone());
+                    objectChangeLogBO.setSerial(opUserMessageBO.getSerial());
+                    objectChangeLogBO.setCreateUserName(opUserMessageBO.getName());
+                    objectChangeLogBO.setCreateUserId(opUserMessageBO.getId());
+                    objectChangeLogBO.setUpdateUserId(opUserMessageBO.getId());
+                    objectChangeLogBO.setUpdateUserName(opUserMessageBO.getName());
+                }
+
+                objectChangeLogBO.setUuid(KPUuidUtil.getSimpleUUID());
+                objectChangeLogBO.setChangeBody(KPStringUtil.isEmpty(changeBody) ? "" : changeBody.substring(0, changeBody.length() - 1));
+                objectChangeLogBO.setParameter(KPJsonUtil.toJsonString(proceedingJoinPoint.getArgs()));
+                objectChangeLogBO.setIdentification(identification);
+                objectChangeLogBO.setOperateType(beforeJson.getString("type"));
+                objectChangeLogBO.setBusinessType(operateLog.businessType());
+                objectChangeLogBO.setUrl(beforeJson.getString("url"));
+                objectChangeLogBO.setClassName(proceedingJoinPoint.getTarget().getClass().getName() + "." + signature.getMethod().getName());
+                objectChangeLogBO.setClinetIp(beforeJson.getString("IP"));
+                objectChangeLogBO.setProjectName(kpFrameworkConfig.getProjectName());
+
+                objectChangeLogBO.setCreateDate(LocalDateTime.now());
+                objectChangeLogBO.setUpdateDate(LocalDateTime.now());
+                objectChangeLogBO.setDeleteFlag(DeleteFalgEnum.NORMAL.code());
+
+                DynamicDataSourceContextHolder.push(operateLog.saveDS());
+                KPServiceUtil.getBean(ObjectChangeMapper.class).saveObjectChange(operateLog.saveTableName(), objectChangeLogBO);
+                DynamicDataSourceContextHolder.poll();
+            }
+        });
+    }
+
+    /**
+     * @Author lipeng
      * @Description 先删除后新增
      * @Date 2024/3/13 10:20
-     * @param joinPoint
+     * @param proceedingJoinPoint
      * @param operateLog
      * @param result
      * @return void
@@ -382,50 +543,51 @@ public class ObjectChangeUtil {
         List<String> notRecordField = Arrays.asList(operateLog.notRecordField().split(","));
 
         StringBuffer builder = new StringBuffer();
-        if (oldObject.size() != 0){
+        if (oldObject.size() != 0) {
             List<JSONObject> body = new ArrayList<>();
             oldObject.forEach(obj -> {
                 JSONObject json = KPJsonUtil.toJson(obj);
                 notRecordField.forEach(field -> {
                     try {
                         json.remove(field);
-                    }catch (Exception ex){}
+                    } catch (Exception ex) {
+                    }
                 });
                 body.add(json);
             });
             builder.append("删除的数据 ").append(KPJsonUtil.toJsonString(body));
         }
 
-        if (result.size() != 0){
+        if (result.size() != 0) {
             List<JSONObject> body = new ArrayList<>();
             result.forEach(obj -> {
                 JSONObject json = KPJsonUtil.toJson(obj);
                 notRecordField.forEach(field -> {
                     try {
                         json.remove(field);
-                    }catch (Exception ex){}
+                    } catch (Exception ex) {
+                    }
                 });
                 body.add(json);
             });
-            builder.append(oldObject.size() != 0?"|新增的数据 ":"新增的数据").append(KPJsonUtil.toJsonString(body));
+            builder.append(oldObject.size() != 0 ? "|新增的数据 " : "新增的数据").append(KPJsonUtil.toJsonString(body));
         }
-
 
 
         String changeBody = builder.toString();
         String identification = "";
-        if (result.size()!=0){
+        if (result.size() != 0) {
             JSONObject newData = KPJsonUtil.toJson(result.get(0));
-            identification = newData.getString(operateLog.identification().contains(",")?operateLog.identification().split(",")[0]:operateLog.identification());
-        }else if (oldObject.size() !=0){
+            identification = newData.getString(operateLog.identification().contains(",") ? operateLog.identification().split(",")[0] : operateLog.identification());
+        } else if (oldObject.size() != 0) {
             JSONObject oldData = KPJsonUtil.toJson(oldObject.get(0));
-            identification = oldData.getString(operateLog.identification().contains(",")?operateLog.identification().split(",")[0]:operateLog.identification());
+            identification = oldData.getString(operateLog.identification().contains(",") ? operateLog.identification().split(",")[0] : operateLog.identification());
         }
 
 
         ObjectChangeLogBO objectChangeLogBO = new ObjectChangeLogBO();
         OperationUserMessageBO opUserMessageBO = beforeJson.getObject("userMessage", OperationUserMessageBO.class);
-        if (opUserMessageBO != null){
+        if (opUserMessageBO != null) {
             objectChangeLogBO.setPhone(opUserMessageBO.getPhone());
             objectChangeLogBO.setSerial(opUserMessageBO.getSerial());
             objectChangeLogBO.setCreateUserName(opUserMessageBO.getName());
@@ -435,7 +597,7 @@ public class ObjectChangeUtil {
         }
 
         objectChangeLogBO.setUuid(KPUuidUtil.getSimpleUUID());
-        objectChangeLogBO.setChangeBody(KPStringUtil.isEmpty(changeBody)?"":changeBody);
+        objectChangeLogBO.setChangeBody(KPStringUtil.isEmpty(changeBody) ? "" : changeBody);
         objectChangeLogBO.setParameter(KPJsonUtil.toJsonString(proceedingJoinPoint.getArgs()));
         objectChangeLogBO.setIdentification(identification);
         objectChangeLogBO.setOperateType(beforeJson.getString("type"));
@@ -453,4 +615,61 @@ public class ObjectChangeUtil {
         KPServiceUtil.getBean(ObjectChangeMapper.class).saveObjectChange(operateLog.saveTableName(), objectChangeLogBO);
         DynamicDataSourceContextHolder.poll();
     }
+
+
+    /**
+     * @Author lipeng
+     * @Description 删除
+     * @Date 2025/10/28 17:03
+     * @param proceedingJoinPoint
+     * @param kpObjectChangeLogNote
+     * @param beforeJson
+     * @return void
+     **/
+    private void delete(ProceedingJoinPoint proceedingJoinPoint, KPObjectChangeLogNote kpObjectChangeLogNote, JSONObject beforeJson) {
+        MethodSignature signature = (MethodSignature) proceedingJoinPoint.getSignature();
+
+        String fileName = kpObjectChangeLogNote.identification();
+        if (kpObjectChangeLogNote.identification().contains(","))
+            fileName = kpObjectChangeLogNote.identification().split(",")[0];
+
+
+        List<JSONObject> deleteList = KPJsonUtil.toJavaObjectList(beforeJson.getJSONArray("oldObject"), JSONObject.class);
+        if (deleteList.size() == 0) return;
+
+        final String fileName_final = fileName;
+        deleteList.forEach(del -> {
+            ObjectChangeLogBO objectChangeLogBO = new ObjectChangeLogBO();
+            OperationUserMessageBO opUserMessageBO = beforeJson.getObject("userMessage", OperationUserMessageBO.class);
+            if (opUserMessageBO != null) {
+                objectChangeLogBO.setPhone(opUserMessageBO.getPhone());
+                objectChangeLogBO.setSerial(opUserMessageBO.getSerial());
+                objectChangeLogBO.setCreateUserName(opUserMessageBO.getName());
+                objectChangeLogBO.setCreateUserId(opUserMessageBO.getId());
+                objectChangeLogBO.setUpdateUserId(opUserMessageBO.getId());
+                objectChangeLogBO.setUpdateUserName(opUserMessageBO.getName());
+            }
+
+
+            objectChangeLogBO.setUuid(KPUuidUtil.getSimpleUUID());
+            objectChangeLogBO.setChangeBody(KPStringUtil.format("数据被删除：删除用户id: {0} 删除用户姓名: {1}", opUserMessageBO == null ? "游客" : opUserMessageBO.getId(), opUserMessageBO == null ? "游客" : opUserMessageBO.getName()));
+            objectChangeLogBO.setParameter(KPJsonUtil.toJsonString(proceedingJoinPoint.getArgs()));
+            objectChangeLogBO.setIdentification(del.getString(fileName_final));
+            objectChangeLogBO.setOperateType(beforeJson.getString("type"));
+            objectChangeLogBO.setBusinessType(kpObjectChangeLogNote.businessType());
+            objectChangeLogBO.setUrl(beforeJson.getString("url"));
+            objectChangeLogBO.setClassName(proceedingJoinPoint.getTarget().getClass().getName() + "." + signature.getMethod().getName());
+            objectChangeLogBO.setClinetIp(beforeJson.getString("IP"));
+            objectChangeLogBO.setProjectName(kpFrameworkConfig.getProjectName());
+
+            objectChangeLogBO.setCreateDate(LocalDateTime.now());
+            objectChangeLogBO.setUpdateDate(LocalDateTime.now());
+            objectChangeLogBO.setDeleteFlag(DeleteFalgEnum.NORMAL.code());
+
+            DynamicDataSourceContextHolder.push(kpObjectChangeLogNote.saveDS());
+            KPServiceUtil.getBean(ObjectChangeMapper.class).saveObjectChange(kpObjectChangeLogNote.saveTableName(), objectChangeLogBO);
+            DynamicDataSourceContextHolder.poll();
+        });
+    }
+
 }

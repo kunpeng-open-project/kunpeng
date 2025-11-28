@@ -18,7 +18,7 @@ import com.kp.framework.modules.project.po.param.ProjectEditParamPO;
 import com.kp.framework.modules.project.po.param.ProjectListParamPO;
 import com.kp.framework.modules.user.po.UserProjectPO;
 import com.kp.framework.modules.user.po.customer.LoginUserBO;
-import com.kp.framework.utils.kptool.KPAppUtil;
+import com.kp.framework.utils.kptool.KPAuthorizationUtil;
 import com.kp.framework.utils.kptool.KPJsonUtil;
 import com.kp.framework.utils.kptool.KPStringUtil;
 import com.kp.framework.utils.kptool.KPVerifyUtil;
@@ -97,14 +97,15 @@ public class ProjectService extends ServiceImpl<ProjectMapper, ProjectPO> {
             });
         }
 
-        projectPO.setAppId(KPAppUtil.getAppId());
-        projectPO.setAppSecret(KPAppUtil.getAppSecret(60));
-        projectPO.setTokenFailure(KPAppUtil.TOKEN_FAILURE);
-        projectPO.setTokenGainMaxNum(KPAppUtil.TOKEN_GAIN_MAX_NUM);
+        projectPO.setAppId(KPAuthorizationUtil.getAppId());
+        projectPO.setAppSecret(KPAuthorizationUtil.getAppSecret(60));
+        projectPO.setTokenFailure(KPAuthorizationUtil.TOKEN_FAILURE);
+        projectPO.setTokenGainMaxNum(KPAuthorizationUtil.TOKEN_GAIN_MAX_NUM);
         projectPO.setVoucher(new BCryptPasswordEncoder().encode(projectPO.getAppSecret()));
         if (this.baseMapper.insert(projectPO) == 0)
             throw new KPServiceException(ReturnFinishedMessageConstant.ERROR);
 
+        projectEditParamPO.setProjectId(projectPO.getProjectId());
         ProjectCache.clear();
     }
 

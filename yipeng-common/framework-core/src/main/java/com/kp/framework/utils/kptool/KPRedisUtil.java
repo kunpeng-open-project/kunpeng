@@ -1,5 +1,6 @@
 package com.kp.framework.utils.kptool;
 
+import lombok.experimental.UtilityClass;
 import org.apache.poi.ss.formula.functions.T;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,11 +18,10 @@ import java.util.concurrent.TimeUnit;
  * @Param $
  * @return $
  **/
+@UtilityClass
 public final class KPRedisUtil {
 
     private static Logger log = LoggerFactory.getLogger(KPRedisUtil.class);
-
-    private KPRedisUtil(){}
 
 //    @Autowired
 //    private RedisTemplate<String, Object> redisTemplate;

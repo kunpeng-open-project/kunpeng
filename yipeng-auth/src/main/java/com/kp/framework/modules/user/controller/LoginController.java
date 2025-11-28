@@ -80,12 +80,4 @@ public class LoginController {
     public KPResult logout() {
         return KPResult.success();
     }
-
-    @PostMapping("/swagger/login")
-    public KPResult<UserLoginCustomerPO> login111() {
-        return null;
-    }
-
-
-
 }

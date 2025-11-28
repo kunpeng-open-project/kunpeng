@@ -1,6 +1,9 @@
 package com.kp.framework.utils.kptool;
 
+import lombok.experimental.UtilityClass;
 
+import java.lang.management.ManagementFactory;
+import java.time.DayOfWeek;
 import java.time.Duration;
 import java.time.Instant;
 import java.time.LocalDate;
@@ -10,14 +13,15 @@ import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.time.temporal.TemporalAdjusters;
+import java.util.Date;
 import java.util.concurrent.TimeUnit;
 
 /**
  * @Author lipeng
- * @Description LocalDateTime 工具
- * @Date 2023/10/24 14:45
- * @return
- **/
+ * @Description LocalDateTime 工具类，其方法名与 KPDateUtil 保持一致，以便于项目迁移。
+ * @Date 2023/10/24
+ */
+@UtilityClass
 public class KPLocalDateTimeUtil {
 
     public static final String DATE_TIME_PATTERN = "yyyy-MM-dd HH:mm:ss";
@@ -26,190 +30,441 @@ public class KPLocalDateTimeUtil {
     public static final String DATE_PATTERN = "yyyy-MM-dd";
     public static final String MONTH_PATTERN = "yyyy-MM";
     public static final String YEAR_PATTERN = "yyyy";
-    public static final String MINUTE_ONLY_PATTERN = "MM";
-    public static final String HOUR_ONLY_PATTERN = "HH";
     public static final String TIMESTAMP_YMD = "yyyyMMdd";
 
-    public static final ZoneId ZONEID_ASIA_ASIA = ZoneId.of("Asia/Shanghai");
-
-
     /**
-     * @Author lipeng
-     * @Description LocalDateTime 转 string
-     * @Date 2023/10/24 14:47
-     * @param localDateTime
-     * @param format
-     * @return java.lang.String
-     **/
-    public static String toString(LocalDateTime localDateTime, String format){
-        DateTimeFormatter df = DateTimeFormatter.ofPattern(format);
-        return df.format(localDateTime);
-    }
-
-    public static String toString(String localDateTime, String format){
-        DateTimeFormatter df = DateTimeFormatter.ofPattern(format);
-        return df.format(LocalDateTime.parse(localDateTime, df));
-    }
-
-    /**
-     * @Author lipeng
-     * @Description string 转 LocalDateTime
-     * @Date 2023/10/24 14:55
-     * @param str
-     * @param format
-     * @return java.time.LocalDateTime
-     **/
-    public static LocalDateTime byLocalDateTime(String str,String format){
-        DateTimeFormatter df = DateTimeFormatter.ofPattern(format);
-        return LocalDateTime.parse(str,df);
-    }
-
-    /**
-     * @Author lipeng
-     * @Description 获取两个日期相差的天数
-     * @Date 2023/10/24 14:56
-     * @param beginDateTime
-     * @param endDateTime
-     * @return java.lang.Integer
-     **/
-    public static Integer getApartDay(LocalDateTime beginDateTime,LocalDateTime endDateTime){
-        return endDateTime.getDayOfYear()-beginDateTime.getDayOfYear();
-    }
-
-    /**
-     * @Author lipeng
-     * @Description 获取一天最早的时间
-     * @Date 2023/10/24 14:56
-     * @param dateTime
-     * @return java.time.LocalDateTime
-     **/
-    public static LocalDateTime getFirstDateTimeOfDay(LocalDateTime dateTime){
-        if (dateTime == null) dateTime = LocalDateTime.now();
-        return LocalDateTime.of(dateTime.toLocalDate(), LocalTime.MIN);
-    }
-    public static LocalDateTime getFirstDateTimeOfDay(LocalDate localDate){
-        if (localDate == null) localDate = LocalDate.now();
-        return LocalDateTime.of(localDate, LocalTime.MIN);
-    }
-    public static LocalDateTime getFirstDateTimeOfDay(){
-        return LocalDateTime.of(LocalDate.now(), LocalTime.MIN);
-    }
-
-    /**
-     * @Author lipeng
-     * @Description 获取一天最晚的时间
-     * @Date 2023/10/24 14:57
-     * @param dateTime
-     * @return java.time.LocalDateTime
-     **/
-    public static LocalDateTime getLastDateTimeOfDay(LocalDateTime dateTime){
-        if (dateTime == null) dateTime = LocalDateTime.now();
-        return LocalDateTime.of(dateTime.toLocalDate(), LocalTime.MAX);
-    }
-    public static LocalDateTime getLastDateTimeOfDay(LocalDate localDate){
-        if (localDate == null) localDate = LocalDate.now();
-        return LocalDateTime.of(localDate, LocalTime.MAX);
-    }
-    public static LocalDateTime getLastDateTimeOfDay(){
-        return LocalDateTime.of(LocalDate.now(), LocalTime.MAX);
-    }
-
-   /**
-    * @Author lipeng
-    * @Description 取一个月内的最早一天
-    * @Date 2023/10/24 14:57
-    * @param dateTime
-    * @return java.time.LocalDateTime
-    **/
-    public static LocalDateTime getFirstDateTimeOfMonth(LocalDateTime dateTime){
-        return LocalDateTime.of(LocalDate.from(dateTime.toLocalDate().with(TemporalAdjusters.firstDayOfMonth())), LocalTime.MIN);
-    }
-
-    /**
-     * @Author lipeng
-     * @Description 获取一个月最后一天
-     * @Date 2023/10/24 14:57
-     * @param dateTime
-     * @return java.time.LocalDateTime
-     **/
-    public static LocalDateTime getLastDateTimeOfMonth(LocalDateTime dateTime){
-        return LocalDateTime.of(LocalDate.from(dateTime.toLocalDate().with(TemporalAdjusters.lastDayOfMonth())), LocalTime.MAX);
-    }
-
-
-    /**
-     * @Author lipeng
-     * @Description 获取当前日期
-     * @Date 2023/12/7 16:07
-     * @param
-     * @return java.lang.String
-     **/
-    public static String getDate() {
-        return toString(LocalDateTime.now(), KPLocalDateTimeUtil.DATE_PATTERN);
-    }
-
-
-    /**
-     * @Author lipeng
-     * @Description 获取当前时间+日期
-     * @Date 2023/12/7 16:07
-     * @param
-     * @return java.lang.String
-     **/
-    public static final String getTime() {
-        return toString(LocalDateTime.now(), KPLocalDateTimeUtil.DATE_TIME_PATTERN);
-    }
-
-
-
-
-
-    /**
-     * @Author lipeng
-     * @Description 时间加或减去指定天数
-     * @Date 2025/9/3 20:27
-     * @param localDateTime 操作日期
-     * @param days 加上获取减去的天数 减用负数
-     * @return java.time.LocalDateTime
-     **/
-    public static LocalDateTime addDays(LocalDateTime localDateTime, int days) {
-        // 统一逻辑：正数用plusDays，负数转绝对值后用minusDays，0直接返回原时间
-        if (days > 0) {
-            return localDateTime.plusDays(days);
-        } else if (days < 0) {
-            return localDateTime.minusDays(Math.abs(days));
+     * 日期增减天数
+     * @param date 目标日期 (为 null 则取当前时间)
+     * @param days 增减天数 (正数加，负数减)
+     * @param includeTime 是否包含时分秒
+     */
+    public LocalDateTime addDays(LocalDateTime date, int days, boolean includeTime) {
+        if (date == null) {
+            date = LocalDateTime.now();
         }
-        return localDateTime;
+        if (!includeTime) {
+            date = date.with(LocalTime.MIN);
+        }
+        return date.plusDays(days);
+    }
+
+    /**
+     * 时间格式化为字符串
+     * @param date 目标日期
+     * @param pattern 格式模板
+     */
+    public String format(LocalDateTime date, String pattern) {
+        return date.format(DateTimeFormatter.ofPattern(pattern));
+    }
+
+    public String format(String dateStr, String pattern) {
+        return LocalDateTime.parse(dateStr, DateTimeFormatter.ofPattern(pattern))
+                .format(DateTimeFormatter.ofPattern(pattern));
+    }
+
+    /**
+     * 转换日期格式
+     * @param dateStr 日期字符串
+     * @param inputPattern 输入格式
+     * @param outputPattern 输出格式
+     */
+    public String format(String dateStr, String inputPattern, String outputPattern) {
+        LocalDateTime dateTime = LocalDateTime.parse(dateStr, DateTimeFormatter.ofPattern(inputPattern));
+        return dateTime.format(DateTimeFormatter.ofPattern(outputPattern));
+    }
+
+    /**
+     * 字符串解析为 LocalDateTime 对象
+     * @param dateTimeString 日期时间字符串
+     * @param pattern 格式模板
+     */
+    public LocalDateTime parse(String dateTimeString, String pattern) {
+        return LocalDateTime.parse(dateTimeString, DateTimeFormatter.ofPattern(pattern));
+    }
+
+    /**
+     * 时间增减小时
+     * @param startDate 起始日期 (为 null 则取当前时间)
+     * @param hours 增减小时数 (正数加，负数减)
+     */
+    public LocalDateTime addHours(LocalDateTime startDate, int hours) {
+        if (startDate == null) {
+            startDate = LocalDateTime.now();
+        }
+        return startDate.plusHours(hours);
+    }
+
+    /**
+     * 时间增减分钟
+     * @param startDate 起始日期 (为 null 则取当前时间)
+     * @param minutes 增减分钟数 (正数加，负数减)
+     */
+    public LocalDateTime addMinutes(LocalDateTime startDate, int minutes) {
+        if (startDate == null) {
+            startDate = LocalDateTime.now();
+        }
+        return startDate.plusMinutes(minutes);
+    }
+
+    /**
+     * 时间增减秒数
+     * @param startDate 起始日期 (为 null 则取当前时间)
+     * @param seconds 增减秒数 (正数加，负数减)
+     */
+    public LocalDateTime addSeconds(LocalDateTime startDate, int seconds) {
+        if (startDate == null) {
+            startDate = LocalDateTime.now();
+        }
+        return startDate.plusSeconds(seconds);
+    }
+
+    /**
+     * 时间增减天数 (重载方法，包含时分秒)
+     * @param startDate 起始日期 (为 null 则取当前时间)
+     * @param days 增减天数 (正数加，负数减)
+     */
+    public LocalDateTime addDays(LocalDateTime startDate, int days) {
+        if (startDate == null) {
+            startDate = LocalDateTime.now();
+        }
+        return startDate.plusDays(days);
+    }
+
+    /**
+     * 时间增减月数
+     * @param startDate 起始日期 (为 null 则取当前时间)
+     * @param months 增减月数 (正数加，负数减)
+     */
+    public LocalDateTime addMonths(LocalDateTime startDate, int months) {
+        if (startDate == null) {
+            startDate = LocalDateTime.now();
+        }
+        return startDate.plusMonths(months);
+    }
+
+    /**
+     * 时间增减年数
+     * @param startDate 起始日期 (为 null 则取当前时间)
+     * @param years 增减年数 (正数加，负数减)
+     */
+    public LocalDateTime addYears(LocalDateTime startDate, int years) {
+        if (startDate == null) {
+            startDate = LocalDateTime.now();
+        }
+        return startDate.plusYears(years);
+    }
+
+    /**
+     * 时间比较
+     * @param date1 日期 1
+     * @param date2 日期 2
+     * @return date1.isAfter(date2) 返回 1；date1.isBefore(date2) 返回 -1；相等返回 0
+     */
+    public int compare(LocalDateTime date1, LocalDateTime date2) {
+        if (date1.isAfter(date2)) return 1;
+        if (date1.isBefore(date2)) return -1;
+        return 0;
+    }
+
+    /**
+     * 获取两个时间的较小值
+     * @param date1 日期 1
+     * @param date2 日期 2
+     */
+    public LocalDateTime min(LocalDateTime date1, LocalDateTime date2) {
+        if (date1 == null) return date2;
+        if (date2 == null) return date1;
+        return date1.isBefore(date2) ? date1 : date2;
+    }
+
+    /**
+     * 获取两个时间的较大值
+     * @param date1 日期 1
+     * @param date2 日期 2
+     */
+    public LocalDateTime max(LocalDateTime date1, LocalDateTime date2) {
+        if (date1 == null) return date2;
+        if (date2 == null) return date1;
+        return date1.isAfter(date2) ? date1 : date2;
+    }
+
+    /**
+     * 两个日期（不含时分秒）的天数差 (不包含今天)
+     * @param startDate 起始日期
+     * @param endDate 结束日期
+     */
+    public long daysBetween(LocalDate startDate, LocalDate endDate) {
+        return ChronoUnit.DAYS.between(startDate, endDate);
+    }
+
+    /**
+     * 两个日期（不含时分秒）的天数差 (不包含今天)
+     *  两个时间点之间的完整天数。例如，从 2024-01-01 23:00:00 到 2024-01-02 01:00:00，结果为 0。满24小时才算一天 如果 不考虑时间 使用KPLocalDateTimeUtil
+     * @param startDateTime 起始日期
+     * @param endDateTime 结束日期
+     */
+    public long daysBetween(LocalDateTime startDateTime, LocalDateTime endDateTime) {
+        return ChronoUnit.DAYS.between(startDateTime.toLocalDate(), endDateTime.toLocalDate());
+    }
+
+    /**
+     * 两个日期（不含时分秒）的天数差 (包含今天)
+     * @param startDate 起始日期
+     * @param endDate 结束日期
+     */
+    public long daysBetweenIncludeToday(LocalDate startDate, LocalDate endDate) {
+        return daysBetween(startDate, endDate) + 1;
+    }
+
+    public long daysBetweenIncludeToday(LocalDateTime startDateTime, LocalDateTime endDateTime) {
+        return daysBetween(startDateTime, endDateTime) + 1;
+    }
+
+    /**
+     * 获取日期的年份
+     * @param date 目标日期
+     */
+    public int getYear(LocalDateTime date) {
+        return date.getYear();
+    }
+
+    /**
+     * 获取日期的月份 (1-12)
+     * @param date 目标日期
+     */
+    public int getMonth(LocalDateTime date) {
+        return date.getMonthValue();
+    }
+
+    /**
+     * 获取日期的天数 (1-31)
+     * @param date 目标日期
+     */
+    public int getDay(LocalDateTime date) {
+        return date.getDayOfMonth();
+    }
+
+    /**
+     * 获取当月的总天数
+     * @param date 目标日期
+     */
+    public int getDaysOfMonth(LocalDateTime date) {
+        return date.toLocalDate().lengthOfMonth();
+    }
+
+    /**
+     * 获取当年的总天数
+     * @param date 目标日期
+     */
+    public int getDaysOfYear(LocalDateTime date) {
+        return date.toLocalDate().lengthOfYear();
+    }
+
+    /**
+     * 获取当月最大日期
+     * @param date 目标日期
+     */
+    public LocalDateTime getMaxDayOfMonth(LocalDateTime date) {
+        return date.with(TemporalAdjusters.lastDayOfMonth()).with(LocalTime.MAX);
+    }
+
+    /**
+     * 获取当月最小日期 (当月 1 号)
+     * @param date 目标日期
+     */
+    public LocalDateTime getMinDayOfMonth(LocalDateTime date) {
+        return date.with(TemporalAdjusters.firstDayOfMonth()).with(LocalTime.MIN);
+    }
+
+    /**
+     * 获取本周周一日期
+     */
+    public String getMinDayOfWeek() {
+        return LocalDate.now().with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY))
+                .format(DateTimeFormatter.ofPattern(DATE_PATTERN));
+    }
+
+    /**
+     * 获取本周最后一天日期
+     */
+    public String getMaxDayOfWeek() {
+        return LocalDate.now().with(TemporalAdjusters.nextOrSame(DayOfWeek.SUNDAY))
+                .format(DateTimeFormatter.ofPattern(DATE_PATTERN));
+    }
+
+    /**
+     * 时间戳转换为日期字符串
+     * @param seconds 秒级时间戳字符串
+     * @param format 格式模板 (为空则默认 yyyy-MM-dd HH:mm:ss)
+     */
+    public String timestampToDate(String seconds, String format) {
+        if (seconds == null || seconds.isEmpty() || "null".equals(seconds)) {
+            return "";
+        }
+        if (format == null || format.isEmpty()) {
+            format = DATE_TIME_PATTERN;
+        }
+        return Instant.ofEpochSecond(Long.parseLong(seconds))
+                .atZone(ZoneId.systemDefault())
+                .format(DateTimeFormatter.ofPattern(format));
+    }
+
+    /**
+     * 日期字符串转换为时间戳 (毫秒)
+     * @param dateStr 日期字符串
+     * @param format 格式模板
+     */
+    public Long dateToTimestamp(String dateStr, String format) {
+        try {
+            return LocalDateTime.parse(dateStr, DateTimeFormatter.ofPattern(format))
+                    .atZone(ZoneId.systemDefault())
+                    .toInstant()
+                    .toEpochMilli();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    /**
+     * 获取当前秒级时间戳
+     */
+    public String getTimestamp() {
+        return String.valueOf(Instant.now().getEpochSecond());
+    }
+
+    /**
+     * 获取当天凌晨 (00:00:00)
+     */
+    public LocalDateTime getWeeHours() {
+        return LocalDate.now().atStartOfDay();
+    }
+
+    /**
+     * 获取指定日期的凌晨 (00:00:00)
+     */
+    public LocalDateTime getWeeHours(LocalDateTime date) {
+        if (date == null) date = LocalDateTime.now();
+        return date.toLocalDate().atStartOfDay();
+    }
+    public LocalDateTime getWeeHours(LocalDate date) {
+        if (date == null) date = LocalDate.now();
+        return date.atStartOfDay().toLocalDate().atStartOfDay();
     }
 
 
-
+    /**
+     * 获取当天晚时间 (23:59:59)
+     */
+    public static LocalDateTime getWitchingHour() {
+        return LocalDateTime.now().toLocalDate().atTime(LocalTime.MAX);
+    }
 
     /**
-     * @Author lipeng
-     * @Description 时间加或减去指定月份
-     * @Date 2024/7/14 10:24
-     * @param localDateTime 目标时间
-     * @param months 月份
-     * @return java.time.LocalDateTime
+     *  获取指定日期的最晚时间 (23:59:59)
      **/
-    public static LocalDateTime addMonths(LocalDateTime localDateTime, int months) {
-        if ( months > 0 )
-            return localDateTime.plusMonths(months);
-        if ( months < 0 )
-            return localDateTime.minusMonths(Math.abs(months));
-        return localDateTime;
+    public static LocalDateTime getWitchingHour(LocalDateTime date) {
+        if (date == null) date = LocalDateTime.now();
+        return date.toLocalDate().atTime(LocalTime.MAX);
+    }
+    public static LocalDateTime getWitchingHour(LocalDate date) {
+        if (date == null) date = LocalDate.now();
+        return date.atStartOfDay().toLocalDate().atTime(LocalTime.MAX);
     }
 
 
     /**
-     * @Author lipeng
-     * @Description 将毫秒数转换为天、小时、分钟、秒和毫秒的字符串形式
-     * @Date 2024/1/25 17:30
+     * 获取指定年份的第一天
+     * @param date 目标日期 (为 null 则取当前时间)
+     */
+    public LocalDateTime getFirstDayOfYear(LocalDateTime date) {
+        date = date == null ? LocalDateTime.now() : date;
+        return date.with(TemporalAdjusters.firstDayOfYear()).with(LocalTime.MIN);
+    }
+
+    /**
+     * 获取指定年份的最后一天
+     * @param date 目标日期 (为 null 则取当前时间)
+     */
+    public LocalDateTime getLastDayOfYear(LocalDateTime date) {
+        date = date == null ? LocalDateTime.now() : date;
+        return date.with(TemporalAdjusters.lastDayOfYear()).with(LocalTime.MAX);
+    }
+
+    /**
+     * Date 转换为 LocalDateTime
+     * @param date 目标 Date
+     */
+    public LocalDateTime toLocalDateTime(Date date) {
+        return date.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
+    }
+
+    /**
+     * LocalDateTime 转换为 Date
+     * @param localDateTime 目标 LocalDateTime
+     */
+    public Date toDate(LocalDateTime localDateTime) {
+        return Date.from(localDateTime.atZone(ZoneId.systemDefault()).toInstant());
+    }
+
+    /**
+     * LocalDate 转换为 Date
+     * @param localDate 目标 LocalDate
+     */
+    public Date toDate(LocalDate localDate) {
+        return Date.from(localDate.atStartOfDay(ZoneId.systemDefault()).toInstant());
+    }
+
+    /**
+     * 秒数转换为分秒格式字符串
+     * @param seconds 秒数
+     */
+    public String toMinuteSecond(int seconds) {
+        int minutes = seconds / 60;
+        int remainingSeconds = seconds % 60;
+        return minutes + "分" + remainingSeconds + "秒";
+    }
+
+    /**
+     * 获取服务器启动时间
+     */
+    public LocalDateTime getServerStartDate() {
+        long time = ManagementFactory.getRuntimeMXBean().getStartTime();
+        return Instant.ofEpochMilli(time).atZone(ZoneId.systemDefault()).toLocalDateTime();
+    }
+
+    /**
+     * 计算两个时间差 (天、时、分)
+     * @param endDate 结束日期
+     * @param nowDate 当前日期
+     */
+    public String getDuration(LocalDateTime endDate, LocalDateTime nowDate) {
+        // 确保 endDate 在 nowDate 之后，否则结果可能为负
+        if (endDate.isBefore(nowDate)) {
+            return "0天0小时0分钟";
+        }
+
+        Duration duration = Duration.between(nowDate, endDate);
+
+        long days = duration.toDays();
+        // 减去已经计算过的天数
+        duration = duration.minusDays(days);
+
+        long hours = duration.toHours();
+        // 减去已经计算过的小时数
+        duration = duration.minusHours(hours);
+
+        long minutes = duration.toMinutes();
+
+        return days + "天" + hours + "小时" + minutes + "分钟";
+    }
+
+
+    /**
+     * 将毫秒数转换为天、小时、分钟、秒和毫秒的字符串形式
      * @param milliseconds 毫秒数
-     * @return java.lang.String
-     **/
-    public static String formatDuration(Long milliseconds) {
+     */
+    public String formatDuration(Long milliseconds) {
         if (milliseconds == null) return "-1毫秒";
         if (milliseconds == 0) return "0毫秒";
 
@@ -234,109 +489,73 @@ public class KPLocalDateTimeUtil {
         return body;
     }
 
-
-
     /**
-     * 计算两个日期时间（包含日期和时间）相差的分钟数。
-     *
-     * @param startTimeStr 开始日期时间的字符串，格式为"yyyy-MM-dd HH:mm:ss"
-     * @param endTimeStr 结束日期时间的字符串，格式为"yyyy-MM-dd HH:mm:ss"
-     * @return 相差的分钟数
-     * @throws IllegalArgumentException 如果日期时间格式不正确或日期时间无效
-     */
-    public static long getSecondsBetween(String startTimeStr, String endTimeStr) {
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern(KPLocalDateTimeUtil.DATE_TIME_PATTERN);
-        LocalDateTime startDateTime = LocalDateTime.parse(startTimeStr, formatter);
-        LocalDateTime endDateTime = LocalDateTime.parse(endTimeStr, formatter);
-        Duration duration = Duration.between(startDateTime, endDateTime);
-        return duration.getSeconds();
-    }
-
-
-    /**
-     * @Author lipeng
-     * @Description 计算两个日期时间（包含日期和时间）相差的分钟数。
-     * @Date 2024/5/7 14:52
+     * 计算两个日期时间（包含日期和时间）相差的秒数。
      * @param startTime 开始日期时间
      * @param endTime 结束日期时间
-     * @return 相差的分钟数
-     * @throws IllegalArgumentException 如果日期时间格式不正确或日期时间无效
-     **/
-    public static long getSecondsBetween(LocalDateTime startTime, LocalDateTime endTime) {
-        Duration duration = Duration.between(startTime, endTime);
-        return duration.getSeconds();
+     */
+    public long getSecondsBetween(LocalDateTime startTime, LocalDateTime endTime) {
+        return Duration.between(startTime, endTime).getSeconds();
     }
 
+    /**
+     * 计算两个日期时间字符串相差的秒数。
+     * @param startTimeStr 开始日期时间字符串
+     * @param endTimeStr 结束日期时间字符串
+     * @param pattern 格式模板
+     */
+    public long getSecondsBetween(String startTimeStr, String endTimeStr, String pattern) {
+        LocalDateTime start = LocalDateTime.parse(startTimeStr, DateTimeFormatter.ofPattern(pattern));
+        LocalDateTime end = LocalDateTime.parse(endTimeStr, DateTimeFormatter.ofPattern(pattern));
+        return getSecondsBetween(start, end);
+    }
 
     /**
-     * @Author lipeng
-     * @Description 获取从当前时间到当日24:00（次日0点）剩余的秒数。
-     * @Date 2024/7/1 14:28
-     * @param
-     * @return long 剩余的秒数。如果当前时间已过24:00，则返回0。
-     **/
-    public static long secondsUntilEndOfDay() {
-        // 获取当前日期的24:00时间（即次日的00:00）
-        LocalDateTime endOfDay = LocalDateTime.now().toLocalDate().atTime(LocalTime.MAX);
-
-        // 获取当前时间
+     * 获取从当前时间到当日24:00（次日0点）剩余的秒数。
+     */
+    public long secondsUntilEndOfDay() {
         LocalDateTime now = LocalDateTime.now();
-
-        // 计算两者之间的秒数差
-        if (now.isAfter(endOfDay)) {
-            // 如果当前时间已超过当日24:00，则返回0
-            return 0L;
-        } else {
-            return ChronoUnit.SECONDS.between(now, endOfDay);
-        }
-    }
-
-
-    /**
-     * @Author lipeng
-     * @Description 根据给定的时间戳（秒）获取LocalDateTime表示。
-     * @Date 2024/8/12 10:34
-     * @param timestampInSeconds  timestampInSeconds 时间戳（秒）
-     * @param zoneId 时区  "Asia/Shanghai"
-     * @return java.time.LocalDateTime 给定时间戳对应的LocalDateTime对象。
-     **/
-    public static LocalDateTime fromTimeMilli(Long timestampInSeconds, ZoneId zoneId) {
-        // 将秒数的时间戳转换为Instant对象
-        Instant instant = Instant.ofEpochMilli(timestampInSeconds);
-//        ZoneOffset.UTC
-        // 使用UTC时区转换为LocalDateTime
-        return instant.atZone(zoneId).toLocalDateTime();
-    }
-
-
-    /**
-     * @Author lipeng
-     * @Description 获取当前年份的第一天（00:00:00）
-     * @Date 2024/8/12 补充方法
-     * @return java.time.LocalDateTime 当前年份第一天的起始时间
-     **/
-    public static LocalDateTime getFirstDayOfCurrentYear() {
-        // 获取当前日期
-        LocalDate currentDate = LocalDate.now();
-        // 定位到当前年份的第一天
-        LocalDate firstDayOfYear = currentDate.with(TemporalAdjusters.firstDayOfYear());
-        // 拼接当天的起始时间（00:00:00）
-        return LocalDateTime.of(firstDayOfYear, LocalTime.MIN);
+        LocalDateTime endOfDay = now.with(LocalTime.MAX);
+        return Duration.between(now, endOfDay).getSeconds();
     }
 
     /**
-     * @Author lipeng
-     * @Description 获取当前年份的最后一天（23:59:59.999）
-     * @Date 2024/8/12 补充方法
-     * @return java.time.LocalDateTime 当前年份最后一天的结束时间
-     **/
-    public static LocalDateTime getLastDayOfCurrentYear() {
-        // 获取当前日期
-        LocalDate currentDate = LocalDate.now();
-        // 定位到当前年份的最后一天
-        LocalDate lastDayOfYear = currentDate.with(TemporalAdjusters.lastDayOfYear());
-        // 拼接当天的结束时间（23:59:59.999）
-        return LocalDateTime.of(lastDayOfYear, LocalTime.MAX);
+     * 根据给定的时间戳（秒）获取 LocalDateTime 表示。
+     * @param timestampInSeconds 时间戳（秒）
+     * @param zoneId 时区
+     */
+    public LocalDateTime fromTimeMilli(Long timestampInSeconds, ZoneId zoneId) {
+        // 注意：方法名中的 "Milli" 可能是笔误，参数是秒。为保持兼容性，暂不修改方法名。
+        // 如果参数确实是毫秒，请使用 Instant.ofEpochMilli(timestampInSeconds)
+        return Instant.ofEpochSecond(timestampInSeconds).atZone(zoneId).toLocalDateTime();
     }
+
+
+    //------------------------已经改名弃用  保留是为了兼容老代码 新写的代码请勿使用---------------------------
+    @Deprecated
+    public static LocalDateTime getFirstDateTimeOfDay(LocalDateTime dateTime) {
+        return getWeeHours(dateTime);
+    }
+    @Deprecated
+    public static LocalDateTime getFirstDateTimeOfDay(LocalDate date) {
+        return getWeeHours(date);
+    }
+    @Deprecated
+    public static LocalDateTime getFirstDateTimeOfDay() {
+        return getWeeHours();
+    }
+    @Deprecated
+    public static LocalDateTime getLastDateTimeOfDay(LocalDateTime dateTime) {
+        return getWitchingHour(dateTime);
+    }
+    @Deprecated
+    public static LocalDateTime getLastDateTimeOfDay(LocalDate localDate) {
+        return getWitchingHour(localDate);
+    }
+    @Deprecated
+    public static LocalDateTime getLastDateTimeOfDay() {
+        return getWitchingHour();
+    }
+
+
 }
-

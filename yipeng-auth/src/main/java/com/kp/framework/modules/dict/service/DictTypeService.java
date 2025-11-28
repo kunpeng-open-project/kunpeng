@@ -8,6 +8,7 @@ import com.github.pagehelper.PageHelper;
 import com.github.yulichang.wrapper.MPJLambdaWrapper;
 import com.kp.framework.common.cache.DictCache;
 import com.kp.framework.constant.ReturnFinishedMessageConstant;
+import com.kp.framework.entity.bo.DictionaryChildrenBO;
 import com.kp.framework.enums.DeleteFalgEnum;
 import com.kp.framework.enums.YesNoEnum;
 import com.kp.framework.exception.KPServiceException;
@@ -27,6 +28,7 @@ import com.kp.framework.utils.kptool.KPStringUtil;
 import com.kp.framework.utils.kptool.KPVerifyUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import springfox.documentation.spring.web.plugins.Docket;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -45,6 +47,8 @@ public class DictTypeService extends ServiceImpl<DictTypeMapper, DictTypePO> {
 
     @Autowired
     private DictTypeProjectMapper dictTypeProjectMapper;
+    @Autowired
+    private Docket createRestApi;
 
     /**
      * @Author lipeng
@@ -75,6 +79,42 @@ public class DictTypeService extends ServiceImpl<DictTypeMapper, DictTypePO> {
         Page page = PageHelper.startPage(dictTypeListParamPO.getPageNum(), dictTypeListParamPO.getPageSize(), dictTypeListParamPO.getOrderBy(DictTypePO.class));
         page.setCountColumn("distinct dict_type_id");
         return this.baseMapper.selectJoinList(DictTypeListCustomerPO.class, wrapper);
+    }
+
+
+    /**
+     * @Author lipeng
+     * @Description 查询数据字典类型下拉框
+     * @Date 2025/11/28
+     * @param parameter
+     * @return java.util.List<com.kp.framework.entity.bo.DictionaryChildrenBO>
+     **/
+    public List<DictionaryChildrenBO> queryDictTypeSelect(JSONObject parameter) {
+        MPJLambdaWrapper<DictTypePO> wrapper = new MPJLambdaWrapper<DictTypePO>("dictType")
+                .selectAll(DictTypePO.class, "dictType")
+                .leftJoin(DictTypeProjectPO.class, on -> on
+                        .eq(DictTypeProjectPO::getDictTypeId, DictTypePO::getDictTypeId)
+                        .eq(DictTypeProjectPO::getDeleteFlag, DeleteFalgEnum.NORMAL.code())
+                )
+                .leftJoin(ProjectPO.class, "project", on -> on
+                        .eq(ProjectPO::getProjectId, DictTypeProjectPO::getProjectId)
+                        .eq(ProjectPO::getDeleteFlag, DeleteFalgEnum.NORMAL.code())
+                )
+                .disableSubLogicDel()
+                .groupBy(DictTypePO::getDictTypeId)
+                .eq(KPStringUtil.isNotEmpty(parameter.getString("projectId")), DictTypeProjectPO::getProjectId, parameter.getString("projectId"))
+                .orderByDesc(DictTypePO::getCreateDate);
+
+        List<DictTypePO> dictTypeList = this.baseMapper.selectJoinList(DictTypePO.class, wrapper);
+
+        List<DictionaryChildrenBO> body = new ArrayList<>();
+        dictTypeList.forEach(dictTypePO -> {
+            body.add(new DictionaryChildrenBO()
+                    .setLabel(dictTypePO.getDictName())
+                    .setValue(dictTypePO.getDictTypeId())
+                    .setChildren(new ArrayList<>()));
+        });
+        return body;
     }
 
 
@@ -223,5 +263,21 @@ public class DictTypeService extends ServiceImpl<DictTypeMapper, DictTypePO> {
 
         if (this.baseMapper.updateById(dictTypePO) == 0)
             throw new KPServiceException(ReturnFinishedMessageConstant.ERROR);
+    }
+
+
+    /**
+     * @Author lipeng
+     * @Description 根据字典类型Id集合查询字典类型列表
+     * @Date 2025/11/28
+     * @param dictTypeId
+     * @return java.util.List<com.kp.framework.modules.dict.po.DictTypePO>
+     **/
+    public List<DictTypePO> queryDictTypeIdList(List<String> dictTypeId) {
+        KPVerifyUtil.notNull(dictTypeId, "字典类型Id集合不能为空");
+
+        return this.baseMapper.selectList(Wrappers.lambdaQuery(DictTypePO.class)
+                .in(DictTypePO::getDictTypeId, dictTypeId)
+                .orderByDesc(DictTypePO::getCreateDate));
     }
 }

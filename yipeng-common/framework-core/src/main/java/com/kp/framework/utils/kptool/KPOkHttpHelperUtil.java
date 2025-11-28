@@ -286,7 +286,7 @@ public final class KPOkHttpHelperUtil {
                 log.info("接口用时: {} ", KPLocalDateTimeUtil.formatDuration(disposeDate));
             }
             notPringLog(response);
-            record(url, "get", KPJsonUtil.toJsonString(KPUrlUtil.getQueryParams(url)), responseStr, disposeDate);
+            record(url, "get", KPJsonUtil.toJsonString(KPRequsetUtil.getQueryParams(url)), responseStr, disposeDate);
             return responseStr;
         } catch (IOException var5) {
             log.info(var5.getMessage());

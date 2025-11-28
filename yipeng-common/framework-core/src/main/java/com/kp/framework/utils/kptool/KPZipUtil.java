@@ -6,6 +6,7 @@ import com.github.junrar.exception.RarException;
 import com.github.junrar.rarfile.FileHeader;
 import com.kp.framework.entity.po.ZipFilePO;
 import com.kp.framework.exception.KPServiceException;
+import lombok.experimental.UtilityClass;
 import org.apache.commons.compress.archivers.zip.Zip64Mode;
 import org.apache.commons.compress.archivers.zip.ZipArchiveEntry;
 import org.apache.commons.compress.archivers.zip.ZipArchiveOutputStream;
@@ -42,12 +43,10 @@ import java.util.zip.ZipInputStream;
  * @Date 2022/5/18 12:52
  * @return
  **/
+@UtilityClass
 public final class KPZipUtil {
 
     private static Logger log = LoggerFactory.getLogger(KPZipUtil.class);
-
-    private KPZipUtil(){}
-
 
 
 
@@ -106,7 +105,7 @@ public final class KPZipUtil {
             response.setContentType(new Tika().detect(fileName));
             response.setHeader("Content-disposition", "attachment;filename=" + fileName);
 
-            KPIOUtil.downLoad(fileName, response);
+            KPIOUtil.setDownloadResponseHeader(fileName, response);
 
             for (ZipFilePO zipFilePO : zipFilePOList) {
                 ZipArchiveEntry entry = new ZipArchiveEntry(zipFilePO.getFileName());
@@ -370,13 +369,10 @@ public final class KPZipUtil {
     }
 
     public static void main(String[] args) throws IOException {
-//        unZipFile(pathByInputStream("D://hahaha.zip"), "D://jy//zip//");
 //        unRarFile(pathByInputStream("D://hahaha.rar"), "D://jy//rar//");
 
 
 //        System.out.println(unZipInputStream(pathByInputStream("F://add.zip")));
 //        System.out.println(unRarInputStream(pathByInputStream("F://add.rar")));
     }
-
-
 }

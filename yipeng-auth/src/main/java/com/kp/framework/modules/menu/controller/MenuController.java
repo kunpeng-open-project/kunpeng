@@ -4,8 +4,11 @@ import com.alibaba.fastjson2.JSONObject;
 import com.github.xiaoymin.knife4j.annotations.ApiSupport;
 import com.kp.framework.annotation.KPApiJsonlParam;
 import com.kp.framework.annotation.KPApiJsonlParamMode;
+import com.kp.framework.annotation.KPObjectChangeLogNote;
 import com.kp.framework.annotation.verify.KPVerifyNote;
+import com.kp.framework.constant.ObjectChangeLogOperateType;
 import com.kp.framework.entity.bo.KPResult;
+import com.kp.framework.modules.menu.mapper.MenuMapper;
 import com.kp.framework.modules.menu.po.MenuPO;
 import com.kp.framework.modules.menu.po.customer.MenuCustomerPO;
 import com.kp.framework.modules.menu.po.param.MenuEditParamPO;
@@ -62,6 +65,7 @@ public class MenuController {
     @PreAuthorize("hasPermission('/auth/menu/save','auth:menu:save')")
     @ApiOperation(value = "新增菜单信息", notes = "权限 auth:menu:save")
     @PostMapping("/save")
+    @KPObjectChangeLogNote(parentMapper = MenuMapper.class, identification = "menuId,menu_id", operateType = ObjectChangeLogOperateType.ADD, businessType = "菜单信息")
     @KPVerifyNote
     @KPApiJsonlParamMode(component = MenuEditParamPO.class, ignores = "menuId")
     public KPResult<MenuPO> save(@RequestBody MenuEditParamPO menuEditParamPO) {
@@ -73,6 +77,7 @@ public class MenuController {
     @PreAuthorize("hasPermission('/auth/menu/update','auth:menu:update')")
     @ApiOperation(value = "修改菜单信息", notes = "权限 auth:menu:update")
     @PostMapping("/update")
+    @KPObjectChangeLogNote(parentMapper = MenuMapper.class, identification = "menuId,menu_id", businessType = "菜单信息")
     @KPVerifyNote
     public KPResult<MenuPO> update(@RequestBody MenuEditParamPO menuEditParamPO) {
         menuService.updateMenu(menuEditParamPO);
@@ -86,6 +91,7 @@ public class MenuController {
     @KPApiJsonlParam({
             @ApiModelProperty(name = "ids", value = "菜单Id", required = true, dataType = "list")
     })
+    @KPObjectChangeLogNote(parentMapper = MenuMapper.class, identification = "menuId,menu_id", operateType = ObjectChangeLogOperateType.DELETE, businessType = "菜单信息")
     public KPResult batchRemove(@RequestBody List<String> ids) {
         return KPResult.success(menuService.batchRemove(ids));
     }
@@ -94,6 +100,7 @@ public class MenuController {
     @PreAuthorize("hasPermission('/auth/menu/do/set/sort','auth:menu:do:set:sort')")
     @ApiOperation(value = "设置排序", notes = "权限 auth:menu:do:set:sort")
     @PostMapping(value = "/do/set/sort")
+    @KPObjectChangeLogNote(parentMapper = MenuMapper.class, identification = "menuId,menu_id", operateType = ObjectChangeLogOperateType.UPDATE_BATCH, businessType = "菜单信息")
     @KPVerifyNote
     public KPResult doSetOrderNum(@RequestBody List<MenuSortParamPO> menuSortParamPOList) {
         menuService.doSetSort(menuSortParamPOList);
@@ -107,6 +114,7 @@ public class MenuController {
     @KPApiJsonlParam({
             @ApiModelProperty(name = "menuId", value = "菜单Id", required = true)
     })
+    @KPObjectChangeLogNote(parentMapper = MenuMapper.class, identification = "menuId,menu_id", businessType = "菜单信息")
     public KPResult doEnable(@RequestBody JSONObject parameter) {
         menuService.doEnable(parameter);
         return KPResult.success();
@@ -119,6 +127,7 @@ public class MenuController {
     @KPApiJsonlParam({
             @ApiModelProperty(name = "menuId", value = "菜单Id", required = true)
     })
+    @KPObjectChangeLogNote(parentMapper = MenuMapper.class, identification = "menuId,menu_id", operateType = ObjectChangeLogOperateType.ADD, businessType = "菜单信息")
     public KPResult doStatus(@RequestBody JSONObject parameter) {
         menuService.doCopy(parameter);
         return KPResult.success();

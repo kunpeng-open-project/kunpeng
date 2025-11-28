@@ -1,438 +1,404 @@
 package com.kp.framework.utils.kptool;
 
-
+import com.kp.framework.exception.KPUtilException;
+import lombok.experimental.UtilityClass;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.tika.Tika;
-import org.apache.tomcat.util.codec.binary.Base64;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import sun.misc.BASE64Decoder;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
-import java.awt.geom.RoundRectangle2D;
 import java.awt.image.BufferedImage;
-import java.io.BufferedOutputStream;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Base64;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 /**
- * @Author 李鹏
- * @Description
- * @Date $ $
- * @Param $
- * @return $
- **/
+ * 文件处理工具类，提供文件创建、删除、转换、下载等常用操作。
+ *
+ * <p>注意事项：
+ * <ul>
+ *     <li>所有方法均为静态方法，无需实例化此类。</li>
+ *     <li>方法会抛出明确的异常，调用者应根据需要捕获并处理。</li>
+ *     <li>涉及文件操作的方法，确保调用者拥有相应的文件系统权限。</li>
+ * </ul>
+ */
+@Slf4j
+@UtilityClass
 public final class KPFileUtil {
 
-    private static Logger log = LoggerFactory.getLogger(KPFileUtil.class);
+    /** 文件类型检测器 */
+    private static final Tika TIKA = new Tika();
+
+    /** 默认缓冲区大小 (8KB) */
+    private static final int DEFAULT_BUFFER_SIZE = 8192;
+
+    /** 默认连接超时时间 (5秒) */
+    private static final int DEFAULT_CONNECT_TIMEOUT = 5000;
+
+    /** 默认读取超时时间 (10秒) */
+    private static final int DEFAULT_READ_TIMEOUT = 10000;
 
 
-    private KPFileUtil(){}
-
+    // --- 文件夹操作 ---
 
     /**
-     * @Author lipeng
-     * @Description 创建文件夹
-     * @Date 2020/9/21
-     * @Param [path]
-     * @return boolean
-     **/
-    public static boolean createFolder(String path) throws IOException {
-        File file = new File(path);
-//        if (!new Tika().detect(path).equals("application/octet-stream")){
-//            file = file.getParentFile();
-//        }
-
-        if (!file.exists() && !file.isDirectory()) {
-            file.mkdirs();
+     * 创建文件夹，如果父目录不存在则一并创建。
+     *
+     * @param folderPath 文件夹路径
+     * @return 如果文件夹创建成功或已存在，返回 {@code true}
+     * @throws IOException 如果路径无效或无法创建文件夹
+     */
+    public static boolean createFolder(String folderPath) {
+        Objects.requireNonNull(folderPath, "文件夹路径不能为空");
+        Path path = Paths.get(folderPath);
+        if (!Files.exists(path)) {
+            try {
+                Files.createDirectories(path);
+            } catch (IOException e) {
+                throw new KPUtilException("无法创建文件夹: " + e.getMessage());
+            }
+            log.info("文件夹创建成功: {}", folderPath);
         }
         return true;
     }
 
+    // --- 文件判断与删除 ---
 
     /**
-     * @Author lipeng
-     * @Description 判断是否是文件
-     * @Date 2020/10/26 14:13
-     * @Param [filePath]
-     * @return boolean
-     **/
-    public static boolean isFile(String filePath){
-        File file = new File(filePath);
-        //isFile()：如果文件存在并且是常规文件，则此方法返回true，请注意，如果文件不存在，则返回false。isDirectory()：如果路径/文件实际上是一个目录，则此方法返回true，如果路径不存在，则返回false。//原文出自【易百教程】，商业转载请联系作者获得授权，非商业请保留原文链接：https://www.yiibai.com/java/check-file-directory-file-java.html
-        if(file.isFile())
-            return true;
-        return false;
-    }
-
-    /**
-     * @Author lipeng
-     * @Description 删除文件
-     * @Date 2020/10/26 14:15
-     * @Param [path, flag]
-     * @return void
-     **/
-    public static boolean deleteFile(String filePath){
-        File file = new File(filePath);
-        if(file.isFile())
-            return file.delete();
-        return false;
-    }
-
-    /**
-     * @Author lipeng
-     * @Description 删除文件夹
-     * @Date 2020/10/26 14:14
-     * @Param [path, flag] flag 是否删除子目录
-     * @return void
-     **/
-    public static void deleteFiles(File path, boolean flag){
-        File[] files = path.listFiles();
-        try {
-            //遍历文件和文件夹
-            for(File file :files){
-                //如果是文件夹，递归查找
-                if(file.isDirectory()){
-                    if(flag){
-                        deleteFiles(file, flag);
-                    }
-                    continue;
-                }
-                if(file.isFile()){
-                    if(file.delete()) log.info("删除文件成功：{}", file.getPath());
-                }
-            }
-            if(path.delete()) log.info("删除文件夹成功：{}", path.getPath());
-        }catch (Exception ex){}
-
-    }
-
-
-    /**
-     * @Author lipeng
-     * @Description 保存文件
-     * @Date 2020/10/9 15:20
-     * @Param [path, fileName, base64]
-     * @return void
-     **/
-    public static String saveFileb(String path, String fileName, String base64) throws IOException {
-        if(!KPFileUtil.createFolder(path))
-            return "";
-        Files.write(Paths.get(path.concat(fileName)),
-                KPFileUtil.base64String2ByteFun(base64));
-        return path.concat(fileName);
-    }
-
-
-    /* *
-     * @Author 李鹏
-     * @Description 在线url 转byte
-     * @Date 2020/3/12 1:11
-     * @Param [path]
-     * @return byte[]
-     **/
-    public static byte[] image2byte(String path) throws IOException {
-        byte[] data = null;
-        URL url = null;
-        InputStream input = null;
-        try{
-            url = new URL(path);
-            HttpURLConnection httpUrl = (HttpURLConnection) url.openConnection();
-            httpUrl.connect();
-            httpUrl.getInputStream();
-            input = httpUrl.getInputStream();
-        }catch (Exception e) {
-            e.printStackTrace();
-            return null;
-        }
-        ByteArrayOutputStream output = new ByteArrayOutputStream();
-        byte[] buf = new byte[1024];
-        int numBytesRead = 0;
-        while ((numBytesRead = input.read(buf)) != -1) {
-            output.write(buf, 0, numBytesRead);
-        }
-        data = output.toByteArray();
-        output.close();
-        input.close();
-        return data;
-    }
-
-
-    /* *
-     * @Author 李鹏
-     * @Description //在二维码中间加个logo
-     * @Date 2020/3/30 14:47
-     * @Param [url, logos]
-     * @return byte[]
-     **/
-    public static byte[] encodeWithLogo(String url, String logos) {
-        byte[] data = null;
-        try {
-            Image image2 = ImageIO.read(new URL(url));//  null;//ImageIO.read(qrFile);
-            int width = image2.getWidth(null);
-            int height = image2.getHeight(null);
-            BufferedImage bufferImage = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
-            //BufferedImage bufferImage =ImageIO.read(image);
-            Graphics2D g2 = bufferImage.createGraphics();
-            g2.drawImage(image2, 0, 0, width, height, null);
-            int matrixWidth = bufferImage.getWidth();
-            int matrixHeigh = bufferImage.getHeight();
-
-            //读取Logo图片
-            BufferedImage logo = GenerateImage(logos);
-            //开始绘制图片
-            g2.drawImage(logo,matrixWidth/5*2,matrixHeigh/5*2, matrixWidth/5, matrixHeigh/5, null);//绘制
-            BasicStroke stroke = new BasicStroke(5,BasicStroke.CAP_ROUND,BasicStroke.JOIN_ROUND);
-            g2.setStroke(stroke);// 设置笔画对象
-            //指定弧度的圆角矩形
-            RoundRectangle2D.Float round = new RoundRectangle2D.Float(matrixWidth/5*2, matrixHeigh/5*2, matrixWidth/5, matrixHeigh/5,20,20);
-            g2.setColor(Color.white);
-            g2.draw(round);// 绘制圆弧矩形
-
-            //设置logo 有一道灰色边框
-            BasicStroke stroke2 = new BasicStroke(1,BasicStroke.CAP_ROUND,BasicStroke.JOIN_ROUND);
-            g2.setStroke(stroke2);// 设置笔画对象
-            RoundRectangle2D.Float round2 = new RoundRectangle2D.Float(matrixWidth/5*2+2, matrixHeigh/5*2+2, matrixWidth/5-4, matrixHeigh/5-4,20,20);
-            g2.setColor(new Color(128,128,128));
-            g2.draw(round2);// 绘制圆弧矩形
-
-            g2.dispose();
-
-            bufferImage.flush();
-            ByteArrayOutputStream out = new ByteArrayOutputStream();
-            ImageIO.write(bufferImage, "jpeg", out);
-            data = out.toByteArray();
-        } catch (Exception e) {
-            e.printStackTrace();
-        } finally {
-
-        }
-        return data;
-    }
-
-
-    /* *
-     * @Author 李鹏
-     * @Description //base64字符串转化流文件
-     * @Date 2020/3/30 14:48
-     * @Param [imgStr]
-     * @return java.awt.image.BufferedImage
-     **/
-    public static BufferedImage GenerateImage(String imgStr) {
-        //和base64String2ByteFun 冲突 用的时候解决
-        String s[] = imgStr.split(",");
-        byte[] src1 = base64String2ByteFun(imgStr); //Base64.getDecoder().decode(s[1]);
-        ByteArrayInputStream inputStream = new ByteArrayInputStream(src1);
-        BufferedImage bi = null;
-        try {
-            bi = ImageIO.read(inputStream);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return  bi;
-    }
-
-    //base64字符串转byte[]
-    public static byte[] base64String2ByteFun(String base64Str){
-        byte[] bytes = null;
-        try {
-            bytes =  new BASE64Decoder().decodeBuffer(base64Str.split("base64,")[1]);
-        } catch (IOException e) {
-            bytes = new byte[1];
-        }
-        return bytes;
-    }
-
-    //byte[]转base64
-    public static String byte2Base64StringFun(byte[] b){
-        return Base64.encodeBase64String(b);
-    }
-
-    /* *
-     * @Author 李鹏
-     * @Description 将文件转换成Byte数组
-     * @Date 2020/3/31 11:18
-     * @Param [pathStr]
-     * @return byte[]
-     **/
-    public static byte[] getBytesByFile(String pathStr) {
-        File file = new File(pathStr);
-        try {
-            FileInputStream fis = new FileInputStream(file);
-            ByteArrayOutputStream bos = new ByteArrayOutputStream(1000);
-            byte[] b = new byte[1000];
-            int n;
-            while ((n = fis.read(b)) != -1) {
-                bos.write(b, 0, n);
-            }
-            fis.close();
-            byte[] data = bos.toByteArray();
-            bos.close();
-            return data;
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return null;
-    }
-
-
-
-    /* *
-     * @Author 李鹏
-     * @Description 将Byte数组转换成文件
-     * @Date 2020/3/31 11:18
-     * @Param [bytes, filePath, fileName]
-     * @return void
-     **/
-    public static void getFileByBytes(byte[] bytes, String filePath, String fileName) {
-        BufferedOutputStream bos = null;
-        FileOutputStream fos = null;
-        File file = null;
-        try {
-            File dir = new File(filePath);
-            if (!dir.exists() && dir.isDirectory()) {// 判断文件目录是否存在
-                dir.mkdirs();
-            }
-            file = new File(filePath + "\\" + fileName);
-            fos = new FileOutputStream(file);
-            bos = new BufferedOutputStream(fos);
-            bos.write(bytes);
-        } catch (Exception e) {
-            e.printStackTrace();
-        } finally {
-            if (bos != null) {
-                try {
-                    bos.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-            if (fos != null) {
-                try {
-                    fos.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-        }
-    }
-
-
-
-    /**
-     * @Author lipeng
-     * @Description 文件或字符串重复后重新命名
-     * @Date 2022/7/5 11:33
-     * @param map map对象
-     * @param name 文件名称或字符串
-     * @return java.lang.String
-     **/
-    public final static String duplicateName(Map<String, Integer> map, String name){
-        String postfix = "";
-        if (!new Tika().detect(name).equals("application/octet-stream")){
-            postfix = name.substring(name.lastIndexOf("."));
-            name = name.substring(0, name.lastIndexOf("."));
-        }
-
-        Integer num = 1;
-        String newName = name;
-        if (map.get(name) != null){
-            num = map.get(name) + 1;
-            newName = name + "(" + num + ")";
-        }
-        map.put(name, num);
-        return newName + postfix;
-    }
-
-
-    /**
-     * @Author lipeng
-     * @Description 吧在线url转file
-     * @Date 2022/10/13 13:55
-     * @param url url地址
-     * @param filePath 本地路径
-     * @return java.io.File
-     **/
-    public static File getNetUrlHttp(String url, String filePath){
-        //对本地文件命名，path是http的完整路径，主要得到资源的名字
-        System.out.println(filePath);
-        log.info(filePath);
-        File file = new File(filePath);
-
-        InputStream inputStream = null;
-        OutputStream outputStream = null;
-        try{
-            //判断文件的父级目录是否存在，不存在则创建
-            if(!file.getParentFile().exists()){
-                file.getParentFile().mkdirs();
-            }
-            try{
-                //创建文件
-                file.createNewFile();
-            }catch (Exception e){
-                e.printStackTrace();
-            }
-            //下载
-            inputStream = new URL(url).openStream();
-            outputStream = new FileOutputStream(file);
-
-            int bytesRead = 0;
-            byte[] buffer = new byte[8192];
-            while ((bytesRead=inputStream.read(buffer,0,8192))!=-1) {
-                outputStream.write(buffer, 0, bytesRead);
-            }
-        }catch (Exception e) {
-            e.printStackTrace();
-        }finally {
-            try {
-                if (null != outputStream) {
-                    outputStream.close();
-                }
-                if (null != inputStream) {
-                    inputStream.close();
-                }
-
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-        return file;
-    }
-
-
-
-    /**
-     * 读取目录下的所有文件
+     * 判断指定路径是否为一个文件。
      *
-     * @param dir
-     *            目录
-     * @param fileNames
-     *            保存文件名的集合
-     * @return
+     * @param filePath 文件路径
+     * @return 如果是文件，返回 {@code true}
      */
-    public static void findFileList(File dir, List<String> fileNames) {
-        if (!dir.exists() || !dir.isDirectory()) {// 判断是否存在目录
+    public static boolean isFile(String filePath) {
+        Objects.requireNonNull(filePath, "文件路径不能为空");
+        return Files.isRegularFile(Paths.get(filePath));
+    }
+
+    /**
+     * 删除单个文件。
+     *
+     * @param filePath 文件路径
+     * @return 如果文件删除成功，返回 {@code true}
+     */
+    public static boolean deleteFile(String filePath) {
+        Objects.requireNonNull(filePath, "文件路径不能为空");
+        File file = new File(filePath);
+        if (file.isFile() && file.delete()) {
+            log.info("文件删除成功: {}", filePath);
+            return true;
+        }
+        log.warn("文件删除失败或文件不存在: {}", filePath);
+        return false;
+    }
+
+    /**
+     * 递归删除文件夹及其所有内容。
+     *
+     * @param folderPath 文件夹路径
+     */
+    public static void deleteFolder(String folderPath) {
+        Objects.requireNonNull(folderPath, "文件夹路径不能为空");
+        File folder = new File(folderPath);
+        if (folder.exists() && folder.isDirectory()) {
+            deleteDirectoryContent(folder);
+            if (folder.delete()) {
+                log.info("文件夹删除成功: {}", folderPath);
+            } else {
+                log.warn("文件夹删除失败: {}", folderPath);
+            }
+        } else {
+            log.warn("文件夹不存在或不是一个目录: {}", folderPath);
+        }
+    }
+
+    /**
+     * 递归删除目录内容（内部使用）
+     */
+    private static void deleteDirectoryContent(File dir) {
+        File[] files = dir.listFiles();
+        if (files == null) {
             return;
         }
-        String[] files = dir.list();// 读取目录下的所有目录文件信息
-        for (int i = 0; i < files.length; i++) {// 循环，添加文件名或回调自身
-            File file = new File(dir, files[i]);
-            if (file.isFile()) {// 如果文件
-                fileNames.add(dir + "\\" + file.getName());// 添加文件全路径名
-            } else {// 如果是目录
-                findFileList(file, fileNames);// 回调自身继续查询
+        for (File file : files) {
+            if (file.isDirectory()) {
+                deleteDirectoryContent(file);
+                if (file.delete()) {
+                    log.info("删除子文件夹成功: {}", file.getPath());
+                }
+            } else if (file.delete()) {
+                log.info("删除文件成功: {}", file.getPath());
+            }
+        }
+    }
+
+    // --- Base64 与文件/字节数组转换 ---
+
+    /**
+     * 将 Base64 字符串解码并保存为文件。
+     *
+     * @param folderPath 保存文件的文件夹路径
+     * @param fileName   文件名
+     * @param base64Str  Base64 编码的字符串
+     * @return 保存文件的完整路径
+     * @throws IOException 如果解码失败或文件写入失败
+     */
+    public static String saveFileFromBase64(String folderPath, String fileName, String base64Str) {
+        Objects.requireNonNull(folderPath, "文件夹路径不能为空");
+        Objects.requireNonNull(fileName, "文件名不能为空");
+        Objects.requireNonNull(base64Str, "Base64字符串不能为空");
+
+        createFolder(folderPath);
+        Path filePath = Paths.get(folderPath, fileName);
+        byte[] fileBytes = base64String2ByteFun(base64Str);
+        try {
+            Files.write(filePath, fileBytes);
+        } catch (IOException e) {
+            throw new KPUtilException("文件写入失败: " + e.getMessage());
+        }
+        log.info("文件从Base64保存成功: {}", filePath);
+        return filePath.toString();
+    }
+
+    /**
+     * Base64 字符串转字节数组（自动处理前缀）
+     */
+    public static byte[] base64String2ByteFun(String base64Str) {
+        String[] parts = base64Str.split(",", 2);
+        String base64Body = parts.length > 1 ? parts[1] : parts[0];
+        try {
+            return Base64.getDecoder().decode(base64Body);
+        } catch (IllegalArgumentException e) {
+            log.error("Base64字符串格式无效: {}", base64Str, e);
+            throw new IllegalArgumentException("无效的Base64字符串", e);
+        }
+    }
+
+    /**
+     * 字节数组转 Base64 字符串
+     */
+    public static String byte2Base64StringFun(byte[] bytes) {
+        Objects.requireNonNull(bytes, "字节数组不能为空");
+        return Base64.getEncoder().encodeToString(bytes);
+    }
+
+    /**
+     * 从文件读取字节数组
+     */
+    public static byte[] getBytesByFile(String filePath) {
+        Objects.requireNonNull(filePath, "文件路径不能为空");
+        try {
+            return Files.readAllBytes(Paths.get(filePath));
+        } catch (IOException e) {
+            throw new KPUtilException("文件读取失败: " + e.getMessage());
+        }
+    }
+
+    /**
+     * 将字节数组写入文件
+     */
+    public static void writeBytesToFile(byte[] bytes, String folderPath, String fileName) {
+        Objects.requireNonNull(bytes, "字节数组不能为空");
+        Objects.requireNonNull(folderPath, "文件夹路径不能为空");
+        Objects.requireNonNull(fileName, "文件名不能为空");
+
+        createFolder(folderPath);
+        Path filePath = Paths.get(folderPath, fileName);
+        try {
+            Files.write(filePath, bytes);
+        } catch (IOException e) {
+            throw new KPUtilException("文件写入失败: " + e.getMessage());
+        }
+        log.info("字节数组写入文件成功: {}", filePath);
+    }
+
+    // --- 网络文件操作 ---
+
+    /**
+     * 从 URL 读取字节流
+     */
+    public static byte[] readBytesFromUrl(String urlStr) {
+        try {
+            Objects.requireNonNull(urlStr, "URL不能为空");
+            URL url = new URL(urlStr);
+            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+            connection.setRequestMethod("GET");
+            connection.setConnectTimeout(DEFAULT_CONNECT_TIMEOUT);
+            connection.setReadTimeout(DEFAULT_READ_TIMEOUT);
+
+            try (InputStream in = connection.getInputStream();
+                 ByteArrayOutputStream out = new ByteArrayOutputStream()) {
+
+                byte[] buffer = new byte[DEFAULT_BUFFER_SIZE];
+                int bytesRead;
+                while ((bytesRead = in.read(buffer)) != -1) {
+                    out.write(buffer, 0, bytesRead);
+                }
+                return out.toByteArray();
+            } finally {
+                connection.disconnect();
+            }
+        } catch (Exception ex) {
+            throw new KPUtilException("从URL读取字节流失败" + ex.getMessage());
+        }
+    }
+
+    /**
+     * 下载网络文件到本地
+     */
+    public static File downloadFile(String urlStr, String localFolderPath) {
+        Objects.requireNonNull(urlStr, "URL不能为空");
+        Objects.requireNonNull(localFolderPath, "本地文件夹路径不能为空");
+
+        String fileName = extractFileNameFromUrl(urlStr);
+        createFolder(localFolderPath);
+        Path localFilePath = Paths.get(localFolderPath, fileName);
+
+        byte[] fileBytes = readBytesFromUrl(urlStr);
+        try {
+            Files.write(localFilePath, fileBytes);
+        } catch (IOException e) {
+            throw new KPUtilException("文件写入失败" + e.getMessage());
+        }
+        log.info("文件下载成功: {} -> {}", urlStr, localFilePath);
+        return localFilePath.toFile();
+    }
+
+    /**
+     * 从 URL 中提取文件名
+     */
+    private static String extractFileNameFromUrl(String urlStr) {
+        try {
+            String fileName = new File(new URL(urlStr).getPath()).getName();
+            if (fileName.isEmpty()) {
+                fileName = "downloaded_file_" + System.currentTimeMillis();
+            }
+            return fileName;
+        } catch (Exception ex) {
+            throw new KPUtilException("异常" + ex.getMessage());
+        }
+    }
+
+    // --- 图片处理 ---
+
+    /**
+     * 在二维码图片中间添加 Logo
+     */
+    public static byte[] encodeWithLogo(String qrCodeUrl, String logoBase64) {
+        try {
+            Objects.requireNonNull(qrCodeUrl, "二维码URL不能为空");
+            Objects.requireNonNull(logoBase64, "Logo的Base64字符串不能为空");
+
+            // 读取二维码图片
+            BufferedImage qrImage = ImageIO.read(new URL(qrCodeUrl));
+            int qrWidth = qrImage.getWidth();
+            int qrHeight = qrImage.getHeight();
+
+            // 读取Logo图片
+            byte[] logoBytes = base64String2ByteFun(logoBase64);
+            BufferedImage logoImage = ImageIO.read(new ByteArrayInputStream(logoBytes));
+
+            // Logo尺寸为二维码的1/5
+            int logoSize = qrWidth / 5;
+            BufferedImage resizedLogo = resizeImage(logoImage, logoSize, logoSize);
+
+            // 在二维码中心绘制Logo
+            Graphics2D g2d = qrImage.createGraphics();
+            int x = (qrWidth - logoSize) / 2;
+            int y = (qrHeight - logoSize) / 2;
+
+            // 绘制白色边框
+            g2d.setColor(Color.WHITE);
+            g2d.fillRoundRect(x - 2, y - 2, logoSize + 4, logoSize + 4, 10, 10);
+
+            // 绘制Logo
+            g2d.drawImage(resizedLogo, x, y, logoSize, logoSize, null);
+            g2d.dispose();
+
+            // 转换为字节数组
+            ByteArrayOutputStream out = new ByteArrayOutputStream();
+            ImageIO.write(qrImage, "png", out);
+            return out.toByteArray();
+        } catch (Exception ex) {
+            throw new KPUtilException("图片处理失败" + ex.getMessage());
+        }
+    }
+
+    /**
+     * 调整图片尺寸
+     */
+    private static BufferedImage resizeImage(BufferedImage originalImage, int targetWidth, int targetHeight) {
+        BufferedImage resizedImage = new BufferedImage(targetWidth, targetHeight, BufferedImage.TYPE_INT_ARGB);
+        Graphics2D g2d = resizedImage.createGraphics();
+        g2d.drawImage(originalImage.getScaledInstance(targetWidth, targetHeight, Image.SCALE_SMOOTH), 0, 0, null);
+        g2d.dispose();
+        return resizedImage;
+    }
+
+    // --- 文件命名 ---
+
+    /**
+     * 处理重复文件名
+     */
+    public static String getUniqueName(Map<String, Integer> existingNames, String originalName) {
+        Objects.requireNonNull(existingNames, "existingNames Map不能为空");
+        Objects.requireNonNull(originalName, "原始名称不能为空");
+
+        String baseName = originalName;
+        String extension = "";
+        int dotIndex = originalName.lastIndexOf('.');
+
+        if (dotIndex > 0) {
+            baseName = originalName.substring(0, dotIndex);
+            extension = originalName.substring(dotIndex);
+        }
+
+        Integer count = existingNames.get(baseName);
+        if (count == null) {
+            existingNames.put(baseName, 1);
+            return originalName;
+        } else {
+            String newName = baseName + "(" + (count + 1) + ")" + extension;
+            existingNames.put(baseName, count + 1);
+            return newName;
+        }
+    }
+
+    // --- 目录遍历 ---
+
+    /**
+     * 查找目录下的所有文件（递归）
+     */
+    public static void findAllFiles(File dir, List<String> filePaths) {
+        Objects.requireNonNull(dir, "目录不能为空");
+        Objects.requireNonNull(filePaths, "文件路径列表不能为空");
+
+        if (!dir.exists() || !dir.isDirectory()) {
+            log.warn("目录不存在或不是目录: {}", dir.getPath());
+            return;
+        }
+
+        File[] files = dir.listFiles();
+        if (files == null) {
+            return;
+        }
+
+        for (File file : files) {
+            if (file.isFile()) {
+                filePaths.add(file.getAbsolutePath());
+            } else if (file.isDirectory()) {
+                findAllFiles(file, filePaths);
             }
         }
     }

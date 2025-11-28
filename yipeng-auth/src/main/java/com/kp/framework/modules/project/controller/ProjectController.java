@@ -4,8 +4,11 @@ import com.alibaba.fastjson2.JSONObject;
 import com.github.xiaoymin.knife4j.annotations.ApiSupport;
 import com.kp.framework.annotation.KPApiJsonlParam;
 import com.kp.framework.annotation.KPApiJsonlParamMode;
+import com.kp.framework.annotation.KPObjectChangeLogNote;
 import com.kp.framework.annotation.verify.KPVerifyNote;
+import com.kp.framework.constant.ObjectChangeLogOperateType;
 import com.kp.framework.entity.bo.KPResult;
+import com.kp.framework.modules.project.mapper.ProjectMapper;
 import com.kp.framework.modules.project.po.ProjectPO;
 import com.kp.framework.modules.project.po.param.ProjectEditParamPO;
 import com.kp.framework.modules.project.po.param.ProjectListParamPO;
@@ -23,10 +26,10 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 
 /**
-* @Author lipeng
-* @Description  项目表相关接口
-* @Date 2025-03-14
-**/
+ * @Author lipeng
+ * @Description 项目表相关接口
+ * @Date 2025-03-14
+ **/
 @RestController
 @RequestMapping("/auth/project")
 @Api(tags = "项目相关接口", value = "项目相关接口")
@@ -41,60 +44,64 @@ public class ProjectController {
     @ApiOperation(value = "查询项目分页列表", notes = "权限 auth:project:page:list")
     @PostMapping("/page/list")
     @KPVerifyNote
-    public KPResult<ProjectPO> queryPageList(@RequestBody ProjectListParamPO projectListParamPO){
+    public KPResult<ProjectPO> queryPageList(@RequestBody ProjectListParamPO projectListParamPO) {
         return KPResult.list(projectService.queryPageList(projectListParamPO));
     }
 
 
     @PreAuthorize("hasPermission('/auth/project/details','auth:project:details')")
-    @ApiOperation(value = "根据项目Id查询详情", notes="权限 auth:project:details")
+    @ApiOperation(value = "根据项目Id查询详情", notes = "权限 auth:project:details")
     @PostMapping("/details")
     @KPApiJsonlParam({
-        @ApiModelProperty(name = "projectId", value = "项目Id", required = true)
+            @ApiModelProperty(name = "projectId", value = "项目Id", required = true)
     })
-    public KPResult<ProjectPO> queryDetailsById(@RequestBody JSONObject parameter){
+    public KPResult<ProjectPO> queryDetailsById(@RequestBody JSONObject parameter) {
         return KPResult.success(projectService.queryDetailsById(parameter));
     }
 
 
     @PreAuthorize("hasPermission('/auth/project/save','auth:project:save')")
-    @ApiOperation(value = "新增项目", notes="权限 auth:project:save")
+    @ApiOperation(value = "新增项目", notes = "权限 auth:project:save")
     @PostMapping("/save")
+    @KPObjectChangeLogNote(parentMapper = ProjectMapper.class, identification = "projectId,project_id", operateType = ObjectChangeLogOperateType.ADD, businessType = "项目信息")
     @KPVerifyNote
     @KPApiJsonlParamMode(component = ProjectEditParamPO.class, ignores = "projectId")
-    public KPResult<ProjectPO> save(@RequestBody ProjectEditParamPO projectEditParamPO){
+    public KPResult<ProjectPO> save(@RequestBody ProjectEditParamPO projectEditParamPO) {
         projectService.saveProject(projectEditParamPO);
         return KPResult.success();
     }
 
 
     @PreAuthorize("hasPermission('/auth/project/update','auth:project:update')")
-    @ApiOperation(value = "修改项目", notes="权限 auth:project:update")
+    @ApiOperation(value = "修改项目", notes = "权限 auth:project:update")
     @PostMapping("/update")
+    @KPObjectChangeLogNote(parentMapper = ProjectMapper.class, identification = "projectId,project_id", businessType = "项目信息")
     @KPVerifyNote
-    public KPResult<ProjectPO> update(@RequestBody ProjectEditParamPO projectEditParamPO){
+    public KPResult<ProjectPO> update(@RequestBody ProjectEditParamPO projectEditParamPO) {
         projectService.updateProject(projectEditParamPO);
         return KPResult.success();
     }
 
 
     @PreAuthorize("hasPermission('/auth/project/batch/remove','auth:project:batch:remove')")
-    @ApiOperation(value = "批量删除项目", notes="权限 auth:project:batch:remove")
+    @ApiOperation(value = "批量删除项目", notes = "权限 auth:project:batch:remove")
     @PostMapping("/batch/remove")
     @KPApiJsonlParam({
-        @ApiModelProperty(name = "ids", value = "项目Id", required = true, dataType = "list")
+            @ApiModelProperty(name = "ids", value = "项目Id", required = true, dataType = "list")
     })
-    public KPResult batchRemove(@RequestBody List<String> ids){
+    @KPObjectChangeLogNote(parentMapper = ProjectMapper.class, identification = "projectId,project_id", operateType = ObjectChangeLogOperateType.DELETE, businessType = "项目信息")
+    public KPResult batchRemove(@RequestBody List<String> ids) {
         return KPResult.success(projectService.batchRemove(ids));
     }
 
 
     @PreAuthorize("hasPermission('/auth/project/do/status','auth:project:do:status')")
-    @ApiOperation(value = "设置项目状态", notes="权限 auth:project:do:status")
+    @ApiOperation(value = "设置项目状态", notes = "权限 auth:project:do:status")
     @PostMapping(value = "/do/status")
     @KPApiJsonlParam({
-        @ApiModelProperty(name = "projectId", value = "项目Id", required = true, example = "af0ccec3d65f7571d75a0a4fdf597407"),
+            @ApiModelProperty(name = "projectId", value = "项目Id", required = true, example = "af0ccec3d65f7571d75a0a4fdf597407"),
     })
+    @KPObjectChangeLogNote(parentMapper = ProjectMapper.class, identification = "projectId,project_id", businessType = "项目信息")
     public KPResult doStatus(@RequestBody JSONObject parameter) {
         projectService.doStatus(parameter);
         return KPResult.success();

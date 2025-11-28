@@ -8,6 +8,9 @@ import com.alibaba.excel.write.metadata.fill.FillConfig;
 import com.alibaba.excel.write.metadata.style.WriteCellStyle;
 import com.alibaba.excel.write.metadata.style.WriteFont;
 import com.alibaba.excel.write.style.HorizontalCellStyleStrategy;
+import com.kp.framework.constant.MinioConstant;
+import com.kp.framework.exception.KPServiceException;
+import lombok.experimental.UtilityClass;
 import org.apache.poi.ss.usermodel.BorderStyle;
 import org.apache.poi.ss.usermodel.IndexedColors;
 import org.apache.tika.Tika;
@@ -29,11 +32,9 @@ import java.util.List;
  * @Param
  * @return
  **/
+@UtilityClass
 public final class KPEasyExcelUtil {
     private static Logger logger = LoggerFactory.getLogger(KPEasyExcelUtil.class);
-
-    private KPEasyExcelUtil(){}
-
 
 
     /**
@@ -45,16 +46,16 @@ public final class KPEasyExcelUtil {
      * @param list 导出内容
      * @return void
      **/
-    public static final void exportByTemplate(String filename, String tempLatePath, List<?> list){
-        if (filename.indexOf("/")!=-1)
-            filename = filename.substring(filename.lastIndexOf("/")+1);
-        HttpServletResponse response =((ServletRequestAttributes)RequestContextHolder.getRequestAttributes()).getResponse();
+    public static final void exportByTemplate(String filename, String tempLatePath, List<?> list) {
+        if (filename.indexOf("/") != -1)
+            filename = filename.substring(filename.lastIndexOf("/") + 1);
+        HttpServletResponse response = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getResponse();
         try {
             // 内容的策略
             WriteCellStyle contentWriteCellStyle = new WriteCellStyle();
             WriteFont contentWriteFont = new WriteFont();
             // 字体大小
-            contentWriteFont.setFontHeightInPoints((short)16);
+            contentWriteFont.setFontHeightInPoints((short) 16);
             contentWriteCellStyle.setWriteFont(contentWriteFont);
 
             contentWriteCellStyle.setBorderBottom(BorderStyle.THIN);
@@ -83,9 +84,9 @@ public final class KPEasyExcelUtil {
             ExcelWriter excelWriter = null;
 //          ExcelWriter excelWriter = EasyExcel.write(response.getOutputStream()).withTemplate(tempLatePath).registerWriteHandler(horizontalCellStyleStrategy).build();
 
-            if(filename.substring(filename.indexOf("."), filename.length()).equalsIgnoreCase(".xls"))
+            if (filename.substring(filename.indexOf("."), filename.length()).equalsIgnoreCase(".xls"))
                 excelWriter = EasyExcel.write(response.getOutputStream()).withTemplate(tempLatePath).excelType(ExcelTypeEnum.XLS).registerWriteHandler(horizontalCellStyleStrategy).build();
-            if(filename.substring(filename.indexOf("."), filename.length()).equalsIgnoreCase(".xlsx"))
+            if (filename.substring(filename.indexOf("."), filename.length()).equalsIgnoreCase(".xlsx"))
                 excelWriter = EasyExcel.write(response.getOutputStream()).withTemplate(tempLatePath).excelType(ExcelTypeEnum.XLSX).registerWriteHandler(horizontalCellStyleStrategy).build();
 
 
@@ -98,7 +99,6 @@ public final class KPEasyExcelUtil {
     }
 
 
-
     /**
      * @Author lipeng
      * @Description 根据模板导出Excel
@@ -108,16 +108,16 @@ public final class KPEasyExcelUtil {
      * @param list 导出内容
      * @return void
      **/
-    public static final void exportByTemplate(String filename, InputStream inputStream, List<?> list){
-        if (filename.indexOf("/")!=-1)
-            filename = filename.substring(filename.lastIndexOf("/")+1);
-        HttpServletResponse response =((ServletRequestAttributes)RequestContextHolder.getRequestAttributes()).getResponse();
+    public static final void exportByTemplate(String filename, InputStream inputStream, List<?> list) {
+        if (filename.indexOf("/") != -1)
+            filename = filename.substring(filename.lastIndexOf("/") + 1);
+        HttpServletResponse response = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getResponse();
         try {
             // 内容的策略
             WriteCellStyle contentWriteCellStyle = new WriteCellStyle();
             WriteFont contentWriteFont = new WriteFont();
             // 字体大小
-            contentWriteFont.setFontHeightInPoints((short)16);
+            contentWriteFont.setFontHeightInPoints((short) 16);
             contentWriteCellStyle.setWriteFont(contentWriteFont);
 
             contentWriteCellStyle.setBorderBottom(BorderStyle.THIN);
@@ -143,9 +143,9 @@ public final class KPEasyExcelUtil {
             response.setHeader("Content-disposition", "attachment;filename=" + URLEncoder.encode(filename, "utf-8"));
 //            response.setHeader("filename", URLEncoder.encode(filename.substring(0, filename.indexOf(".")), "utf-8"));
             ExcelWriter excelWriter = null;
-            if(filename.substring(filename.indexOf("."), filename.length()).equalsIgnoreCase(".xls"))
+            if (filename.substring(filename.indexOf("."), filename.length()).equalsIgnoreCase(".xls"))
                 excelWriter = EasyExcel.write(response.getOutputStream()).withTemplate(inputStream).excelType(ExcelTypeEnum.XLS).registerWriteHandler(horizontalCellStyleStrategy).build();
-            if(filename.substring(filename.indexOf("."), filename.length()).equalsIgnoreCase(".xlsx"))
+            if (filename.substring(filename.indexOf("."), filename.length()).equalsIgnoreCase(".xlsx"))
                 excelWriter = EasyExcel.write(response.getOutputStream()).withTemplate(inputStream).excelType(ExcelTypeEnum.XLSX).registerWriteHandler(horizontalCellStyleStrategy).build();
 
             WriteSheet writeSheet = EasyExcel.writerSheet().build();
@@ -157,7 +157,6 @@ public final class KPEasyExcelUtil {
     }
 
 
-
     /**
      * @Author lipeng
      * @Description 根据模板导出，适用任何情况
@@ -167,10 +166,10 @@ public final class KPEasyExcelUtil {
      * @param obj
      * @return void
      **/
-    public static final void exportByTemplate(String filename, InputStream inputStream, Object... obj){
-        if (filename.indexOf("/")!=-1)
-            filename = filename.substring(filename.lastIndexOf("/")+1);
-        HttpServletResponse response =((ServletRequestAttributes)RequestContextHolder.getRequestAttributes()).getResponse();
+    public static final void exportByTemplate(String filename, InputStream inputStream, Object... obj) {
+        if (filename.indexOf("/") != -1)
+            filename = filename.substring(filename.lastIndexOf("/") + 1);
+        HttpServletResponse response = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getResponse();
         try {
             // 这里注意 有同学反应使用swagger 会导致各种问题，请直接用浏览器或者用postman
             response.setContentType(new Tika().detect(filename));
@@ -178,9 +177,9 @@ public final class KPEasyExcelUtil {
             response.setHeader("Content-disposition", "attachment;filename=" + URLEncoder.encode(filename, "utf-8"));
 //            response.setHeader("filename", URLEncoder.encode(filename.substring(0, filename.indexOf(".")), "utf-8"));
             ExcelWriter excelWriter = null;
-            if(filename.substring(filename.indexOf("."), filename.length()).equalsIgnoreCase(".xls"))
+            if (filename.substring(filename.indexOf("."), filename.length()).equalsIgnoreCase(".xls"))
                 excelWriter = EasyExcel.write(response.getOutputStream()).withTemplate(inputStream).excelType(ExcelTypeEnum.XLS).build();
-            if(filename.substring(filename.indexOf("."), filename.length()).equalsIgnoreCase(".xlsx"))
+            if (filename.substring(filename.indexOf("."), filename.length()).equalsIgnoreCase(".xlsx"))
                 excelWriter = EasyExcel.write(response.getOutputStream()).withTemplate(inputStream).excelType(ExcelTypeEnum.XLSX).build();
 
             WriteSheet writeSheet = EasyExcel.writerSheet().build();
@@ -196,6 +195,31 @@ public final class KPEasyExcelUtil {
         }
     }
 
+
+    /**
+     * @Author lipeng
+     * @Description 根据模板导出（模板在minio中）
+     * @Date 2022/7/7 10:36
+     * @param bucketName 桶名称
+     * @param fileName 文件名
+     * @param list 导出内容
+     * @return void
+     **/
+    public static void minioExprotByTemplate(String bucketName, String fileName, List<?> list) {
+        InputStream inputStream = null;
+        try {
+            inputStream = KPMinioUtil.getObject(bucketName, MinioConstant.TEMPLATE + fileName);
+            KPEasyExcelUtil.exportByTemplate(fileName, inputStream, list);
+        } catch (Exception e) {
+            throw new KPServiceException("导出异常，请检查模板是否存在！");
+        } finally {
+            try {
+                inputStream.close();
+            } catch (Exception ex) {
+            }
+            System.gc();
+        }
+    }
 
     /**
      * @Author lipeng

@@ -4,8 +4,13 @@ import com.alibaba.fastjson2.JSONObject;
 import com.github.xiaoymin.knife4j.annotations.ApiSupport;
 import com.kp.framework.annotation.KPApiJsonlParam;
 import com.kp.framework.annotation.KPApiJsonlParamMode;
+import com.kp.framework.annotation.KPObjectChangeLogListNote;
+import com.kp.framework.annotation.KPObjectChangeLogNote;
 import com.kp.framework.annotation.verify.KPVerifyNote;
+import com.kp.framework.constant.ObjectChangeLogOperateType;
 import com.kp.framework.entity.bo.KPResult;
+import com.kp.framework.modules.role.mapper.RoleMapper;
+import com.kp.framework.modules.role.mapper.RoleProjectRelevanceMapper;
 import com.kp.framework.modules.role.po.RolePO;
 import com.kp.framework.modules.role.po.customer.RoleDetailsCustomerPO;
 import com.kp.framework.modules.role.po.customer.RoleListCustomerPO;
@@ -66,6 +71,10 @@ public class RoleController {
     @PreAuthorize("hasPermission('/auth/role/save','auth:role:save')")
     @ApiOperation(value = "新增角色信息", notes = "权限 auth:role:save")
     @PostMapping("/save")
+    @KPObjectChangeLogListNote({
+            @KPObjectChangeLogNote(parentMapper = RoleMapper.class, identification = "roleId,role_id", operateType = ObjectChangeLogOperateType.ADD, businessType = "角色信息"),
+            @KPObjectChangeLogNote(parentMapper = RoleProjectRelevanceMapper.class, identification = "roleId,role_id", operateType = ObjectChangeLogOperateType.ADD_BATCH, businessType = "角色关联项目信息")
+    })
     @KPVerifyNote
     @KPApiJsonlParamMode(component = RoleEditParamPO.class, ignores = "roleId")
     public KPResult<RolePO> save(@RequestBody RoleEditParamPO roleEditParamPO) {
@@ -77,6 +86,10 @@ public class RoleController {
     @PreAuthorize("hasPermission('/auth/role/update','auth:role:update')")
     @ApiOperation(value = "修改角色信息", notes = "权限 auth:role:update")
     @PostMapping("/update")
+    @KPObjectChangeLogListNote({
+            @KPObjectChangeLogNote(parentMapper = RoleMapper.class, identification = "roleId,role_id", businessType = "角色信息"),
+            @KPObjectChangeLogNote(parentMapper = RoleProjectRelevanceMapper.class, identification = "roleId,role_id", operateType = ObjectChangeLogOperateType.DELETE_ADD, businessType = "角色关联项目信息")
+    })
     @KPVerifyNote
     public KPResult<RolePO> update(@RequestBody RoleEditParamPO roleEditParamPO) {
         roleService.updateRole(roleEditParamPO);
@@ -90,7 +103,8 @@ public class RoleController {
     @KPApiJsonlParam({
             @ApiModelProperty(name = "ids", value = "角色Id", required = true, dataType = "list")
     })
-    public KPResult batchRemove(@RequestBody List<String> ids) {
+    @KPObjectChangeLogNote(parentMapper = RoleMapper.class, identification = "roleId,role_id", operateType = ObjectChangeLogOperateType.DELETE, businessType = "角色信息")
+    public KPResult<String> batchRemove(@RequestBody List<String> ids) {
         return KPResult.success(roleService.batchRemove(ids));
     }
 
@@ -101,6 +115,7 @@ public class RoleController {
     @KPApiJsonlParam({
             @ApiModelProperty(name = "roleId", value = "角色Id", required = true, example = "4c2943e45aa513c079045020b0d1bd8e")
     })
+    @KPObjectChangeLogNote(parentMapper = RoleMapper.class, identification = "roleId,role_id", businessType = "角色信息")
     public KPResult updateStatus(@RequestBody JSONObject parameter) {
         roleService.updateStatus(parameter);
         return KPResult.success();

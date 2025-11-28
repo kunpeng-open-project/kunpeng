@@ -146,6 +146,8 @@ public class MenuService extends ServiceImpl<MenuMapper, MenuPO> {
 
         if (this.baseMapper.insert(menuPO) == 0)
             throw new KPServiceException(ReturnFinishedMessageConstant.ERROR);
+
+        menuEditParamPO.setMenuId(menuPO.getMenuId());
     }
 
 
@@ -305,5 +307,7 @@ public class MenuService extends ServiceImpl<MenuMapper, MenuPO> {
 
         if (this.baseMapper.insert(menuPO) == 0)
             throw new KPServiceException(ReturnFinishedMessageConstant.ERROR);
+
+        parameter.put("menuId", menuPO.getMenuId());
     }
 }

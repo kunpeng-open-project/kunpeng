@@ -20,7 +20,7 @@ import java.util.Arrays;
 public class FrameworkSecurityApplication {
     @PostConstruct
     public void init() {
-        IconUtil.println(IconUtil.PURPLE, Arrays.asList("加载模块 [framework-security] 鉴权校验模块!", "版本      1.0.0-SNAPSHOT"));
+        IconUtil.println(IconUtil.PURPLE, Arrays.asList("加载模块 [framework-security] 鉴权校验模块!", "版本      1.1.1-SNAPSHOT"));
         log.info("加载模块 [framework-security] 鉴权校验模块!");
     }
 }

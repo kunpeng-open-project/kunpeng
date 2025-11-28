@@ -40,7 +40,13 @@ public final class KPServiceUtil implements ApplicationContextAware {
         return applicationContext;
     }
 
-    //通过name获取 Bean.
+
+    /**
+     * @Author lipeng
+     * @Description 通过name获取 Bean.
+     * @param name
+     * @return T
+     **/
     public static <T> T getBean(String name) {
         try {
             return (T)getApplicationContext().getBean(name);
@@ -50,7 +56,12 @@ public final class KPServiceUtil implements ApplicationContextAware {
 
     }
 
-    //通过class获取Bean.
+    /**
+     * @Author lipeng
+     * @Description 通过class获取Bean.
+     * @param clazz
+     * @return T
+     **/
     public static <T> T getBean(Class<T> clazz) {
         try {
             return (T) getApplicationContext().getBean(KPStringUtil.initialsLowerCase(clazz.getSimpleName()), clazz);
@@ -59,7 +70,13 @@ public final class KPServiceUtil implements ApplicationContextAware {
         }
     }
 
-    //通过name,以及Clazz返回指定的Bean
+    /**
+     * @Author lipeng
+     * @Description 通过name,以及Clazz返回指定的Bean
+     * @param name
+     * @param clazz
+     * @return T
+     **/
     public static <T> T getBean(String name, Class<T> clazz)  {
         return getApplicationContext().getBean(name, clazz);
     }

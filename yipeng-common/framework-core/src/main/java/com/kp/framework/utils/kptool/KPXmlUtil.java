@@ -5,6 +5,7 @@ import de.odysseus.staxon.json.JsonXMLConfigBuilder;
 import de.odysseus.staxon.json.JsonXMLInputFactory;
 import de.odysseus.staxon.json.JsonXMLOutputFactory;
 import de.odysseus.staxon.xml.util.PrettyXMLEventWriter;
+import lombok.experimental.UtilityClass;
 
 import javax.xml.stream.XMLEventReader;
 import javax.xml.stream.XMLEventWriter;
@@ -21,9 +22,8 @@ import java.io.StringWriter;
  * @Date 2021/10/14 14:13
  * @return
  **/
+@UtilityClass
 public final class KPXmlUtil {
-
-    private KPXmlUtil(){}
 
 
     /**

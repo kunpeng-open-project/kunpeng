@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.github.yulichang.wrapper.MPJLambdaWrapper;
 import com.kp.framework.exception.KPUtilException;
+import lombok.experimental.UtilityClass;
 import org.apache.ibatis.session.SqlSessionFactory;
 
 import java.lang.reflect.Field;
@@ -13,6 +14,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
+@UtilityClass
 public class KPDatabaseUtil {
     /**
      * 聚合函数：将字段按指定分隔符拼接（替代MySQL的GROUP_CONCAT）

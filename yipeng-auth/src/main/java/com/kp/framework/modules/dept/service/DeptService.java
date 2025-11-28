@@ -145,6 +145,8 @@ public class DeptService extends ServiceImpl<DeptMapper, DeptPO> {
 
         if (this.baseMapper.insert(deptPO) == 0)
             throw new KPServiceException(ReturnFinishedMessageConstant.ERROR);
+
+        deptEditParamPO.setDeptId(deptPO.getDeptId());
     }
 
 

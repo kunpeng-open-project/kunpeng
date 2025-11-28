@@ -27,7 +27,7 @@ public class RequestSubmitBuilder {
 
     public Boolean dispose(KPRepeatSubmitNote repeatSubmit)  {
         HttpServletRequest request = KPRequsetUtil.getRequest();
-        String redisKey = redis_key +  KPIPUtil.getClinetIP() + ":" + request.getRequestURI();
+        String redisKey = redis_key +  KPIPUtil.getClientIP() + ":" + request.getRequestURI();
 
         String timestamp = KPRedisUtil.getString(redisKey);
         if (KPStringUtil.isEmpty(timestamp)){

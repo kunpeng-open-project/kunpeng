@@ -1,149 +1,190 @@
 package com.kp.framework.utils.kptool;
 
+import com.kp.framework.exception.KPUtilException;
+import lombok.experimental.UtilityClass;
+import lombok.extern.slf4j.Slf4j;
 
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
 import java.util.Base64;
-import java.util.List;
+import java.util.Random;
 
 /**
- * @Author lipeng
- * @Description
- * @Date 2023/9/28
- * @return
- **/
+ * <p>
+ * 一个增强的 Base64 工具类，提供标准和 URL 安全的 Base64 编码/解码功能，并集成了加盐机制。
+ * </p>
+ * <p>
+ * 该工具类采用在 Base64 编码后的字符串首尾添加随机盐值的方式，
+ * 有效防止对固定明文的 Base64 编码进行彩虹表攻击，增加了加密的安全性。
+ * </p>
+ * @author lipeng
+ * @version 2.0
+ * @since 2023/10/27
+ */
+@UtilityClass
+@Slf4j
 public class KPBase64Utils {
 
-    //盐
-    private Integer[] saltssite = {1};
+    //用于生成随机盐的字符池。包含了数字、大小写字母和常用特殊字符，以确保盐值的复杂性。
+    private static final String SALT_CHARACTERS = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ!@#$%^&*()_-+=[]{}|;:,.?";
 
-    //加的内容
-    private static final String[] values = {"0","1","2","3","4","5","6","7","8","9",
-            "a","b","c","d","e","f","g","h","i","g","k","l","m","n","o","p","q","r","s","t","u","v","w","x","z","y",
-            "!","@","#","$","%","^","&","*"};
+    // 用于生成随机数的 {@link Random} 实例。
+    private static final Random RANDOM = new Random();
 
-    //明文
-    private String body;
 
-    public KPBase64Utils(Integer[] saltssite, String body){
-        this.saltssite = saltssite;
-        this.body = body;
+    /**
+     * @Author lipeng
+     * @Description 标准 Base64 加密
+     * @Date 2023/9/28
+     * @param plainText 待编码的明文
+     * @return java.lang.String 标准 Base64 编码后的字符串。
+     **/
+    public static String encode(String plainText) {
+        if (KPStringUtil.isEmpty(plainText)) return plainText;
+        return Base64.getEncoder().encodeToString(plainText.getBytes(StandardCharsets.UTF_8));
     }
 
 
     /**
      * @Author lipeng
-     * @Description 加密
+     * @Description 对url加密
+     * 该算法使用 '-' 代替 '+'，使用 '_' 代替 '/'，并且默认不进行填充（即移除末尾的 '='）。
      * @Date 2023/9/28
-     * @return java.lang.String
+     * @param plainText 待编码的明文
+     * @return java.lang.String  URL 安全的 Base64 编码后的字符串。
      **/
-    public KPBase64Utils encryption(){
-        this.body = Base64.getEncoder().encodeToString(this.body.getBytes(StandardCharsets.UTF_8));
-        return this;
+    public static String encodeUrlSafe(String plainText) {
+        if (KPStringUtil.isEmpty(plainText)) return plainText;
+        return Base64.getUrlEncoder().withoutPadding().encodeToString(plainText.getBytes(StandardCharsets.UTF_8));
     }
-
 
     /**
      * @Author lipeng
-     * @Description 解密
+     * @Description 对标准 Base64 编码的字符串进行解码。
      * @Date 2023/9/28
-     * @return java.lang.String
+     * @param base64String  标准 Base64 编码的字符串。
+     * @return java.lang.String 解码后的明文。
      **/
-    public KPBase64Utils decode(){
-        this.body = new String(Base64.getDecoder().decode(this.body.getBytes()), StandardCharsets.UTF_8);
-        return this;
-    }
-
-
-    /**
-     * @Author lipeng
-     * @Description 返回结果
-     * @Date 2023/9/28
-     * @param
-     * @return java.lang.String
-     **/
-    public String build(){
-        return this.body;
-    }
-
-
-    /**
-     * @Author lipeng
-     * @Description 随机加盐
-     * @Date 2023/9/28
-     * @return java.lang.String
-     **/
-    public KPBase64Utils addSalt(){
-        StringBuffer sb = new StringBuffer(this.body);
-        for (int value: this.saltssite) {
-            sb.insert(value, this.values[KPNumberUtil.rod(0, this.values.length-1)]);
+    public static String decode(String base64String) {
+        if (KPStringUtil.isEmpty(base64String)) return base64String;
+        try {
+            return new String(Base64.getDecoder().decode(base64String), StandardCharsets.UTF_8);
+        } catch (IllegalArgumentException e) {
+            throw new KPUtilException("Base64 解码失败，输入字符串格式不正确: " + base64String);
         }
-        this.body =  sb.toString();
-        return this;
     }
-
 
     /**
      * @Author lipeng
-     * @Description 去盐
+     * @Description 对 URL 安全的 Base64 编码的字符串进行解码。
      * @Date 2023/9/28
-     * @return java.lang.String
+     * @param urlSafeBase64String URL 安全的 Base64 编码的字符串。
+     * @return java.lang.String 解码后的明文
      **/
-    public KPBase64Utils delSalt(){
-        StringBuffer sb = new StringBuffer(this.body);
-
-        for (int i = 0; i <  this.saltssite.length; i++) {
-            sb.deleteCharAt(this.saltssite[i]-i);
+    public static String decodeUrlSafe(String urlSafeBase64String) {
+        if (KPStringUtil.isEmpty(urlSafeBase64String)) return urlSafeBase64String;
+        try {
+            return new String(Base64.getUrlDecoder().decode(urlSafeBase64String), StandardCharsets.UTF_8);
+        } catch (IllegalArgumentException e) {
+            throw new KPUtilException("URL 安全的 Base64 解码失败，输入字符串格式不正确: " + urlSafeBase64String);
         }
-        this.body =  sb.toString();
-        return this;
     }
 
 
     /**
      * @Author lipeng
-     * @Description 根据要加密的内容生成合适的盐
-     * @Date 2023/10/13
-     * @param body 明文
-     * @param interval 间隔
-     * @return java.lang.String
+     * @Description 在一个字符串的开头和结尾添加随机生成的盐。
+     * 对 Base64 编码后的字符串使用此方法。
+     * @Date 2023/9/28
+     * @param input 原始输入字符串（推荐是 Base64 编码后的字符串）。
+     * @param saltLength 盐的长度。前缀和后缀的盐将各占此长度。
+     * @return java.lang.String 添加了盐的新字符串。
      **/
-    public String generateSaltssite (String body, Integer interval){
-        List<Integer> list = new ArrayList<>();
-        for (int i = 0; i < (body.length()-2)/interval; i++) {
-            int satrt = i*interval+1, end = i*interval+interval;
-//            System.out.println("("+satrt+"~"+end+")"+KPNumberUtil.rod(satrt, end) +"-");
-            Integer num = KPNumberUtil.rod(satrt, end);
-            if (!list.contains(num)){
-                list.add(KPNumberUtil.rod(satrt, end));
-            }else{
-                return null;
-            }
-        }
-        StringBuilder sb = new StringBuilder("{");
-        list.forEach(num->{
-            sb.append(num).append(",");
-        });
-        return sb.toString().substring(0, sb.toString().length()-1) + "}";
-
-//        return list.stream().toArray(Integer[]::new);
+    public static String addSalt(String input, int saltLength) {
+        if (KPStringUtil.isEmpty(input)) return input;
+        if (saltLength < 0) saltLength = 10;
+        String prefix = generateRandomSalt(saltLength);
+        String suffix = generateRandomSalt(saltLength);
+        return prefix + input + suffix;
     }
 
 
-//    public static void main(String[] args) {
-//        String aaa = new KPBase64Utils(KPBase64Utils.saltssite, "lipeng-lipeng-lipeng-lipeng-lipeng-lipeng-lipeng").encryption().build();
-//        System.out.println(aaa);
-//        System.out.println(new KPBase64Utils(KPBase64Utils.saltssite, aaa).decode().build());
-//        System.out.println("--------------------------------");
-//        String bbb = new KPBase64Utils(KPBase64Utils.saltssite,"lipeng-lipeng-lipeng-lipeng-lipeng-lipeng-lipeng").addSalt().encryption().build();
-//        System.out.println(bbb);
-//        System.out.println(new KPBase64Utils(KPBase64Utils.saltssite, bbb).decode().delSalt().build());
-//        String RabbitMqListeningConfig = "eyJjUlNBX15DVVN3UDBSSWtLRVl2IjoiTWhJcElrI0V2UUk5NCpkQnhBREFOQmdrcWhraUc5dzBCQVFFRkFBU0NCS2N3Z2dTakFnRUFBb0lCQVFEQkxCTitNUXpGTnNVa2w5RURubVFHRU01N0RZZDU2T25Fa2xZWGlKd28zL2JDRW93NWFSVDBDTDJSVWdOZDd0MDY0S1c2VjNoYVhCdGF3aEtYVG9CSkdRYjl6QWUxWWhnalhtbTdTRG1sa0M1V1VDa1d6YmJxYzVTSktPOGltV2R5SW9BU0VkaDNteS94dnJFNlB5YnBvc3c1Tk02a2RyVnJBbmFKb1RPOW5SaDkxa2dFM212eEJrV1hqUW5aeXBWU1lkRDl6QkhCbmlWc1ZLK1Bkcktnb25qQnFqejhmRXhqWm8vUTc2ZnVQd0JMMmNDUTI0dmRMdXZJNFZadVRDeFpFbStwY21sZUFiRThUa3hnbzZ3bDVUYzRBUkNmTEUyRllRckJlVTUrbHNUQTM1WE5ucmFhUUxoWEdCWXpSa3ROOGlrbDdVRTlnWG5jdGhxclllNHRBZ01CQUFFQ2dnRUFESjhldCsrb1dWNFgyVlA5RnNBdzRnK1RqNGs3QS9LOVlYZ1JTQ1l5S1RQaHJ0MExqS01WSTN2TERSVjAwd2RNMTdCcGRsM2U1eTB6cHJBSVlIQURPYU41RXVOVHBwem9uYTVUemhEczgvM1NIK3dnRklBYVMrMHVORWNOMXU3UWlrTXBwem51RzZTSUV3TFF3dER4QlRJbC9MVTZyT3dmdEVTbWc1MXZpM0Rub1N2K0hNVWhkMnJway84VDVHWnByR3BpZTJ0ZkJPeFpkTElrMnhOc00zT0JwN1BzRzFPaXdsS0tWTlRlcHl6WTd4NXBicWlmNWVzL3dyalRFNGtoby9jYmVaRVo1WnA0L3N3aWdna2t1M1V5b0hCNlFaMUIxcHlESVZVeEE1UHp1RGQ1bXkzYmkvTHJya2JtSVFmYUhsWlRhUHlWMFR1RU4zdUtPdjRCS1FLQmdRRGpoeEZUTGpOWW4vdjI3NGJBelRwdHhlUVk3cXpxS0tGQm9KNjIzeDJaY1NWeFBDR0htM1VRbEIwV3RHUVpaUWZiajRKUWY3djQ5dlBsZXJNNUYwWmI4YUh2YTJRSGMvakxYOG5CeTAzKzdoL0swVGhsK1JSaU9naytWbkZacEJscVVISHJoc212VWNjMGV2N1pkRFBWSkkwS1AvYlJiZTFsaVhTdEZyTDBHUUtCZ1FEWldHdFFNVlRDRmxDUmtlNFc1cytycXEyenBaSm01Vzg3NG40VjFKTlB1ZHNpQ3hFZlBkZEJ3REdPSnpXa3BMZE1nNVg3MCtHVzRlQ2hadGRHaGtaR2pTWDVUSzhMVE1WVXc3UmdDL3RjcEpaUzFLYU8zNmVXZlJaU0V3OUU3RW1Ta1BXTGVBQnNVSTFzNUJIclhCTnhybmoxaklmejVrYkJ2NmRNRkhVdE5RS0JnRmYycXdzR2pKRlI0TDY2SWRXK1FqMllTVFFlYWpscEZkYmlleG5tTG5KWkhRbW5IcXRudloxNE5ickdhUUNzWDVwUjVDYXRDNFlZSzNqbnRBeDVaQms5MU1aVU5XcndPaHFlWU1rTWlZM3FqOTRBZnhabGNxejdGUUhGdDdMWlQzNGJ0YjlCOEExWXgzUVJyUjl5M21zajQyYzREWHN3VFp4NHhPUDZKNXRaQW9HQVgwb1p1bzMyU0NXNmF5Z2N4Nk9vTnU1Y3U1K0M0V1FEOGJCcWNTM0M3RGhpNzdrRVo3c1lMZmFTZzIyRFlrenBKRDJvdTBENDdjcllUa3NsWlFFbnZIVFR5a29wa0gyM0ltT3ZLRkQ0Z25TU2gzdytEZlBXcU83c28wMUI2NGpnOU1aak1TT0tvL0pwSHUyYlFhSWIwRUtiTzZUQ1VsZUtmQldIeHA1TmhXVUNnWUVBbmhpOE9KeHIreTU0dlhYQURZN1VMVHpaWXU3WFRyTmlScGY3V1Z3c3pmeWtNTjl1a3o5QVRsd2JnOXd2M0RCaEdLUEFwVTRsSHNnek0rNWZ1QUtiQmtHWnZ1VzR6OUM3Q09RTkc4eU9IYVY5RVgxUk5ZVC95Y0k2S2F1aGpMVUNmcG5tTSsrRksvZzl2Sm5Wak9QcTF0SjZESlpEdG5OcCs2SkIrbjNWSUlzPSIsImFwcGlkIjoiMDAyODYyMzYifQ==";
-//        System.out.println(new KPBase64Utils(KPBase64Utils.saltssite, RabbitMqListeningConfig).decode().delSalt().build());
-//
-//        String aa = new KPBase64Utils(KPBase64Utils.saltssite,"lipeng-lipeng-lipeng-lipeng-lipeng-lipeng-lipeng").addSalt().build();
-//        System.out.println(aa);
-//        System.out.println(new KPBase64Utils(KPBase64Utils.saltssite,aa).delSalt().build());
-//    }
+    /**
+     * @Author lipeng
+     * @Description 移除在字符串开头和结尾添加的盐。
+     *  调用时必须提供与 {@link #addSalt(String, int)} 时相同的盐长度。
+     * @Date 2023/9/28
+     * @param saltedInput 加盐后的字符串。
+     * @param saltLength 盐的长度。将从字符串首尾各移除此长度的字符。
+     * @return java.lang.String 如果字符串长度小于 2 * saltLength，无法执行去盐操作。
+     **/
+    public static String removeSalt(String saltedInput, int saltLength) {
+        if (KPStringUtil.isEmpty(saltedInput)) return saltedInput;
+        if (saltLength < 0) saltLength = 10;
 
+        if (saltedInput.length() < 2L * saltLength) {
+            String errorMsg = String.format("字符串长度 (%d) 不足，无法移除指定长度 (%d) 的盐。", saltedInput.length(), saltLength);
+            throw new KPUtilException(errorMsg);
+        }
+        return saltedInput.substring(saltLength, saltedInput.length() - saltLength);
+    }
+
+
+    /**
+     * @Author lipeng
+     * @Description 生成一个指定长度的随机盐字符串
+     * @Date 2023/9/28
+     * @param length 期望生成的盐的长度。如果 length <= 0，则返回空字符串。
+     * @return java.lang.String 生成的随机盐字符串
+     **/
+    private static String generateRandomSalt(int length) {
+        if (length <= 0) {
+            return "";
+        }
+        // 使用 StringBuilder 效率更高
+        StringBuilder sb = new StringBuilder(length);
+        for (int i = 0; i < length; i++) {
+            // 从 SALT_CHARACTERS 中随机选取一个字符
+            sb.append(SALT_CHARACTERS.charAt(RANDOM.nextInt(SALT_CHARACTERS.length())));
+        }
+        return sb.toString();
+    }
+
+
+
+    public static void main(String[] args) {
+        String original = "lipeng-lipeng-lipeng-lipeng-lipeng-lipeng-lipeng";
+        int saltLen = 10;
+
+        System.out.println("--- 标准 Base64 加解密 + 加盐去盐 示例 ---");
+        System.out.println("原始明文: " + original);
+
+        // 加密流程: 明文 -> Base64编码 -> 添加随机盐
+        String base64Encoded = KPBase64Utils.encode(original);
+        System.out.println("Base64编码后: " + base64Encoded);
+        String encrypted = KPBase64Utils.addSalt(base64Encoded, saltLen);
+        System.out.println("加盐后最终密文: " + encrypted);
+
+        // 解密流程: 最终密文 -> 移除随机盐 -> Base64解码 -> 明文
+        System.out.println("Base64解码后: " + KPBase64Utils.decode(base64Encoded));
+        String decryptedBase64 = KPBase64Utils.removeSalt(encrypted, saltLen);
+        System.out.println("去盐后Base64: " + decryptedBase64);
+        String decrypted = KPBase64Utils.decode(decryptedBase64);
+        System.out.println("去盐后解码后明文: " + decrypted);
+        System.out.println("是否相等: " + original.equals(decrypted));
+
+        System.out.println("\n--- URL 安全的 Base64 加解密 + 加盐去盐 示例 ---");
+        // URL Safe 示例
+
+        original = "https://www.toolhelper.cn/EncodeDecode/Base64";
+        String urlSafeBase64Encoded = KPBase64Utils.encodeUrlSafe(original);
+        System.out.println("URL安全Base64编码后: " + urlSafeBase64Encoded);
+        String urlSafeEncrypted = KPBase64Utils.addSalt(urlSafeBase64Encoded, saltLen);
+        System.out.println("URL安全加盐后最终密文: " + urlSafeEncrypted);
+
+        String urlSafeDecryptedBase64 = KPBase64Utils.removeSalt(urlSafeEncrypted, saltLen);
+        System.out.println("URL安全去盐后Base64: " + urlSafeDecryptedBase64);
+        String urlSafeDecrypted = KPBase64Utils.decodeUrlSafe(urlSafeDecryptedBase64);
+        System.out.println("URL安全解码后明文: " + urlSafeDecrypted);
+        System.out.println("是否相等: " + original.equals(urlSafeDecrypted));
+    }
 }

@@ -4,9 +4,16 @@ import com.alibaba.fastjson2.JSONObject;
 import com.github.xiaoymin.knife4j.annotations.ApiSupport;
 import com.kp.framework.annotation.KPApiJsonlParam;
 import com.kp.framework.annotation.KPApiJsonlParamMode;
+import com.kp.framework.annotation.KPObjectChangeLogListNote;
+import com.kp.framework.annotation.KPObjectChangeLogNote;
 import com.kp.framework.annotation.verify.KPVerifyNote;
-import com.kp.framework.constant.MinioConstant;
+import com.kp.framework.constant.ObjectChangeLogOperateType;
 import com.kp.framework.entity.bo.KPResult;
+import com.kp.framework.modules.user.mapper.UserDeptMapper;
+import com.kp.framework.modules.user.mapper.UserMapper;
+import com.kp.framework.modules.user.mapper.UserPostMapper;
+import com.kp.framework.modules.user.mapper.UserProjectMapper;
+import com.kp.framework.modules.user.mapper.UserRoleMapper;
 import com.kp.framework.modules.user.po.UserPO;
 import com.kp.framework.modules.user.po.customer.UserDetailsCustomerPO;
 import com.kp.framework.modules.user.po.customer.UserListCustomerPO;
@@ -78,15 +85,22 @@ public class UserController {
     public KPResult feedbackDetails(@RequestBody JSONObject parameter) {
         UserDetailsCustomerPO userDetailsCustomerPO = userService.queryDetailsById(parameter);
         return KPResult.success(new KPJSONFactoryUtil(KPJsonUtil.toJson(userDetailsCustomerPO))
-                .put("avatarShow", KPMinioUtil.getUrl(MinioConstant.AUTH_BUCKET_NAME, userDetailsCustomerPO.getAvatar(), 168)).build());
+                .put("avatarShow", KPMinioUtil.getUrl(userDetailsCustomerPO.getAvatar(), 24)).build());
     }
 
 
     @PreAuthorize("hasPermission('/auth/user/save','auth:user:save')")
     @ApiOperation(value = "新增用户信息", notes = "权限 auth:user:save")
     @PostMapping("/save")
-    @KPVerifyNote
     @KPApiJsonlParamMode(component = UserEditParamPO.class, ignores = "userId")
+    @KPObjectChangeLogListNote({
+            @KPObjectChangeLogNote(parentMapper = UserMapper.class, identification = "userId,user_id", operateType = ObjectChangeLogOperateType.ADD, businessType = "用户信息"),
+            @KPObjectChangeLogNote(parentMapper = UserDeptMapper.class, identification = "userId,user_id", operateType = ObjectChangeLogOperateType.ADD_BATCH, businessType = "用户所属部门"),
+            @KPObjectChangeLogNote(parentMapper = UserRoleMapper.class, identification = "userId,user_id", operateType = ObjectChangeLogOperateType.ADD_BATCH, businessType = "用户所属角色"),
+            @KPObjectChangeLogNote(parentMapper = UserPostMapper.class, identification = "userId,user_id", operateType = ObjectChangeLogOperateType.ADD_BATCH, businessType = "用户所属岗位"),
+            @KPObjectChangeLogNote(parentMapper = UserProjectMapper.class, identification = "userId,user_id", operateType = ObjectChangeLogOperateType.ADD_BATCH, businessType = "用户可操作项目")
+    })
+    @KPVerifyNote
     public KPResult<UserPO> save(@RequestBody UserEditParamPO userEditParamPO) {
         userService.saveUser(userEditParamPO);
         return KPResult.success();
@@ -96,6 +110,13 @@ public class UserController {
     @PreAuthorize("hasPermission('/auth/user/update','auth:user:update')")
     @ApiOperation(value = "修改用户信息", notes = "权限 auth:user:update")
     @PostMapping("/update")
+    @KPObjectChangeLogListNote({
+            @KPObjectChangeLogNote(parentMapper = UserMapper.class, identification = "userId,user_id", businessType = "用户信息"),
+            @KPObjectChangeLogNote(parentMapper = UserDeptMapper.class, identification = "userId,user_id", operateType = ObjectChangeLogOperateType.DELETE_ADD, businessType = "用户所属部门"),
+            @KPObjectChangeLogNote(parentMapper = UserRoleMapper.class, identification = "userId,user_id", operateType = ObjectChangeLogOperateType.DELETE_ADD, businessType = "用户所属角色"),
+            @KPObjectChangeLogNote(parentMapper = UserPostMapper.class, identification = "userId,user_id", operateType = ObjectChangeLogOperateType.DELETE_ADD, businessType = "用户所属岗位"),
+            @KPObjectChangeLogNote(parentMapper = UserProjectMapper.class, identification = "userId,user_id", operateType = ObjectChangeLogOperateType.DELETE_ADD, businessType = "用户可操作项目")
+    })
     @KPVerifyNote
     public KPResult<UserPO> update(@RequestBody UserEditParamPO userEditParamPO) {
         userService.updateUser(userEditParamPO);
@@ -109,6 +130,7 @@ public class UserController {
     @KPApiJsonlParam({
             @ApiModelProperty(name = "ids", value = "用户Id", required = true, dataType = "list")
     })
+    @KPObjectChangeLogNote(parentMapper = UserMapper.class, identification = "userId,user_id", operateType = ObjectChangeLogOperateType.DELETE, businessType = "用户信息")
     public KPResult batchRemove(@RequestBody List<String> ids) {
         return KPResult.success(userService.batchRemove(ids));
     }
@@ -120,6 +142,7 @@ public class UserController {
     @KPApiJsonlParam({
             @ApiModelProperty(name = "userId", value = "用户Id", required = true, example = "5dbf7ae5e10272f8e1867cd25447720a")
     })
+    @KPObjectChangeLogNote(parentMapper = UserMapper.class, identification = "userId,user_id", businessType = "用户信息")
     public KPResult doForbidden(@RequestBody JSONObject parameter) {
         userService.doForbidden(parameter);
         return KPResult.success();
@@ -132,6 +155,7 @@ public class UserController {
     @KPApiJsonlParam({
             @ApiModelProperty(name = "ids", value = "用户Id", required = true, dataType = "list")
     })
+    @KPObjectChangeLogNote(parentMapper = UserMapper.class, identification = "userId,user_id", operateType = ObjectChangeLogOperateType.UPDATE_BATCH, businessType = "用户信息")
     public KPResult doCancel(@RequestBody List<String> ids) {
         return userService.doCancel(ids);
     }
@@ -143,6 +167,7 @@ public class UserController {
     @KPApiJsonlParam({
             @ApiModelProperty(name = "userId", value = "用户Id", required = true, example = "5dbf7ae5e10272f8e1867cd25447720a"),
     })
+    @KPObjectChangeLogNote(parentMapper = UserMapper.class, identification = "userId,user_id", businessType = "用户信息")
     public KPResult doReset(@RequestBody JSONObject parameter) {
         userService.doReset(parameter);
         return KPResult.success();
@@ -155,6 +180,7 @@ public class UserController {
     @KPApiJsonlParam({
             @ApiModelProperty(name = "userId", value = "用户Id", required = true, example = "5dbf7ae5e10272f8e1867cd25447720a")
     })
+    @KPObjectChangeLogNote(parentMapper = UserMapper.class, identification = "userId,user_id", businessType = "用户信息")
     public KPResult doUnlock(@RequestBody JSONObject parameter) {
         userService.doUnlock(parameter);
         return KPResult.success("解锁成功！");
@@ -169,6 +195,7 @@ public class UserController {
             @ApiModelProperty(name = "newPassword", value = "新密码", required = true),
             @ApiModelProperty(name = "okPassword", value = "确认新密码", required = true)
     })
+    @KPObjectChangeLogNote(parentMapper = UserMapper.class, identification = "userId,user_id", businessType = "用户信息")
     public KPResult updatePassword(@RequestBody JSONObject parameter) {
         userService.updatePassword(parameter);
         return KPResult.success();
@@ -185,6 +212,7 @@ public class UserController {
             @ApiModelProperty(name = "email", value = "邮箱"),
             @ApiModelProperty(name = "avatar", value = "头像"),
     })
+    @KPObjectChangeLogNote(parentMapper = UserMapper.class, identification = "userId,user_id", businessType = "用户信息")
     public KPResult updateMessage(@RequestBody JSONObject parameter) {
         userService.updateMessage(parameter);
         return KPResult.success();

@@ -11,6 +11,7 @@ import com.kp.framework.entity.bo.KPResult;
 import com.kp.framework.modules.dept.po.param.DeptListParamPO;
 import com.kp.framework.modules.dept.service.DeptService;
 import com.kp.framework.modules.dict.service.DictDataService;
+import com.kp.framework.modules.dict.service.DictTypeService;
 import com.kp.framework.modules.menu.service.MenuService;
 import com.kp.framework.modules.post.service.PostService;
 import com.kp.framework.modules.project.service.ProjectService;
@@ -94,6 +95,15 @@ public class DataController {
         return KPResult.success(KPServiceUtil.getBean(PostService.class).querySelect());
     }
 
+
+    @ApiOperation(value = "查询数据字典类型下拉框")
+    @PostMapping("/dict/type/select")
+    @KPApiJsonlParam({
+            @ApiModelProperty(name = "projectId", value = "项目Id", required = true, example = "af0ccec3d65f7571d75a0a4fdf597407")
+    })
+    public KPResult<List<DictionaryChildrenBO>> queryDictTypeSelect(@RequestBody JSONObject parameter) {
+        return KPResult.success(KPServiceUtil.getBean(DictTypeService.class).queryDictTypeSelect(parameter));
+    }
 
     @ApiOperation(value = "查询数据字典")
     @PostMapping(value = "/open/dict/data/list")

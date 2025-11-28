@@ -1,6 +1,7 @@
 package com.kp.framework.utils.kptool;
 
 import com.alibaba.fastjson2.JSONObject;
+import lombok.experimental.UtilityClass;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.context.request.RequestContextHolder;
@@ -17,10 +18,9 @@ import java.io.PrintWriter;
  * @Param $
  * @return $
  **/
+@UtilityClass
 public final class KPResponseUtil {
     private static Logger log = LoggerFactory.getLogger(KPResponseUtil.class );
-
-    private KPResponseUtil(){}
 
 
     /* *

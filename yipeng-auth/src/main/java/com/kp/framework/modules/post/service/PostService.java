@@ -96,6 +96,7 @@ public class PostService extends ServiceImpl<PostMapper, PostPO> {
 
         if (this.baseMapper.insert(postPO) == 0)
             throw new KPServiceException(ReturnFinishedMessageConstant.ERROR);
+        postEditParamPO.setPostId(postPO.getPostId());
     }
 
 

@@ -3,6 +3,7 @@ package com.kp.framework.controller.server;
 import com.kp.framework.constant.MinioConstant;
 import com.kp.framework.entity.bo.FileUploadBO;
 import com.kp.framework.entity.po.FilePO;
+import com.kp.framework.entity.po.UploadFilePO;
 import com.kp.framework.exception.KPServiceException;
 import com.kp.framework.utils.kptool.KPBigDecimalUtils;
 import com.kp.framework.utils.kptool.KPIOUtil;
@@ -31,7 +32,7 @@ import java.util.List;
 @Service
 public class FileService {
 
-    private static Logger log = LoggerFactory.getLogger( FileService.class );
+    private static Logger log = LoggerFactory.getLogger(FileService.class);
 
     private long beforeTime;
 
@@ -87,7 +88,6 @@ public class FileService {
 //
 
 
-
     /**
      * @Author lipeng
      * @Description 单个上传文件
@@ -96,13 +96,11 @@ public class FileService {
      **/
     public FileUploadBO upload(MultipartFile file) {
 //        before("文件上传", "upload");
-        if(file == null) throw new KPServiceException("请选择上传的文件！");
+        if (file == null) throw new KPServiceException("请选择上传的文件！");
         if (file.isEmpty() || file.getSize() == 0) throw new KPServiceException("文件为空！");
 
         String fileName = file.getOriginalFilename();
         String newName = new StringBuilder()
-                .append(MinioConstant.TEMPORARY_BUCKET_NAME)
-                .append("/")
                 .append(KPUuidUtil.getSimpleUUID())
                 .append(fileName.substring(fileName.lastIndexOf(".")))
                 .toString();
@@ -111,13 +109,14 @@ public class FileService {
             inputStream = file.getInputStream();
             KPMinioUtil.putObject(MinioConstant.TEMPORARY_BUCKET_NAME, newName, inputStream);
 //            end("文件上传", "upload");
-            return new FileUploadBO(file.getOriginalFilename(), file.getSize(), file.getContentType(), newName);
-        }catch (Exception ex){
-            throw new KPServiceException(file.getOriginalFilename().concat(" 上传失败！ 失败原因: ".concat(ex.getMessage()) ));
-        }finally {
+            return new FileUploadBO(file.getOriginalFilename(), file.getSize(), file.getContentType(), MinioConstant.TEMPORARY_BUCKET_NAME + "/" + newName);
+        } catch (Exception ex) {
+            throw new KPServiceException(file.getOriginalFilename().concat(" 上传失败！ 失败原因: ".concat(ex.getMessage())));
+        } finally {
             try {
                 inputStream.close();
-            }catch (Exception ex){}
+            } catch (Exception ex) {
+            }
             System.gc();
         }
     }
@@ -131,16 +130,14 @@ public class FileService {
      **/
     public List<FileUploadBO> uploadByBatch(MultipartFile[] files) {
 //        before("批量文件上传", "uploadByBatch");
-        if(files == null) throw new KPServiceException("请选择上传的文件！");
+        if (files == null) throw new KPServiceException("请选择上传的文件！");
         List<FileUploadBO> fileUploadBOList = new ArrayList<>();
 
-        for(MultipartFile file : files) {
+        for (MultipartFile file : files) {
             if (file.isEmpty() || file.getSize() == 0) throw new KPServiceException("文件为空！");
 
             String fileName = file.getOriginalFilename();
             String newName = new StringBuilder()
-                    .append(MinioConstant.TEMPORARY_BUCKET_NAME)
-                    .append("/")
                     .append(KPUuidUtil.getSimpleUUID())
                     .append(fileName.substring(fileName.lastIndexOf(".")))
                     .toString();
@@ -149,13 +146,14 @@ public class FileService {
                 inputStream = file.getInputStream();
                 KPMinioUtil.putObject(MinioConstant.TEMPORARY_BUCKET_NAME, newName, inputStream);
                 //, DBMinioUtil.getObjectUrl(MinioConstant.TEMPORARY_BUCKET_NAME, newName)
-                fileUploadBOList.add(new FileUploadBO(file.getOriginalFilename(), file.getSize(), file.getContentType(), newName));
-            }catch (Exception ex){
-                throw new KPServiceException(file.getOriginalFilename().concat(" 上传失败！ 失败原因: ".concat(ex.getMessage()) ));
-            }finally {
+                fileUploadBOList.add(new FileUploadBO(file.getOriginalFilename(), file.getSize(), file.getContentType(), MinioConstant.TEMPORARY_BUCKET_NAME + "/" + newName));
+            } catch (Exception ex) {
+                throw new KPServiceException(file.getOriginalFilename().concat(" 上传失败！ 失败原因: ".concat(ex.getMessage())));
+            } finally {
                 try {
                     inputStream.close();
-                }catch (Exception ex){}
+                } catch (Exception ex) {
+                }
             }
         }
 //        end("批量文件上传", "uploadByBatch");
@@ -205,8 +203,9 @@ public class FileService {
      **/
     public void downLoad(FilePO filePO) {
         try {
-            InputStream inputStream = KPMinioUtil.getObject(filePO.getBucketName(), filePO.getFilePath());
-            KPIOUtil.downLoad(inputStream, filePO.getFileName());
+            UploadFilePO uploadFilePO = new UploadFilePO(filePO.getFilePath());
+            InputStream inputStream = KPMinioUtil.getObject(uploadFilePO.getBucketName(), uploadFilePO.getFilePath());
+            KPIOUtil.downloadFile(inputStream, filePO.getFileName());
         } catch (Exception e) {
             throw new KPServiceException("文件下载失败！" + e.getMessage());
 //            ResultBO bo = new ResultBO();
@@ -227,9 +226,10 @@ public class FileService {
      **/
     public void imageFormatVerify(MultipartFile file, String size, String ratio) {
         KPVerifyUtil.twoChoiceOne(size, "图片大小限制", ratio, "图片比例限制", false);
-        size = size.replaceAll("X", "x");
-        size = size.replaceAll("x", "x");
-
+        if (KPStringUtil.isNotEmpty(size)) {
+            size = size.replaceAll("X", "x");
+            size = size.replaceAll("x", "x");
+        }
         String ratios, sizes;
         try {
             BufferedImage image = ImageIO.read(file.getInputStream());
@@ -240,12 +240,12 @@ public class FileService {
         }
 
         //校验尺寸
-        if (KPStringUtil.isNotEmpty(size)){
-            if (!sizes.equals(size.trim())) throw new KPServiceException("图片尺寸不合规， 须" +size);
+        if (KPStringUtil.isNotEmpty(size)) {
+            if (!sizes.equals(size.trim())) throw new KPServiceException("图片尺寸不合规， 须" + size);
         }
 
         //校验比例
-        if (KPStringUtil.isNotEmpty(ratio)){
+        if (KPStringUtil.isNotEmpty(ratio)) {
             if (!ratio.contains(":")) throw new KPServiceException("ratio格式错误！");
 
             String[] ratioss = ratio.split(":");

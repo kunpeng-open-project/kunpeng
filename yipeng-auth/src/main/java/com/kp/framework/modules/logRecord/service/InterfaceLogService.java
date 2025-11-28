@@ -69,7 +69,7 @@ public class InterfaceLogService extends ServiceImpl<InterfaceLogMapper, Interfa
                     .eq(KPStringUtil.isNotEmpty(interfaceLogListParamPO.getSerial()), InterfaceLogPO::getSerial, interfaceLogListParamPO.getSerial())
                     .eq(KPStringUtil.isNotEmpty(interfaceLogListParamPO.getStatus()), InterfaceLogPO::getStatus, interfaceLogListParamPO.getStatus())
                     .like(KPStringUtil.isNotEmpty(interfaceLogListParamPO.getMessage()), InterfaceLogPO::getMessage, interfaceLogListParamPO.getMessage())
-                    .between(KPStringUtil.isNotEmpty(interfaceLogListParamPO.getCallTime()), InterfaceLogPO::getCallTime, KPLocalDateTimeUtil.getFirstDateTimeOfDay(interfaceLogListParamPO.getCallTime()), KPLocalDateTimeUtil.getLastDateTimeOfDay(interfaceLogListParamPO.getCallTime()));
+                    .between(KPStringUtil.isNotEmpty(interfaceLogListParamPO.getCallTime()), InterfaceLogPO::getCallTime, KPLocalDateTimeUtil.getWeeHours(interfaceLogListParamPO.getCallTime()), KPLocalDateTimeUtil.getWitchingHour(interfaceLogListParamPO.getCallTime()));
             return this.baseMapper.selectList(queryWrapper);
         }
 
@@ -86,7 +86,7 @@ public class InterfaceLogService extends ServiceImpl<InterfaceLogMapper, Interfa
                 .eq(KPStringUtil.isNotEmpty(interfaceLogListParamPO.getSerial()), InterfaceLogHistoryPO::getSerial, interfaceLogListParamPO.getSerial())
                 .eq(KPStringUtil.isNotEmpty(interfaceLogListParamPO.getStatus()), InterfaceLogHistoryPO::getStatus, interfaceLogListParamPO.getStatus())
                 .like(KPStringUtil.isNotEmpty(interfaceLogListParamPO.getMessage()), InterfaceLogHistoryPO::getMessage, interfaceLogListParamPO.getMessage())
-                .between(KPStringUtil.isNotEmpty(interfaceLogListParamPO.getCallTime()), InterfaceLogHistoryPO::getCallTime, KPLocalDateTimeUtil.getFirstDateTimeOfDay(interfaceLogListParamPO.getCallTime()), KPLocalDateTimeUtil.getLastDateTimeOfDay(interfaceLogListParamPO.getCallTime())));
+                .between(KPStringUtil.isNotEmpty(interfaceLogListParamPO.getCallTime()), InterfaceLogHistoryPO::getCallTime, KPLocalDateTimeUtil.getWeeHours(interfaceLogListParamPO.getCallTime()), KPLocalDateTimeUtil.getWitchingHour(interfaceLogListParamPO.getCallTime())));
     }
 
 

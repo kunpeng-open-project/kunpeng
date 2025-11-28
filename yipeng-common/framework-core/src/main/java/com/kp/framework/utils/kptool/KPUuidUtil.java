@@ -1,7 +1,10 @@
 package com.kp.framework.utils.kptool;
 
+import lombok.experimental.UtilityClass;
+
 import java.util.UUID;
 
+@UtilityClass
 public final class KPUuidUtil {
 
 

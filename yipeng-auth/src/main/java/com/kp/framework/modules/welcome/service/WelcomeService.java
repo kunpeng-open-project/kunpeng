@@ -67,7 +67,7 @@ public class WelcomeService {
 
         LambdaQueryWrapper<LoginRecordPO> queryWrapper = Wrappers.lambdaQuery();
         queryWrapper.in(LoginRecordPO::getProjectId, projectPOList.stream().map(ProjectPO::getProjectId).collect(Collectors.toList()))
-                .between(LoginRecordPO::getCreateDate, KPLocalDateTimeUtil.getFirstDateTimeOfDay(), KPLocalDateTimeUtil.getLastDateTimeOfDay())
+                .between(LoginRecordPO::getCreateDate, KPLocalDateTimeUtil.getWeeHours(), KPLocalDateTimeUtil.getWitchingHour())
                 .groupBy(LoginRecordPO::getUserName, LoginRecordPO::getProjectId)
                 .select(LoginRecordPO::getUserName, LoginRecordPO::getProjectId);
         Map<String, List<LoginRecordPO>> map = loginRecordMapper.selectList(queryWrapper).stream().collect(Collectors.groupingBy(LoginRecordPO::getProjectId));
@@ -160,7 +160,7 @@ public class WelcomeService {
         maps.forEach(map -> {
             LoginRecordStatisticsCustomerPO loginRecordStatisticsCustomerPO = new LoginRecordStatisticsCustomerPO();
 //            loginRecordStatisticsCustomerPO.setCreateDate(map.get("createDate").toString());
-            loginRecordStatisticsCustomerPO.setCreateDate(KPDateUtil.dateFormat(map.get("createDate").toString(), KPDateUtil.DATE_PATTERN, "MM-dd"));
+            loginRecordStatisticsCustomerPO.setCreateDate(KPDateUtil.format(map.get("createDate").toString(), KPDateUtil.DATE_PATTERN, "MM-dd"));
             loginRecordStatisticsCustomerPO.setNumber(Integer.valueOf(map.get("number").toString()));
             row.add(loginRecordStatisticsCustomerPO);
         });
@@ -189,7 +189,7 @@ public class WelcomeService {
         QueryWrapper<InterfaceLogPO> queryWrapper = new QueryWrapper<>();
         queryWrapper.select("DATE( call_time ) AS callTime, project_name as projectName, count( 1 ) AS number ")
                 .eq(KPStringUtil.isNotEmpty(interfaceLogPO.getProjectName()), "project_name", interfaceLogPO.getProjectName())
-                .ge("DATE( call_time )", KPDateUtil.dateFormat(KPDateUtil.dateAdd(new Date(), -day, false), KPDateUtil.DATE_PATTERN))
+                .ge("DATE( call_time )", KPDateUtil.format(KPDateUtil.addDays(new Date(), -day, false), KPDateUtil.DATE_PATTERN))
                 .groupBy("projectName, callTime")
                 .orderByDesc("callTime");
 
@@ -206,7 +206,7 @@ public class WelcomeService {
             InterfaceCallStatisticsCustomerPO po = new InterfaceCallStatisticsCustomerPO();
             po.setProjectName(projectName);
             for (int i = day; i >= 0; i--){
-                String date = KPDateUtil.dateFormat(KPDateUtil.dateAdd(new Date(), -i, false), KPDateUtil.DATE_PATTERN);
+                String date = KPDateUtil.format(KPDateUtil.addDays(new Date(), -i, false), KPDateUtil.DATE_PATTERN);
                 if (po.getCallTime() == null)
                     po.setCallTime(new ArrayList<>());
                 if (po.getNumber() == null)

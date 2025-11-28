@@ -54,7 +54,7 @@ public class HttpLogService extends ServiceImpl<HttpLogMapper, HttpLogPO> {
                     .eq(KPStringUtil.isNotEmpty(httpLogListParamPO.getSerial()), HttpLogPO::getSerial, httpLogListParamPO.getSerial())
                     .eq(KPStringUtil.isNotEmpty(httpLogListParamPO.getStatus()), HttpLogPO::getStatus, httpLogListParamPO.getStatus())
                     .like(KPStringUtil.isNotEmpty(httpLogListParamPO.getMessage()), HttpLogPO::getMessage, httpLogListParamPO.getMessage())
-                    .between(KPStringUtil.isNotEmpty(httpLogListParamPO.getCallTime()), HttpLogPO::getCallTime, KPLocalDateTimeUtil.getFirstDateTimeOfDay(httpLogListParamPO.getCallTime()), KPLocalDateTimeUtil.getLastDateTimeOfDay(httpLogListParamPO.getCallTime()));
+                    .between(KPStringUtil.isNotEmpty(httpLogListParamPO.getCallTime()), HttpLogPO::getCallTime, KPLocalDateTimeUtil.getWeeHours(httpLogListParamPO.getCallTime()), KPLocalDateTimeUtil.getWitchingHour(httpLogListParamPO.getCallTime()));
             return this.baseMapper.selectList(queryWrapper);
         }
 
@@ -71,7 +71,7 @@ public class HttpLogService extends ServiceImpl<HttpLogMapper, HttpLogPO> {
                 .eq(KPStringUtil.isNotEmpty(httpLogListParamPO.getSerial()), HttpLogHistoryPO::getSerial, httpLogListParamPO.getSerial())
                 .eq(KPStringUtil.isNotEmpty(httpLogListParamPO.getStatus()), HttpLogHistoryPO::getStatus, httpLogListParamPO.getStatus())
                 .like(KPStringUtil.isNotEmpty(httpLogListParamPO.getMessage()), HttpLogHistoryPO::getMessage, httpLogListParamPO.getMessage())
-                .between(KPStringUtil.isNotEmpty(httpLogListParamPO.getCallTime()), HttpLogHistoryPO::getCallTime, KPLocalDateTimeUtil.getFirstDateTimeOfDay(httpLogListParamPO.getCallTime()), KPLocalDateTimeUtil.getLastDateTimeOfDay(httpLogListParamPO.getCallTime())));
+                .between(KPStringUtil.isNotEmpty(httpLogListParamPO.getCallTime()), HttpLogHistoryPO::getCallTime, KPLocalDateTimeUtil.getWeeHours(httpLogListParamPO.getCallTime()), KPLocalDateTimeUtil.getWitchingHour(httpLogListParamPO.getCallTime())));
     }
 
 

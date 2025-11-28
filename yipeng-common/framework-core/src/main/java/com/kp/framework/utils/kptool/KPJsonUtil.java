@@ -6,6 +6,7 @@ import com.alibaba.fastjson2.JSONException;
 import com.alibaba.fastjson2.JSONObject;
 import com.alibaba.fastjson2.JSONWriter;
 import com.kp.framework.exception.KPServiceException;
+import lombok.experimental.UtilityClass;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -23,19 +24,17 @@ import java.util.TreeMap;
  * @Param
  * @return
  **/
+@UtilityClass
 public final class KPJsonUtil {
 
     private static Logger log = LoggerFactory.getLogger(KPJsonUtil.class);
-
-    private KPJsonUtil() {
-    }
 
     /**
      * @param obj
      * @param clazz
      * @return T
      * @Author lipeng
-     * @Description 把对象转 Java对象
+     * @Description 把一个对象转成另一个对象
      * @Date 2025/1/3 15:13
      **/
     public static final <T> T toJavaObject(Object obj, Class<T> clazz) {
@@ -51,6 +50,14 @@ public final class KPJsonUtil {
         }
     }
 
+    /**
+     * @Author lipeng
+     * @Description 把JSONObject 转成对象
+     * @Date 2025/11/20 11:23
+     * @param jsonObject
+     * @param clazz
+     * @return T
+     **/
     public static final <T> T toJavaObject(JSONObject jsonObject, Class<T> clazz) {
         try {
             cleanJsonObject(jsonObject);
@@ -61,6 +68,14 @@ public final class KPJsonUtil {
         }
     }
 
+    /**
+     * @Author lipeng
+     * @Description 把一个对象转成另一个对象并且去掉值数null的内容
+     * @Date 2025/11/20 11:23
+     * @param obj
+     * @param clazz
+     * @return T
+     **/
     public static final <T> T toJavaObjectNotEmpty(Object obj, Class<T> clazz) {
         return toJavaObject(KPJsonUtil.toJson(obj), clazz);
     }
@@ -81,10 +96,27 @@ public final class KPJsonUtil {
     }
 
 
+    /**
+     * @Author lipeng
+     * @Description 把一个list 转成另一个list
+     * @Date 2025/11/20 11:24
+     * @param list
+     * @param clazz
+     * @return java.util.List<T>
+     **/
     public static <T> List<T> toJavaObjectList(List list, Class<T> clazz) {
         return toJavaObjectList(JSON.toJSONString(list), clazz);
     }
 
+
+    /**
+     * @Author lipeng
+     * @Description 把一个josn字符串转成 list
+     * @Date 2025/11/20
+     * @param jsonString
+     * @param clazz
+     * @return java.util.List<T>
+     **/
     public static final <T> List<T> toJavaObjectList(String jsonString, Class<T> clazz) {
         try {
             return JSON.parseArray(jsonString, clazz);
@@ -99,7 +131,7 @@ public final class KPJsonUtil {
      * @return com.alibaba.fastjson.JSONObject
      * @Author lipeng
      * @Description 把 对象转 json
-     * @Date 2020/9/10 15:28
+     * @Date 2020/9/10
      * @Param [obj]
      **/
     public static final JSONObject toJson(Object obj) {
@@ -127,11 +159,24 @@ public final class KPJsonUtil {
     }
 
 
+    /**
+     * @Author lipeng
+     * @Description  那个json字符串转成jsonObject
+     * @Date 2025/11/20
+     * @param jsonStr
+     * @return com.alibaba.fastjson2.JSONObject
+     **/
     public static final JSONObject toJson(String jsonStr) {
         return JSONObject.parseObject(jsonStr);
     }
 
-
+    /**
+     * @Author lipeng
+     * @Description 把对象转成json字符串
+     * @Date 2023/11/20
+     * @param obj
+     * @return java.lang.String
+     **/
     public static final String toJsonString(Object obj) {
         try {
             // 配置 JSONWriter 特性
@@ -401,4 +446,9 @@ public final class KPJsonUtil {
         }
     }
 
+
+    public static void main(String[] args) {
+
+        System.out.println(toJson(new KPJSONFactoryUtil().put("asdsad",null).put("asdsadsdasdd","asds").build()));
+    }
 }

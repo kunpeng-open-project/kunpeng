@@ -1,6 +1,7 @@
 package com.kp.framework.utils.kptool;
 
 import com.kp.framework.exception.KPServiceException;
+import lombok.experimental.UtilityClass;
 import net.sourceforge.pinyin4j.PinyinHelper;
 import net.sourceforge.pinyin4j.format.HanyuPinyinCaseType;
 import net.sourceforge.pinyin4j.format.HanyuPinyinOutputFormat;
@@ -18,11 +19,9 @@ import java.util.List;
  * @author: 李鹏 
  * @date:   2018年10月17日 上午8:45:47
  */
+@UtilityClass
 public final class KPStringUtil {
 
-	private KPStringUtil(){}
-
-	
 	/**
 	 * 
 	 * @author 李鹏

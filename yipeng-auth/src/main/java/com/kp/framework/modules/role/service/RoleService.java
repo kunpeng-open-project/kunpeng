@@ -123,6 +123,8 @@ public class RoleService extends ServiceImpl<RoleMapper, RolePO> {
         if (this.baseMapper.insert(rolePO) == 0)
             throw new KPServiceException(ReturnFinishedMessageConstant.ERROR);
 
+        roleEditParamPO.setRoleId(rolePO.getRoleId());
+
         //维护项目
         roleProjectReplevanceService.saveOrUpdate(roleEditParamPO.getProjectIds(), rolePO);
     }

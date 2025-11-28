@@ -1,6 +1,7 @@
 package com.kp.framework.utils.kptool;
 
 import com.kp.framework.constant.MinioConstant;
+import com.kp.framework.entity.po.UploadFilePO;
 import com.kp.framework.exception.KPServiceException;
 import com.kp.framework.exception.KPUtilException;
 import io.minio.BucketExistsArgs;
@@ -27,6 +28,7 @@ import io.minio.messages.Bucket;
 import io.minio.messages.DeleteError;
 import io.minio.messages.DeleteObject;
 import io.minio.messages.Item;
+import lombok.experimental.UtilityClass;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -43,6 +45,7 @@ import java.util.concurrent.TimeUnit;
  * @Date 2021/12/29 10:59
  * @return
  **/
+@UtilityClass
 public final class KPMinioUtil {
 
 
@@ -51,8 +54,6 @@ public final class KPMinioUtil {
 
     private static final int DEFAULT_EXPIRY_TIME = 7 * 24 * 3600;
 
-    private KPMinioUtil() {
-    }
 
     static {
         minioClient = KPServiceUtil.getBean("minioClient", MinioClient.class);
@@ -243,7 +244,8 @@ public final class KPMinioUtil {
      * @Author lipeng
      * @Description 复制文件
      * @Date 2022/1/12 22:21
-     * @param bucketName 目标桶名称
+     * 如果通过上传获取到的filePath  第一个/ 前标识通名称 （bucketName） 后面的 标识 存储路径（objectName）
+     * @param bucketName 目标桶名称 说明
      * @param objectName 目标文件存储路径
      * @param newBucketName 移动桶名称
      * @param newObjectName 移动存储路径
@@ -269,6 +271,7 @@ public final class KPMinioUtil {
      * @Author lipeng
      * @Description 通过文件上传到对象
      * @Date 2021/12/16 17:14
+     * 如果通过上传获取到的filePath  第一个/ 前标识通名称 （bucketName） 后面的 标识 存储路径（objectName）
      * @param bucketName 存储桶名称
      * @param objectName 存储桶里的对象名称 aa.txt
      * @param fileName  文件全路径 d://aa.txt
@@ -298,6 +301,7 @@ public final class KPMinioUtil {
      * @Author lipeng
      * @Description 通过InputStream上传对象
      * @Date 2021/12/16 17:17
+     * 如果通过上传获取到的filePath  第一个/ 前标识通名称 （bucketName） 后面的 标识 存储路径（objectName）
      * @param bucketName 存储桶名称
      * @param objectName 存储桶里的对象名称
      * @param stream 要上传的流
@@ -307,9 +311,15 @@ public final class KPMinioUtil {
         if (!bucketExists(bucketName)) createBucket(bucketName);
 
         try {
-            minioClient.putObject(PutObjectArgs.builder().bucket(bucketName).object(objectName).stream(
-                            stream, stream.available(), -1)
+//            minioClient.putObject(PutObjectArgs.builder().bucket(bucketName).object(objectName).stream(
+//                            stream, stream.available(), -1)
+//                    .build());
+            minioClient.putObject(PutObjectArgs.builder()
+                    .bucket(bucketName)
+                    .object(objectName)
+                    .stream(stream, -1, 1024 * 1024 * 5)  // 第二个参数传 -1，第三个参数设为 5MB 分片大小（适配 MinIO 最佳实践）
                     .build());
+
             StatObjectResponse statObject = statObject(bucketName, objectName);
             if (statObject != null && statObject.size() > 0) return true;
             return false;
@@ -328,6 +338,7 @@ public final class KPMinioUtil {
      * @Author lipeng
      * @Description 以流的形式获取一个文件对象（断点下载）
      * @Date 2021/12/16 17:18
+     * 如果通过上传获取到的filePath  第一个/ 前标识通名称 （bucketName） 后面的 标识 存储路径（objectName）
      * @param bucketName 存储桶名称
      * @param objectName 存储桶里的对象名称
      * @param offset     起始字节的位置
@@ -358,6 +369,7 @@ public final class KPMinioUtil {
      * @Author lipeng
      * @Description 以流的形式获取一个文件对象
      * @Date 2021/12/16 17:18
+     * 如果通过上传获取到的filePath  第一个/ 前标识通名称 （bucketName） 后面的 标识 存储路径（objectName）
      * @param bucketName 存储桶名称
      * @param objectName 存储桶里的对象名称
      * @return java.io.InputStream
@@ -384,6 +396,7 @@ public final class KPMinioUtil {
      * @Author lipeng
      * @Description 下载并将文件保存到本地
      * @Date 2021/12/16 17:19
+     * 如果通过上传获取到的filePath  第一个/ 前标识通名称 （bucketName） 后面的 标识 存储路径（objectName）
      * @param bucketName 存储桶名称
      * @param objectName 存储桶里的对象名称
      * @param fileName   File name 全路径
@@ -411,6 +424,7 @@ public final class KPMinioUtil {
 
     /**
      * @Author lipeng
+     * 如果通过上传获取到的filePath  第一个/ 前标识通名称 （bucketName） 后面的 标识 存储路径（objectName）
      * @Description 删除一个对象
      * @Date 2021/12/16 17:19
      * @param bucketName 存储桶名称
@@ -431,6 +445,7 @@ public final class KPMinioUtil {
 
     /**
      * @Author lipeng
+     * 如果通过上传获取到的filePath  第一个/ 前标识通名称 （bucketName） 后面的 标识 存储路径（objectName）
      * @Description 除指定桶的多个文件对象, 返回删除错误的对象列表，全部删除成功，返回空列表
      * @Date 2021/12/16 17:19
      * @param bucketName  存储桶名称
@@ -462,6 +477,7 @@ public final class KPMinioUtil {
 
     /**
      * @Author lipeng
+     * 如果通过上传获取到的filePath  第一个/ 前标识通名称 （bucketName） 后面的 标识 存储路径（objectName）
      * @Description 生成一个给HTTP GET请求用的presigned URL。
      * 浏览器/移动端的客户端可以用这个URL进行下载，即使其所在的存储桶是私有的。这个presigned URL可以设置一个失效时间，默认值是7天。
      * @Date 2021/12/16 17:20
@@ -486,10 +502,27 @@ public final class KPMinioUtil {
         }
     }
 
+
+    /**
+     * @Author lipeng
+     * @Description 易鹏框架简化版获取文件访问路径 只正对通过通用上传后 或者 移动后获取的路径有效
+     * @Date 2025/11/25 21:05
+     * @param filePath
+     * @param hours
+     * @return java.lang.String
+     **/
+    public static String getUrl(String filePath, Integer hours) {
+        UploadFilePO uploadFilePO = new UploadFilePO(filePath);
+        return KPMinioUtil.getUrl(uploadFilePO.getBucketName(), uploadFilePO.getFilePath(), hours);
+    }
+
+
+
     /**
      * @Author lipeng
      * @Description 获取url地址
      * @Date 2025/7/8 17:25
+     * 如果通过上传获取到的filePath  第一个/ 前标识通名称 （bucketName） 后面的 标识 存储路径（objectName）
      * @param bucketName 存储桶名称
      * @param objectName 存储桶里的对象名称
      * @param time 失效时间
@@ -515,6 +548,7 @@ public final class KPMinioUtil {
      * @Author lipeng
      * @Description 获取对象的元数据
      * @Date 2021/12/16 17:21
+     * 如果通过上传获取到的filePath  第一个/ 前标识通名称 （bucketName） 后面的 标识 存储路径（objectName）
      * @param bucketName 存储桶名称
      * @param objectName 存储桶里的对象名称
      * @return io.minio.ObjectStat
@@ -527,7 +561,6 @@ public final class KPMinioUtil {
             throw new KPUtilException("获取对象的元数据异常：" + e.getMessage());
         }
     }
-
 
 
 //
@@ -623,6 +656,7 @@ public final class KPMinioUtil {
     /**
      * @Author lipeng
      * @Description 把临时桶里面的文件转入业务数据正式桶中 如果不是临时桶移动 请使用copyObject
+     * 如果通过上传获取到的filePath  第一个/ 前标识通名称 （bucketName） 后面的 标识 存储路径（objectName）
      * @Date 2022/6/10 14:50
      * @param folder 保存的文件夹
      * @param filePath 临时文件地址
@@ -631,7 +665,7 @@ public final class KPMinioUtil {
      **/
     public static String copyTemporaryFile(String folder, String filePath, String newBucketName) {
         if (KPStringUtil.isEmpty(filePath)) return null;
-        if (!filePath.contains(MinioConstant.TEMPORARY_BUCKET_NAME)) return filePath;
+        if (!filePath.startsWith(MinioConstant.TEMPORARY_BUCKET_NAME)) return filePath;
 
         if (folder.startsWith("/")) folder = folder.substring(1, folder.length());
 
@@ -640,7 +674,7 @@ public final class KPMinioUtil {
         try {
             newName = new StringBuilder(folder)
                     .append("/")
-                    .append(KPDateUtil.dateFormat(new Date(), KPDateUtil.DATE_TIME_PATTERN) + "_" + KPUuidUtil.getSimpleUUID())
+                    .append(KPDateUtil.format(new Date(), KPDateUtil.DATE_TIME_PATTERN) + "_" + KPUuidUtil.getSimpleUUID())
                     .append(filePath.substring(filePath.lastIndexOf(".")))
                     .toString();
         } catch (Exception ex) {
@@ -651,10 +685,10 @@ public final class KPMinioUtil {
             return filePath;
 
         try {
-            KPMinioUtil.copyObject(MinioConstant.TEMPORARY_BUCKET_NAME, filePath, newBucketName, newName);
+            KPMinioUtil.copyObject(MinioConstant.TEMPORARY_BUCKET_NAME, new UploadFilePO(filePath).getFilePath(), newBucketName, newName);
         } catch (Exception e) {
             throw new KPServiceException("文件保存错误：" + filePath);
         }
-        return newName;
+        return newBucketName + "/" + newName;
     }
 }

@@ -15,6 +15,7 @@ import com.kp.framework.modules.dict.mapper.DictDataMapper;
 import com.kp.framework.modules.dict.mapper.DictTypeMapper;
 import com.kp.framework.modules.dict.po.DictDataPO;
 import com.kp.framework.modules.dict.po.DictTypePO;
+import com.kp.framework.modules.dict.po.customer.DictDataDetailsCustomerPO;
 import com.kp.framework.modules.dict.po.param.DictDataEditParamPO;
 import com.kp.framework.modules.dict.po.param.DictDataListParamPO;
 import com.kp.framework.modules.project.po.ProjectPO;
@@ -33,7 +34,7 @@ import java.util.Map;
  * @Author lipeng
  * @Description 字典数据表 服务实现类
  * @Date 2025-07-03
-**/
+ **/
 @Service
 public class DictDataService extends ServiceImpl<DictDataMapper, DictDataPO> {
 
@@ -46,14 +47,14 @@ public class DictDataService extends ServiceImpl<DictDataMapper, DictDataPO> {
      * @Date 2025-07-03
      * @param dictDataListParamPO
      * @return java.util.List<DictDataPO>
-    **/
-    public List<DictDataPO> queryPageList(DictDataListParamPO dictDataListParamPO){
+     **/
+    public List<DictDataPO> queryPageList(DictDataListParamPO dictDataListParamPO) {
         //搜索条件
         LambdaQueryWrapper<DictDataPO> queryWrapper = Wrappers.lambdaQuery(DictDataPO.class)
                 .eq(KPStringUtil.isNotEmpty(dictDataListParamPO.getDictTypeId()), DictDataPO::getDictTypeId, dictDataListParamPO.getDictTypeId())
                 .like(KPStringUtil.isNotEmpty(dictDataListParamPO.getLabel()), DictDataPO::getLabel, dictDataListParamPO.getLabel())
                 .eq(KPStringUtil.isNotEmpty(dictDataListParamPO.getStatus()), DictDataPO::getStatus, dictDataListParamPO.getStatus());
-    
+
         //分页和排序
         PageHelper.startPage(dictDataListParamPO.getPageNum(), dictDataListParamPO.getPageSize(), dictDataListParamPO.getOrderBy(DictDataPO.class));
         return this.baseMapper.selectList(queryWrapper);
@@ -66,11 +67,17 @@ public class DictDataService extends ServiceImpl<DictDataMapper, DictDataPO> {
      * @Date 2025-07-03
      * @param parameter
      * @return DictDataPO
-    **/
-    public DictDataPO queryDetailsById(JSONObject parameter){
+     **/
+    public DictDataDetailsCustomerPO queryDetailsById(JSONObject parameter) {
         DictDataPO dictDataPO = KPJsonUtil.toJavaObject(parameter, DictDataPO.class);
         KPVerifyUtil.notNull(dictDataPO.getDictDataId(), "请输入dictDataId");
-        return this.baseMapper.selectById(dictDataPO.getDictDataId());
+        DictDataPO body = this.baseMapper.selectById(dictDataPO.getDictDataId());
+        if (body == null) return null;
+
+        DictDataDetailsCustomerPO dictDataDetailsCustomerPO = KPJsonUtil.toJavaObject(body, DictDataDetailsCustomerPO.class);
+        DictTypePO dictTypePO = dictTypeMapper.selectById(dictDataDetailsCustomerPO.getDictTypeId());
+        dictDataDetailsCustomerPO.setDictName(dictTypePO.getDictName()).setDictType(dictTypePO.getDictType());
+        return dictDataDetailsCustomerPO;
     }
 
 
@@ -80,8 +87,8 @@ public class DictDataService extends ServiceImpl<DictDataMapper, DictDataPO> {
      * @Date 2025-07-03
      * @param dictDataEditParamPO
      * @return void
-    **/
-    public void saveDictData(DictDataEditParamPO dictDataEditParamPO){
+     **/
+    public void saveDictData(DictDataEditParamPO dictDataEditParamPO) {
         DictDataPO dictDataPO = KPJsonUtil.toJavaObjectNotEmpty(dictDataEditParamPO, DictDataPO.class);
 
         DictTypePO dictTypePO = dictTypeMapper.selectById(dictDataPO.getDictTypeId());
@@ -98,15 +105,16 @@ public class DictDataService extends ServiceImpl<DictDataMapper, DictDataPO> {
                 .eq(DictDataPO::getDictTypeId, dictDataPO.getDictTypeId())
                 .orderByDesc(DictDataPO::getSort).last(" limit 1"));
 
-        if (data == null){
+        if (data == null) {
             dictDataPO.setSort(1);
-        }else{
-            dictDataPO.setSort(data.getSort()+1);
+        } else {
+            dictDataPO.setSort(data.getSort() + 1);
         }
 
         if (this.baseMapper.insert(dictDataPO) == 0)
             throw new KPServiceException(ReturnFinishedMessageConstant.ERROR);
 
+        dictDataEditParamPO.setDictDataId(dictDataPO.getDictDataId());
         DictCache.clearAll();
     }
 
@@ -117,8 +125,8 @@ public class DictDataService extends ServiceImpl<DictDataMapper, DictDataPO> {
      * @Date 2025-07-03
      * @param dictDataEditParamPO
      * @return void
-    **/
-    public void updateDictData(DictDataEditParamPO dictDataEditParamPO){
+     **/
+    public void updateDictData(DictDataEditParamPO dictDataEditParamPO) {
         DictDataPO dictDataPO = KPJsonUtil.toJavaObjectNotEmpty(dictDataEditParamPO, DictDataPO.class);
 
         DictTypePO dictTypePO = dictTypeMapper.selectById(dictDataPO.getDictTypeId());
@@ -144,12 +152,12 @@ public class DictDataService extends ServiceImpl<DictDataMapper, DictDataPO> {
      * @Date 2025-07-03
      * @param ids
      * @return String
-    **/
-    public String batchRemove(List<String> ids){
-        if(KPStringUtil.isEmpty(ids)) throw new KPServiceException("请选择要删除的内容！");
+     **/
+    public String batchRemove(List<String> ids) {
+        if (KPStringUtil.isEmpty(ids)) throw new KPServiceException("请选择要删除的内容！");
 
         Integer row = this.baseMapper.deleteBatchIds(ids);
-        if(row == 0) throw new KPServiceException(ReturnFinishedMessageConstant.ERROR);
+        if (row == 0) throw new KPServiceException(ReturnFinishedMessageConstant.ERROR);
 
         DictCache.clearAll();
         return KPStringUtil.format("删除成功{0}条数据", row);
@@ -170,7 +178,7 @@ public class DictDataService extends ServiceImpl<DictDataMapper, DictDataPO> {
         DictDataPO dictDataPO = this.baseMapper.selectById(dictDataParameter.getDictDataId());
         if (dictDataPO == null) throw new KPServiceException("字典数据不存在");
 
-        dictDataPO.setStatus(dictDataPO.getStatus().equals(YesNoEnum.YES.code())? YesNoEnum.NO.code():YesNoEnum.YES.code());
+        dictDataPO.setStatus(dictDataPO.getStatus().equals(YesNoEnum.YES.code()) ? YesNoEnum.NO.code() : YesNoEnum.YES.code());
 
         if (this.baseMapper.updateById(dictDataPO) == 0)
             throw new KPServiceException(ReturnFinishedMessageConstant.ERROR);
@@ -192,7 +200,7 @@ public class DictDataService extends ServiceImpl<DictDataMapper, DictDataPO> {
         if (KPStringUtil.isEmpty(projectPO)) throw new KPServiceException("项目不存在, 请输入正确的项目编号！");
 
         List<DictDataPO> dictDataPOList = DictCache.getDictData(projectPO.getProjectCode(), parameter.getString("dictType"));
-        if ( KPStringUtil.isEmpty(dictDataPOList) ) return new ArrayList<>();
+        if (KPStringUtil.isEmpty(dictDataPOList)) return new ArrayList<>();
 
 
         List<DictionaryBO> body = new ArrayList<>();
@@ -218,7 +226,7 @@ public class DictDataService extends ServiceImpl<DictDataMapper, DictDataPO> {
         if (KPStringUtil.isEmpty(projectPO)) throw new KPServiceException("项目不存在, 请输入正确的项目编号！");
 
         Map<String, List<DictDataPO>> map = DictCache.getDictData(projectPO.getProjectCode(), parameter.getList("dictTypes", String.class));
-        if ( map == null || map.size()==0 ) return new HashMap<>();
+        if (map == null || map.size() == 0) return new HashMap<>();
 
         Map<String, List<DictionaryBO>> body = new HashMap<>();
 

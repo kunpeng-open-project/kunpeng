@@ -145,7 +145,7 @@ public final class KPBarCodeUtil {
     public void downLoad(String downLoadFileNme){
         this.generate();
         HttpServletResponse response =((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getResponse();
-        KPIOUtil.downLoad(downLoadFileNme + "." + this.imageType, response);
+        KPIOUtil.setDownloadResponseHeader(downLoadFileNme + "." + this.imageType, response);
         try {
             ServletOutputStream os = response.getOutputStream();
             ImageIO.write(bufferedImage, this.imageType, os);

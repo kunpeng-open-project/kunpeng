@@ -21,11 +21,19 @@ public final class KPBigDecimalUtils {
 
 
     public KPBigDecimalUtils(BigDecimal value) {
-        bigDecimal = value;
+        this.bigDecimal = value;
     }
-
-    public KPBigDecimalUtils(Object value) {
-        bigDecimal = new BigDecimal(value.toString());
+    public KPBigDecimalUtils(String value) {
+        this.bigDecimal = new BigDecimal(value.trim());
+    }
+    public KPBigDecimalUtils(int value) {
+        this.bigDecimal = BigDecimal.valueOf(value);
+    }
+    public KPBigDecimalUtils(long value) {
+        this.bigDecimal = BigDecimal.valueOf(value);
+    }
+    public KPBigDecimalUtils(double value) {
+        this.bigDecimal = BigDecimal.valueOf(value);
     }
 
 

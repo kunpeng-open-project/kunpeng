@@ -32,9 +32,9 @@ public class ProhibitCrawlerBuilder {
     public Boolean dispose(KPProhibitCrawlerNote prohibitCrawler)  {
         HttpServletRequest request = KPRequsetUtil.getRequest();
         //放行白名单
-        if (whitelist.contains(KPIPUtil.getClinetIP())) return true;
+        if (whitelist.contains(KPIPUtil.getClientIP())) return true;
 
-        String redisKey = redis_key + request.getRequestURI() + ":" + KPIPUtil.getClinetIP();
+        String redisKey = redis_key + request.getRequestURI() + ":" + KPIPUtil.getClientIP();
         String redisKey_forbid = redisKey + ":forbid"; //是否禁用
         String redisKey_forbidNumber = redisKey + ":forbidNumber"; //禁黑名单 统计次数
         String redisKey_blacklist = redis_key + request.getRequestURI() + ":blacklist"; //黑名单
@@ -43,7 +43,7 @@ public class ProhibitCrawlerBuilder {
         String forbid = KPRedisUtil.getString(redisKey_forbid); // 是否禁用
         List<Object> blacklist = KPRedisUtil.getList(redisKey_blacklist); // 黑名单
 
-        if (blacklist != null && blacklist.size()>0 && blacklist.contains(KPIPUtil.getClinetIP())){
+        if (blacklist != null && blacklist.size()>0 && blacklist.contains(KPIPUtil.getClientIP())){
             JSONObject error = new KPJSONFactoryUtil()
                     .put("code", ResultCode.PERPETUAL_FORBID_VISIT.code())
                     .put("message", ResultCode.PERPETUAL_FORBID_VISIT.message())
@@ -84,8 +84,8 @@ public class ProhibitCrawlerBuilder {
                 Integer forbidCount = forbidNumber + 1;
                 KPRedisUtil.set(redisKey_forbidNumber, forbidCount, 30, TimeUnit.DAYS);
                 if (forbidCount >= prohibitCrawler.blacklist()){
-                    if (!blacklist.contains(KPIPUtil.getClinetIP())){
-                        KPRedisUtil.setListByLeftPush(redisKey_blacklist, KPIPUtil.getClinetIP());
+                    if (!blacklist.contains(KPIPUtil.getClientIP())){
+                        KPRedisUtil.setListByLeftPush(redisKey_blacklist, KPIPUtil.getClientIP());
                     }
                 }
             }

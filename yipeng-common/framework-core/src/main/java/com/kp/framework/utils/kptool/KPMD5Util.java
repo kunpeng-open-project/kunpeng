@@ -1,6 +1,7 @@
 package com.kp.framework.utils.kptool;
 
 import com.kp.framework.exception.KPServiceException;
+import lombok.experimental.UtilityClass;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -13,11 +14,10 @@ import java.util.Random;
  * @author: 李鹏 
  * @date:   2018年10月17日 上午8:41:33
  */
+@UtilityClass
 public final class KPMD5Util {
 
 
-	private KPMD5Util(){}
-	
 	/**
 	 * 
 	 * @author 李鹏

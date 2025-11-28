@@ -47,17 +47,17 @@ public class LoginRecordService extends ServiceImpl<LoginRecordMapper, LoginReco
                 .eq(KPStringUtil.isNotEmpty(loginRecordListParamPO.getLoginType()), "login_type", loginRecordListParamPO.getLoginType())
                 .eq(KPStringUtil.isNotEmpty(loginRecordListParamPO.getProjectId()), "project_id", loginRecordListParamPO.getProjectId())
                 .like(KPStringUtil.isNotEmpty(loginRecordListParamPO.getLoginIp()), "login_ip", loginRecordListParamPO.getLoginIp())
-                .between(KPStringUtil.isNotEmpty(loginRecordListParamPO.getLoginDate()), "create_date", KPLocalDateTimeUtil.getFirstDateTimeOfDay(loginRecordListParamPO.getLoginDate()), KPLocalDateTimeUtil.getLastDateTimeOfDay(loginRecordListParamPO.getLoginDate()))
+                .between(KPStringUtil.isNotEmpty(loginRecordListParamPO.getLoginDate()), "create_date", KPLocalDateTimeUtil.getWeeHours(loginRecordListParamPO.getLoginDate()), KPLocalDateTimeUtil.getWitchingHour(loginRecordListParamPO.getLoginDate()))
                 .select(loginRecordListParamPO.getOptions().contains("distinct"), "SUBSTRING_INDEX(GROUP_CONCAT(alr_id ORDER BY create_date DESC),',',1) AS alr_id,user_name, max(create_date) as createDate")
                 .groupBy(loginRecordListParamPO.getOptions().contains("distinct"), "user_name");
 
         List<LoginRecordPO> list = null;
-        if (loginRecordListParamPO.getOptions().contains("distinct")){
+        if (loginRecordListParamPO.getOptions().contains("distinct")) {
             PageHelper.startPage(loginRecordListParamPO.getPageNum(), loginRecordListParamPO.getPageSize());
             list = this.baseMapper.selectList(queryWrapper);
             if (list.size() == 0) return list;
             list = this.baseMapper.selectList(Wrappers.lambdaQuery(LoginRecordPO.class).in(LoginRecordPO::getAlrId, list.stream().map(LoginRecordPO::getAlrId).collect(Collectors.toList())));
-        }else{
+        } else {
             PageHelper.startPage(loginRecordListParamPO.getPageNum(), loginRecordListParamPO.getPageSize(), loginRecordListParamPO.getOrderBy(LoginRecordPO.class));
             list = this.baseMapper.selectList(queryWrapper);
 

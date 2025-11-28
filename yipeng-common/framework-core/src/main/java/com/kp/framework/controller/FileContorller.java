@@ -6,6 +6,7 @@ import com.kp.framework.controller.server.FileService;
 import com.kp.framework.entity.bo.FileUploadBO;
 import com.kp.framework.entity.bo.KPResult;
 import com.kp.framework.entity.po.FilePO;
+import com.kp.framework.entity.po.UploadFilePO;
 import com.kp.framework.utils.kptool.KPMinioUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
@@ -114,6 +115,15 @@ public class FileContorller {
     @KPVerifyNote
     public void downLoad(@RequestBody FilePO filePO) {
         fileService.downLoad(filePO);
+    }
+
+
+    @ApiOperation(value = "获取临时可访问路径(有效性2小时)")
+    @PostMapping(value = "/temporary/url")
+    @KPVerifyNote
+    public KPResult<String> queryTemporaryUrl(@RequestBody FilePO filePO) {
+        UploadFilePO uploadFilePO = new UploadFilePO(filePO.getFilePath());
+        return KPResult.success(KPMinioUtil.getUrl(uploadFilePO.getBucketName(), uploadFilePO.getFilePath(), 2));
     }
 
     @ApiOperation(value = "设置桶权限")

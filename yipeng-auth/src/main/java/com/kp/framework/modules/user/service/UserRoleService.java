@@ -41,7 +41,7 @@ public class UserRoleService extends ServiceImpl<UserRoleMapper, UserRolePO> {
      **/
     public void userRoleService(JSONObject parameter) {
         KPVerifyUtil.notNull(parameter.getString("roleId"), "请输入角色id！");
-        KPVerifyUtil.notNull(parameter.getJSONArray("userIds"), "请选择用户！");
+//        KPVerifyUtil.notNull(parameter.getJSONArray("userIds"), "请选择用户！");
 
         RolePO rolePO = roleMapper.selectById(parameter.getString("roleId"));
         if (rolePO == null) throw new KPServiceException("角色不存在");
@@ -61,6 +61,7 @@ public class UserRoleService extends ServiceImpl<UserRoleMapper, UserRolePO> {
                     .setRoleId(rolePO.getRoleId()));
         });
 
-        KPCollectionUtil.insertBatch(this.baseMapper, userRoleList, 100);
+        if (userRoleList.size() > 0)
+            KPCollectionUtil.insertBatch(this.baseMapper, userRoleList, 100);
     }
 }

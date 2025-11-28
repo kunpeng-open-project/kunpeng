@@ -1,9 +1,12 @@
 package com.kp.framework.utils.kptool;
 
+import lombok.experimental.UtilityClass;
+
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.regex.Pattern;
 
+@UtilityClass
 public class KPIDCardUtil {
     /**
      *

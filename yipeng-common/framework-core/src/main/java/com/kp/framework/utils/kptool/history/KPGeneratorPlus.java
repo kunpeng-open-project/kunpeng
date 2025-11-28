@@ -1,4 +1,4 @@
-package com.kp.framework.utils.kptool;
+package com.kp.framework.utils.kptool.history;
 //
 //import com.baomidou.mybatisplus.annotation.DbType;
 //import com.baomidou.mybatisplus.annotation.IdType;

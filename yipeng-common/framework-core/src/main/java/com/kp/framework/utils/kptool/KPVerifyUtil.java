@@ -1,6 +1,7 @@
 package com.kp.framework.utils.kptool;
 
 
+import lombok.experimental.UtilityClass;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.math.BigDecimal;
@@ -16,6 +17,7 @@ import java.util.regex.Pattern;
  * @Param
  * @return
  **/
+@UtilityClass
 public final class KPVerifyUtil {
 
     //校验ip
@@ -36,9 +38,6 @@ public final class KPVerifyUtil {
 
     //是否包含中文
     public final static String CHINESE = ".*[\\u4e00-\\u9fa5]+.*";
-
-
-    private KPVerifyUtil() {}
 
 
     //---------------------------  非空校验开始   str 校验内容   errMeg 错误信息 -----------------------------------

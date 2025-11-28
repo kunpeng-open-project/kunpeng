@@ -135,9 +135,8 @@ public class UserService extends ServiceImpl<UserMapper, UserPO> {
         List<UserListCustomerPO> row = this.baseMapper.selectJoinList(UserListCustomerPO.class, wrapper);
 
         row.forEach(userListCustomerPO -> {
-            userListCustomerPO.setAvatar(KPMinioUtil.getUrl(MinioConstant.AUTH_BUCKET_NAME, userListCustomerPO.getAvatar(), 168));
+            userListCustomerPO.setAvatar(KPMinioUtil.getUrl(userListCustomerPO.getAvatar(), 24));
         });
-
         return row;
     }
 
@@ -350,6 +349,8 @@ public class UserService extends ServiceImpl<UserMapper, UserPO> {
 
         if (this.baseMapper.insert(userPO) == 0)
             throw new KPServiceException(ReturnFinishedMessageConstant.ERROR);
+
+        userEditParamPO.setUserId(userPO.getUserId());
 
         userUtil.editRest(userEditParamPO, userPO.getUserId());
     }
@@ -611,7 +612,7 @@ public class UserService extends ServiceImpl<UserMapper, UserPO> {
                 .orderByDesc(UserPO::getCreateDate));
 
         row.forEach(userListCustomerPO -> {
-            userListCustomerPO.setAvatar(KPMinioUtil.getUrl(MinioConstant.AUTH_BUCKET_NAME, userListCustomerPO.getAvatar(), 168));
+            userListCustomerPO.setAvatar(KPMinioUtil.getUrl(userListCustomerPO.getAvatar(), 24));
         });
 
         return row;

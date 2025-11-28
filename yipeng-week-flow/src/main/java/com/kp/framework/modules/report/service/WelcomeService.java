@@ -46,12 +46,12 @@ public class WelcomeService {
      **/
     public StatisticalCustomerPO queryStatistical() {
         MonthlyReportStatisticsCustomerPO monthlyReportStatisticsCustomerPO = monthlyReportCustomerMapper.countByReviewMonthStatus(Wrappers.lambdaQuery(MonthlyReportPO.class)
-                .eq(MonthlyReportPO::getPlanDate, KPLocalDateUtil.getFirstDayOfMonth(LocalDate.now()))
+                .eq(MonthlyReportPO::getPlanDate, KPLocalDateUtil.getMinDayOfMonth(LocalDate.now()))
                 .eq(MonthlyReportPO::getDeleteFlag, DeleteFalgEnum.NORMAL.code()));
 
 
         WeellyTaskSummaryCustomerPO weellyTaskSummaryCustomerPO = weeklyPalanCustomerMapper.queryWeeklyNumber(Wrappers.lambdaQuery(WeeklyPalanPO.class)
-                .eq(WeeklyPalanPO::getMonthlyPlanDate, KPLocalDateUtil.getFirstDayOfMonth(LocalDate.now()))
+                .eq(WeeklyPalanPO::getMonthlyPlanDate, KPLocalDateUtil.getMinDayOfMonth(LocalDate.now()))
                 .eq(WeeklyPalanPO::getDeleteFlag, DeleteFalgEnum.NORMAL.code()));
 
         return new StatisticalCustomerPO()
@@ -69,7 +69,7 @@ public class WelcomeService {
      **/
     public List<WeeklyPalanCustomerCustomerPO> queryMonthlyCmpletion() {
         LambdaQueryWrapper<WeeklyPalanPO> wrappers = Wrappers.lambdaQuery(WeeklyPalanPO.class)
-                .eq(WeeklyPalanPO::getMonthlyPlanDate, KPLocalDateUtil.getFirstDayOfMonth(LocalDate.now()))
+                .eq(WeeklyPalanPO::getMonthlyPlanDate, KPLocalDateUtil.getMinDayOfMonth(LocalDate.now()))
                 .ne(WeeklyPalanPO::getTaskStatus, WeeklyPalanStatusEnum.DISCARD.code())
                 .eq(WeeklyPalanPO::getDeleteFlag, DeleteFalgEnum.NORMAL.code());
 
@@ -94,7 +94,7 @@ public class WelcomeService {
                         .ne(WeeklyPalanPO::getTaskStatus, WeeklyPalanStatusEnum.DISCARD.code()) // 移到这里
                 )
                 .disableSubLogicDel()
-                .eq(MonthlyReportPO::getPlanDate, KPLocalDateUtil.getFirstDayOfMonth(LocalDate.now()))
+                .eq(MonthlyReportPO::getPlanDate, KPLocalDateUtil.getMinDayOfMonth(LocalDate.now()))
                 .in(MonthlyReportPO::getStatus, Arrays.asList(
                         MonthlyReportStatusEnum.REVIEW_PASSED_WAITING_FOR_SPLIT.code(),
                         MonthlyReportStatusEnum.SPLITTED_IN_PROGRESS.code(),

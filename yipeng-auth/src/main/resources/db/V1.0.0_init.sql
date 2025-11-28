@@ -661,7 +661,7 @@ CREATE TABLE `auth_login_record`
 
 
 -- ----------------------------
--- 数据字段改变记录表
+-- 数据库字段改变记录表
 -- ---------------------------
 DROP TABLE IF EXISTS `auth_object_change_log`;
 CREATE TABLE `auth_object_change_log`
@@ -671,7 +671,7 @@ CREATE TABLE `auth_object_change_log`
     `class_name`       varchar(300) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL COMMENT '操作类名和方法名',
     `identification`   varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL COMMENT '标识 唯一外键（业务通过这个字段关联）',
     `operate_type`     varchar(64) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci  DEFAULT NULL COMMENT '操作类型',
-    `business_type`    varchar(64) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci  DEFAULT NULL COMMENT '操作类型',
+    `business_type`    varchar(64) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci  DEFAULT NULL COMMENT '业务类型',
     `change_body`      text CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci COMMENT '改变记录',
     `url`              varchar(191) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL COMMENT '请求url',
     `clinet_ip`        varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci  DEFAULT NULL COMMENT '客户端IP',
@@ -695,7 +695,7 @@ CREATE TABLE `auth_object_change_log`
     INDEX              `clinet_ip`(`clinet_ip`) USING BTREE,
     INDEX              `phone`(`phone`) USING BTREE,
     INDEX              `serial`(`serial`) USING BTREE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci ROW_FORMAT=DYNAMIC;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT = '数据库字段改变记录表' ROW_FORMAT=DYNAMIC;
 
 
 -- ----------------------------

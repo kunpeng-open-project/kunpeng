@@ -3,6 +3,7 @@ package com.kp.framework.utils.kptool;
 import com.alibaba.fastjson2.JSONArray;
 import com.alibaba.fastjson2.JSONObject;
 import com.kp.framework.exception.KPServiceException;
+import lombok.experimental.UtilityClass;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -12,10 +13,11 @@ import org.slf4j.LoggerFactory;
  * @Date 2021/9/12 13:55
  * @return
  **/
+@UtilityClass
 public final class KPWebServiceXmlUtil {
     private static final Logger log = LoggerFactory.getLogger(KPWebServiceXmlUtil.class);
 
-    private KPWebServiceXmlUtil(){}
+
 
     /**
      * @Author lipeng

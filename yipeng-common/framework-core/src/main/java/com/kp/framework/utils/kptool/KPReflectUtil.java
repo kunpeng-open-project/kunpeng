@@ -1,5 +1,6 @@
 package com.kp.framework.utils.kptool;
 
+import lombok.experimental.UtilityClass;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -18,12 +19,12 @@ import java.util.regex.Pattern;
  * @Param
  * @return
  **/
+@UtilityClass
 public final class KPReflectUtil {
 
     private static Logger log = LoggerFactory.getLogger(KPReflectUtil.class);
     private static final Pattern GET_PATTERN = Pattern.compile("get(\\p{javaUpperCase}\\w*)");
     private static final Pattern SET_PATTERN = Pattern.compile("set(\\p{javaUpperCase}\\w*)");
-    private KPReflectUtil(){}
 
 
     /**

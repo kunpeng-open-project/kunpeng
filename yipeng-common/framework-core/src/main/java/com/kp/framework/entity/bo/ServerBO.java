@@ -213,8 +213,8 @@ public class ServerBO {
         jvm.setUsed(new KPBigDecimalUtils(Runtime.getRuntime().totalMemory()-Runtime.getRuntime().freeMemory()).divide(1024*1024, 2, RoundingMode.HALF_UP).buildString("M"));
         jvm.setUsedRate(new KPBigDecimalUtils(100).sub(new KPBigDecimalUtils(Runtime.getRuntime().freeMemory()).divide(Runtime.getRuntime().totalMemory(), 2, RoundingMode.HALF_UP).multiply(100).build()).buildString("%"));
         jvm.setJavaName(ManagementFactory.getRuntimeMXBean().getVmName());
-        jvm.setJavaStartTime(KPDateUtil.dateFormat(KPDateUtil.getServerStartDate(), KPDateUtil.DATE_TIME_PATTERN));
-        jvm.setJavaRunTime(KPDateUtil.getDatePoor(new Date(), KPDateUtil.getServerStartDate()));
+        jvm.setJavaStartTime(KPDateUtil.format(KPDateUtil.getServerStartDate(), KPDateUtil.DATE_TIME_PATTERN));
+        jvm.setJavaRunTime(KPDateUtil.getDuration(new Date(), KPDateUtil.getServerStartDate()));
         jvm.setJavaVersion(props.getProperty("java.version"));
         jvm.setJavaPath(props.getProperty("java.home"));
         jvm.setTimeZone(props.getProperty("user.timezone"));

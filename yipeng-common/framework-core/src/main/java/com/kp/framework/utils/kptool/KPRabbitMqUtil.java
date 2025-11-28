@@ -1,6 +1,7 @@
 package com.kp.framework.utils.kptool;
 
 
+import lombok.experimental.UtilityClass;
 import org.springframework.amqp.rabbit.connection.CorrelationData;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 
@@ -12,6 +13,7 @@ import java.util.List;
  * @Date 2024/1/24 14:23
  * @return
  **/
+@UtilityClass
 public class KPRabbitMqUtil {
     private final static RabbitTemplate rabbitTemplate = KPServiceUtil.getBean("rabbitTemplate", RabbitTemplate.class);;
 

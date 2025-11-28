@@ -93,7 +93,7 @@ public class MonthlyReportService extends ServiceImpl<MonthlyReportMapper, Month
         page.setCountColumn("distinct monthly_id");
         List<MonthlyReportListCustomerPO> body = this.baseMapper.selectJoinList(MonthlyReportListCustomerPO.class, wrapper);
 
-        body.forEach(po -> po.setPlanTime(KPLocalDateUtil.toString(po.getPlanDate(), KPLocalDateTimeUtil.MONTH_PATTERN)));
+        body.forEach(po -> po.setPlanTime(KPLocalDateUtil.format(po.getPlanDate(), KPLocalDateTimeUtil.MONTH_PATTERN)));
 
         return body;
     }
@@ -129,7 +129,7 @@ public class MonthlyReportService extends ServiceImpl<MonthlyReportMapper, Month
         DeptFeignPO dept = feignAuthUtil.queryDeptById(row.getDeptId());
         PostFeignPO post = feignAuthUtil.queryPostById(row.getPostId());
 
-        row.setPlanTime(KPLocalDateUtil.toString(row.getPlanDate(), KPLocalDateTimeUtil.MONTH_PATTERN))
+        row.setPlanTime(KPLocalDateUtil.format(row.getPlanDate(), KPLocalDateTimeUtil.MONTH_PATTERN))
                 .setCompleteDate(Arrays.asList(row.getStartDate(), row.getEndDate()))
                 .setDeptName(dept.getDeptName())
                 .setPostName(post.getPostName());

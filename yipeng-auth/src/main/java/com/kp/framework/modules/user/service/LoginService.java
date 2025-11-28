@@ -8,7 +8,6 @@ import com.kp.framework.common.enums.LoginUserTypeEnum;
 import com.kp.framework.common.properties.RedisSecurityConstant;
 import com.kp.framework.common.util.KPJWTUtil;
 import com.kp.framework.configruation.properties.KPFrameworkConfig;
-import com.kp.framework.constant.MinioConstant;
 import com.kp.framework.enums.YesNoEnum;
 import com.kp.framework.exception.KPServiceException;
 import com.kp.framework.modules.project.po.ProjectPO;
@@ -91,7 +90,7 @@ public class LoginService {
             loginCustomerPO.setRoles(loginUserBO.getRoleKeys());
         loginCustomerPO.setPermissions(loginUserBO.getPermissions());
 
-        loginCustomerPO.setAvatar(KPMinioUtil.getUrl(MinioConstant.AUTH_BUCKET_NAME, loginCustomerPO.getAvatar(), 168));
+        loginCustomerPO.setAvatar(KPMinioUtil.getUrl(loginCustomerPO.getAvatar(), 24));
 
         return loginCustomerPO;
     }
@@ -149,7 +148,7 @@ public class LoginService {
             loginCustomerPO.setRoles(loginUserBO.getRoleKeys());
         loginCustomerPO.setPermissions(loginUserBO.getPermissions());
 
-        loginCustomerPO.setAvatar(KPMinioUtil.getUrl(MinioConstant.AUTH_BUCKET_NAME, loginCustomerPO.getAvatar(), 168));
+        loginCustomerPO.setAvatar(KPMinioUtil.getUrl(loginCustomerPO.getAvatar(), 24));
         return loginCustomerPO;
     }
 
@@ -247,7 +246,7 @@ public class LoginService {
             loginCustomerPO.setRoles(loginUserBO.getRoleKeys());
         loginCustomerPO.setPermissions(loginUserBO.getPermissions());
 
-        loginCustomerPO.setAvatar(KPMinioUtil.getUrl(MinioConstant.AUTH_BUCKET_NAME, loginCustomerPO.getAvatar(), 168));
+        loginCustomerPO.setAvatar(KPMinioUtil.getUrl(loginCustomerPO.getAvatar(), 24));
         return loginCustomerPO;
     }
 }

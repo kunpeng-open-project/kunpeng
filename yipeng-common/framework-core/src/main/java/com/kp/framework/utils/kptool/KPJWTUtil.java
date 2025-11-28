@@ -7,6 +7,7 @@ import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.interfaces.Claim;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.kp.framework.exception.KPServiceException;
+import lombok.experimental.UtilityClass;
 
 import java.util.Calendar;
 import java.util.Date;
@@ -20,6 +21,7 @@ import java.util.Map;
  * @Param
  * @return
  **/
+@UtilityClass
 public final class KPJWTUtil {
 
     // 过期时间10天 单位秒  具体有效时间看redis
@@ -34,7 +36,6 @@ public final class KPJWTUtil {
     //主题
     public static final String SUBJECT = "GALAXY-DATA-SYSTEM-CA";
 
-    private KPJWTUtil(){}
 
     /**
      * @Author lipeng

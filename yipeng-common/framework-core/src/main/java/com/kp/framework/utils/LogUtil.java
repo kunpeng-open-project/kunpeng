@@ -41,10 +41,10 @@ public class LogUtil {
                 .put("parameters", parameter)
                 .put("result", result)
                 .put("projectName", kpFrameworkConfig.getProjectName())
-                .put("callTime", KPDateUtil.dateFormat(new Date(), KPDateUtil.DATE_TIME_PATTERN))
+                .put("callTime", KPDateUtil.format(new Date(), KPDateUtil.DATE_TIME_PATTERN))
                 .put("disposeTime", disposeDate)
                 .put("platForm", req.getHeader("Sec-Ch-Ua-Platform") == null ? "" : req.getHeader("Sec-Ch-Ua-Platform").replaceAll("\"", ""))
-                .put("clinetIp", KPIPUtil.getClinetIP())
+                .put("clinetIp", KPIPUtil.getClientIP())
                 .put("userMessage", req.getAttribute("userMessage"))
                 .buildString();
     }
@@ -71,10 +71,10 @@ public class LogUtil {
                     .put("parameters", parameter)
                     .put("result", result)
                     .put("projectName", kpFrameworkConfig.getProjectName())
-                    .put("callTime", KPDateUtil.dateFormat(new Date(), KPDateUtil.DATE_TIME_PATTERN))
+                    .put("callTime", KPDateUtil.format(new Date(), KPDateUtil.DATE_TIME_PATTERN))
                     .put("disposeTime", disposeDate)
                     .put("platForm", "")
-                    .put("clinetIp", KPStringUtil.isEmpty(KPIPUtil.getClinetIP()) ? KPIPUtil.getHostIp() : KPIPUtil.getClinetIP())
+                    .put("clinetIp", KPStringUtil.isEmpty(KPIPUtil.getClientIP()) ? KPIPUtil.getHostIp() : KPIPUtil.getClientIP())
                     .buildString();
         }
 
@@ -86,10 +86,10 @@ public class LogUtil {
                 .put("parameters", parameter)
                 .put("result", result)
                 .put("projectName", kpFrameworkConfig.getProjectName())
-                .put("callTime", KPDateUtil.dateFormat(new Date(), KPDateUtil.DATE_TIME_PATTERN))
+                .put("callTime", KPDateUtil.format(new Date(), KPDateUtil.DATE_TIME_PATTERN))
                 .put("disposeTime", disposeDate)
                 .put(KPStringUtil.isNotEmpty(req), "platForm", req.getHeader("Sec-Ch-Ua-Platform") == null ? "" : req.getHeader("Sec-Ch-Ua-Platform").replaceAll("\"", ""))
-                .put("clinetIp", KPIPUtil.getClinetIP())
+                .put("clinetIp", KPIPUtil.getClientIP())
                 .put(KPStringUtil.isNotEmpty(req), "userMessage", req.getAttribute("userMessage"))
                 .buildString();
     }
