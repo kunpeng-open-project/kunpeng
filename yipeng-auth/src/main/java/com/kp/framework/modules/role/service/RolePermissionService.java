@@ -26,6 +26,7 @@ import com.kp.framework.modules.user.po.UserDeptPO;
 import com.kp.framework.modules.user.po.UserPO;
 import com.kp.framework.modules.user.po.customer.QueryUserCustomerPO;
 import com.kp.framework.utils.kptool.KPCollectionUtil;
+import com.kp.framework.utils.kptool.KPDatabaseUtil;
 import com.kp.framework.utils.kptool.KPJsonUtil;
 import com.kp.framework.utils.kptool.KPStringUtil;
 import com.kp.framework.utils.kptool.KPVerifyUtil;
@@ -178,9 +179,10 @@ public class RolePermissionService extends ServiceImpl<RolePermissionMapper, Rol
         if (KPStringUtil.isEmpty(userIds)) return new ArrayList<>();
 
 
-        MPJLambdaWrapper<UserPO> mpjWrapper = new MPJLambdaWrapper<UserPO>()
-                .selectAll(UserPO.class)
-                .select("GROUP_CONCAT( dept.dept_name SEPARATOR ', ' ) AS deptName")
+        MPJLambdaWrapper<UserPO> mpjWrapper = new MPJLambdaWrapper<UserPO>("u")
+                .selectAll(UserPO.class,"u")
+                .select(KPDatabaseUtil.groupConcat("dept.dept_name", false, "deptName"))
+//                .select("GROUP_CONCAT( dept.dept_name SEPARATOR ', ' ) AS deptName")
                 .leftJoin(UserDeptPO.class, "userDept", on -> on
                         .eq(UserDeptPO::getUserId, UserPO::getUserId)
                         .eq(UserDeptPO::getDeleteFlag, DeleteFalgEnum.NORMAL.code())
@@ -190,8 +192,10 @@ public class RolePermissionService extends ServiceImpl<RolePermissionMapper, Rol
                         .eq(DeptPO::getDeleteFlag, DeleteFalgEnum.NORMAL.code())
                 )
                 .disableSubLogicDel()
-                .groupBy(UserPO::getUserId)
+//                .groupBy(UserPO::getUserId)
                 .in(UserPO::getUserId, userIds);
+        KPDatabaseUtil.groupFieldsBy(mpjWrapper, "u", UserPO.class);
+
         return userMapper.selectJoinList(QueryUserCustomerPO.class, mpjWrapper);
     }
 }

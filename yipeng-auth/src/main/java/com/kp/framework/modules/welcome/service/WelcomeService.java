@@ -16,6 +16,7 @@ import com.kp.framework.modules.welcome.po.customer.InterfaceCallStatisticsCusto
 import com.kp.framework.modules.welcome.po.customer.LoginNumberCustomerPO;
 import com.kp.framework.modules.welcome.po.customer.LoginRecordCustomerPO;
 import com.kp.framework.modules.welcome.po.customer.LoginRecordStatisticsCustomerPO;
+import com.kp.framework.utils.kptool.KPDatabaseUtil;
 import com.kp.framework.utils.kptool.KPDateUtil;
 import com.kp.framework.utils.kptool.KPJsonUtil;
 import com.kp.framework.utils.kptool.KPLocalDateTimeUtil;
@@ -83,7 +84,7 @@ public class WelcomeService {
 
         projectCodes.forEach(projectCode -> {
             loginNumberCustomerPOS.add(new LoginNumberCustomerPO()
-                    .setProjectName(projectCode+"[待上线]")
+                    .setProjectName(projectCode + "[待上线]")
                     .setTodayLoginNumber(0)
                     .setActiveLoginNumber(0));
         });
@@ -91,6 +92,7 @@ public class WelcomeService {
     }
 //
 //
+
     /**
      * @param parameter
      * @return java.util.List<com.jfzh.rht.modules.welcome.po.customer.LoginRecordCustomerPO>
@@ -131,6 +133,7 @@ public class WelcomeService {
     }
 
 //
+
     /**
      * @param parameter
      * @return java.util.List<com.jfzh.rht.modules.welcome.po.customer.LoginRecordStatisticsCustomerPO>
@@ -159,8 +162,8 @@ public class WelcomeService {
         Collections.reverse(maps);
         maps.forEach(map -> {
             LoginRecordStatisticsCustomerPO loginRecordStatisticsCustomerPO = new LoginRecordStatisticsCustomerPO();
-//            loginRecordStatisticsCustomerPO.setCreateDate(map.get("createDate").toString());
-            loginRecordStatisticsCustomerPO.setCreateDate(KPDateUtil.format(map.get("createDate").toString(), KPDateUtil.DATE_PATTERN, "MM-dd"));
+
+            loginRecordStatisticsCustomerPO.setCreateDate(KPDateUtil.format(map.get(KPDatabaseUtil.getDatabaseId().equals("postgresql") ? "createdate" : "createDate").toString(), KPDateUtil.DATE_PATTERN, "MM-dd"));
             loginRecordStatisticsCustomerPO.setNumber(Integer.valueOf(map.get("number").toString()));
             row.add(loginRecordStatisticsCustomerPO);
         });
@@ -168,9 +171,8 @@ public class WelcomeService {
         KPRedisUtil.set(redisKey, KPJsonUtil.toJsonString(row), 2, TimeUnit.HOURS);
         return row;
     }
-//
-//
-//
+
+
     /**
      * @Author lipeng
      * @Description 查询首页接口调用次数统计
@@ -187,11 +189,24 @@ public class WelcomeService {
 
         int day = 20;
         QueryWrapper<InterfaceLogPO> queryWrapper = new QueryWrapper<>();
-        queryWrapper.select("DATE( call_time ) AS callTime, project_name as projectName, count( 1 ) AS number ")
-                .eq(KPStringUtil.isNotEmpty(interfaceLogPO.getProjectName()), "project_name", interfaceLogPO.getProjectName())
-                .ge("DATE( call_time )", KPDateUtil.format(KPDateUtil.addDays(new Date(), -day, false), KPDateUtil.DATE_PATTERN))
-                .groupBy("projectName, callTime")
-                .orderByDesc("callTime");
+        if (KPDatabaseUtil.getDatabaseId().equals("postgresql")) {
+            queryWrapper.select("DATE(call_time) AS \"callTime\", project_name as \"projectName\", count(1) AS \"number\"")
+                    // 1. 项目名称筛选（不变）
+                    .eq(KPStringUtil.isNotEmpty(interfaceLogPO.getProjectName()), "project_name", interfaceLogPO.getProjectName())
+                    // 2. 核心修复：用apply写SQL片段，强制参数转date类型
+                    .apply("DATE(call_time) >= {0}::date", KPDateUtil.format(KPDateUtil.addDays(new Date(), -day, false), KPDateUtil.DATE_PATTERN))
+                    // 3. 分组：放弃用别名，直接用原字段/表达式（彻底避免大小写坑）
+                    .groupBy("project_name, DATE(call_time)")
+                    // 4. 排序：用原表达式，不用别名
+                    .orderByDesc("DATE(call_time)");
+        }
+        if (KPDatabaseUtil.getDatabaseId().equals("mysql")) {
+            queryWrapper.select("DATE( call_time ) AS callTime, project_name as projectName, count( 1 ) AS number ")
+                    .eq(KPStringUtil.isNotEmpty(interfaceLogPO.getProjectName()), "project_name", interfaceLogPO.getProjectName())
+                    .ge("DATE( call_time )", KPDateUtil.format(KPDateUtil.addDays(new Date(), -day, false), KPDateUtil.DATE_PATTERN))
+                    .groupBy("projectName, callTime")
+                    .orderByDesc("callTime");
+        }
 
 
         List<Map<String, Object>> maps = interfaceLogMapper.selectMaps(queryWrapper);
@@ -200,19 +215,19 @@ public class WelcomeService {
         Map<String, List<Map<String, Object>>> groupedByProjectName = maps.stream().collect(Collectors.groupingBy(map -> map.get("projectName").toString(), Collectors.toList()));
 
         List<InterfaceCallStatisticsCustomerPO> result = new ArrayList<>();
-        for (String projectName: groupedByProjectName.keySet()){
+        for (String projectName : groupedByProjectName.keySet()) {
             Map<String, Map<String, Object>> body = groupedByProjectName.get(projectName).stream().collect(Collectors.toMap(map -> map.get("callTime").toString(), e -> e));
 
             InterfaceCallStatisticsCustomerPO po = new InterfaceCallStatisticsCustomerPO();
             po.setProjectName(projectName);
-            for (int i = day; i >= 0; i--){
+            for (int i = day; i >= 0; i--) {
                 String date = KPDateUtil.format(KPDateUtil.addDays(new Date(), -i, false), KPDateUtil.DATE_PATTERN);
                 if (po.getCallTime() == null)
                     po.setCallTime(new ArrayList<>());
                 if (po.getNumber() == null)
                     po.setNumber(new ArrayList<>());
                 po.getCallTime().add(date);
-                Integer number = body.get(date) == null?0:Integer.valueOf(body.get(date).get("number").toString());
+                Integer number = body.get(date) == null ? 0 : Integer.valueOf(body.get(date).get("number").toString());
                 po.getNumber().add(number);
             }
             result.add(po);

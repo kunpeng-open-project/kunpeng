@@ -58,8 +58,8 @@ public class UserController {
         return KPResult.list(userService.queryPageList(userListParamPO));
     }
 
-    @PreAuthorize("hasPermission('/auth/user/page/list', 'auth:user:page:list')")
-    @ApiOperation(value = "查询用户信息-不带分页", notes = "权限 auth:user:page:list")
+
+    @ApiOperation(value = "查询用户信息-不带分页")
     @PostMapping(value = "/list")
     @KPApiJsonlParamMode(component = UserListParamPO.class, ignores = "pageNum,pageSize")
     public KPResult<List<UserListCustomerPO>> queryList(@RequestBody UserListParamPO userListParamPO) {

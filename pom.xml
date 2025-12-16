@@ -6,7 +6,7 @@
 
     <groupId>com.yipeng.framework</groupId>
     <artifactId>yipeng</artifactId>
-    <version>1.1-1-SNAPSHOT</version>
+    <version>1.2.0-SNAPSHOT</version>
     <packaging>pom</packaging>
     <modules>
         <module>yipeng-gateway</module>
@@ -30,6 +30,7 @@
         <spring.cloud.alibaba.version>2021.0.6.1</spring.cloud.alibaba.version>
         <mysql.version>8.0.33</mysql.version> <!-- mysql驱动-->
         <mssql-jdbc.version>8.4.1.jre8</mssql-jdbc.version> <!-- sqlserver驱动-->
+        <postgresql-jdbc.version>42.7.3</postgresql-jdbc.version> <!-- postgresql驱动-->
         <mybatis-spring.version>2.3.0</mybatis-spring.version> <!--mybatis-->
         <mybatis-plus.version>3.5.5</mybatis-plus.version><!-- mybatis-plus-->
         <mybatis-plus-generator.version>3.5.5</mybatis-plus-generator.version> <!-- mybatis逆向工程-->
@@ -133,18 +134,25 @@
                 <artifactId>druid-spring-boot-starter</artifactId>
                 <version>${druid.version}</version>
             </dependency>
-            <!--sqlserver驱动-->
-            <dependency>
-                <groupId>com.microsoft.sqlserver</groupId>
-                <artifactId>mssql-jdbc</artifactId>
-                <version>${mssql-jdbc.version}</version>
-            </dependency>
             <!--mysql驱动-->
             <dependency>
                 <groupId>mysql</groupId>
                 <artifactId>mysql-connector-java</artifactId>
                 <scope>runtime</scope>
                 <version>${mysql.version}</version>
+            </dependency>
+            <!--postgresql驱动-->
+            <dependency>
+                <groupId>org.postgresql</groupId>
+                <artifactId>postgresql</artifactId>
+                <scope>runtime</scope>
+                <version>${postgresql-jdbc.version}</version>
+            </dependency>
+            <!--sqlserver驱动-->
+            <dependency>
+                <groupId>com.microsoft.sqlserver</groupId>
+                <artifactId>mssql-jdbc</artifactId>
+                <version>${mssql-jdbc.version}</version>
             </dependency>
             <!--lombok-->
             <dependency>

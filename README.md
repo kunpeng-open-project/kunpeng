@@ -29,7 +29,7 @@
 
 ## 在线体验
 
-<p>官网地址：<a href="/">http://kpopen.cn</a></p>
+<p>官网地址：<a href="http://kpopen.cn">http://kpopen.cn</a></p>
 <p>演示地址：<a target="_blank" href="http://kpopen.cn/auth">http://kpopen.cn/auth</a></p>
 <p>接口文档地址：<a target="_blank" href="http://kpopen.cn/gateway/doc.html">http://kpopen.cn/gateway/doc.html</a></p>
 

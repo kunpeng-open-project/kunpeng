@@ -16,12 +16,14 @@ import com.kp.framework.modules.user.mapper.LoginRecordMapper;
 import com.kp.framework.modules.user.po.LoginRecordPO;
 import com.kp.framework.modules.user.po.customer.LoginUserBO;
 import com.kp.framework.modules.user.po.param.LoginRecordListParamPO;
+import com.kp.framework.utils.kptool.KPDatabaseUtil;
 import com.kp.framework.utils.kptool.KPJsonUtil;
 import com.kp.framework.utils.kptool.KPLocalDateTimeUtil;
 import com.kp.framework.utils.kptool.KPStringUtil;
 import com.kp.framework.utils.kptool.KPVerifyUtil;
 import org.springframework.stereotype.Service;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -48,8 +50,9 @@ public class LoginRecordService extends ServiceImpl<LoginRecordMapper, LoginReco
                 .eq(KPStringUtil.isNotEmpty(loginRecordListParamPO.getProjectId()), "project_id", loginRecordListParamPO.getProjectId())
                 .like(KPStringUtil.isNotEmpty(loginRecordListParamPO.getLoginIp()), "login_ip", loginRecordListParamPO.getLoginIp())
                 .between(KPStringUtil.isNotEmpty(loginRecordListParamPO.getLoginDate()), "create_date", KPLocalDateTimeUtil.getWeeHours(loginRecordListParamPO.getLoginDate()), KPLocalDateTimeUtil.getWitchingHour(loginRecordListParamPO.getLoginDate()))
-                .select(loginRecordListParamPO.getOptions().contains("distinct"), "SUBSTRING_INDEX(GROUP_CONCAT(alr_id ORDER BY create_date DESC),',',1) AS alr_id,user_name, max(create_date) as createDate")
-                .groupBy(loginRecordListParamPO.getOptions().contains("distinct"), "user_name");
+                .select(KPDatabaseUtil.getDatabaseId().equals("mysql") && loginRecordListParamPO.getOptions().contains("distinct"), "SUBSTRING_INDEX(GROUP_CONCAT(alr_id ORDER BY create_date DESC),',',1) AS alr_id,user_name, max(create_date) as createDate")
+                .select(KPDatabaseUtil.getDatabaseId().equals("postgresql") && loginRecordListParamPO.getOptions().contains("distinct"), "SPLIT_PART(STRING_AGG(alr_id::text, ',' ORDER BY create_date DESC), ',', 1) AS alr_id,user_name, max(create_date) as createDate")
+                .groupBy(Arrays.asList("mysql", "postgresql").contains(KPDatabaseUtil.getDatabaseId()) && loginRecordListParamPO.getOptions().contains("distinct"), "user_name");
 
         List<LoginRecordPO> list = null;
         if (loginRecordListParamPO.getOptions().contains("distinct")) {

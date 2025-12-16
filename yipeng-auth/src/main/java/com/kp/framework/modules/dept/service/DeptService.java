@@ -204,7 +204,7 @@ public class DeptService extends ServiceImpl<DeptMapper, DeptPO> {
 
         List<UserDeptPO> userDeptPOList = userDeptMapper.selectJoinList(UserDeptPO.class, new MPJLambdaWrapper<UserDeptPO>()
                 .selectAll(UserDeptPO.class)
-                .rightJoin(UserPO.class, "user", on -> on
+                .rightJoin(UserPO.class, "u", on -> on
                         .eq(UserPO::getUserId, UserDeptPO::getUserId)
                         .eq(UserPO::getDeleteFlag, DeleteFalgEnum.NORMAL.code())
                 ).disableSubLogicDel()
@@ -216,11 +216,13 @@ public class DeptService extends ServiceImpl<DeptMapper, DeptPO> {
         Integer row = this.baseMapper.deleteBatchIds(ids);
         if (row == 0) throw new KPServiceException(ReturnFinishedMessageConstant.ERROR);
 
-        String sql = "and (";
-        for (String id : ids) {
-            sql += sql.equals("and (") ? "ancestors like '%" + id + "%'" : "OR ancestors like '%" + id + "%'";
-        }
-        List<DeptPO> deptPOList = this.baseMapper.selectList(Wrappers.lambdaQuery(DeptPO.class).last(sql + ")"));
+        List<DeptPO> deptPOList = this.baseMapper.selectList(Wrappers.lambdaQuery(DeptPO.class)
+                .and(wrapper -> {
+                    for (String id : ids) {
+                        wrapper.or().like(DeptPO::getAncestors, id);
+                    }
+                }));
+
         if (deptPOList.size() != 0) throw new KPServiceException("该部门下存在其他部门， 不允许删除！");
         return KPStringUtil.format("删除成功{0}条数据", row);
     }

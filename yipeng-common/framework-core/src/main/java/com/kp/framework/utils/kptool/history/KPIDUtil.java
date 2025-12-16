@@ -1,4 +1,4 @@
-//package com.kp.framework.utils.kptool.history;
+package com.kp.framework.utils.kptool.history;//package com.kp.framework.utils.kptool.history;
 //
 //import org.apache.commons.lang3.RandomUtils;
 //

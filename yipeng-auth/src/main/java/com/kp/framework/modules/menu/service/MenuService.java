@@ -12,6 +12,7 @@ import com.kp.framework.entity.bo.PageBO;
 import com.kp.framework.enums.HierarchyEnum;
 import com.kp.framework.enums.YesNoEnum;
 import com.kp.framework.exception.KPServiceException;
+import com.kp.framework.modules.menu.enums.MenuTypeEnum;
 import com.kp.framework.modules.menu.mapper.MenuMapper;
 import com.kp.framework.modules.menu.po.MenuPO;
 import com.kp.framework.modules.menu.po.customer.MenuCustomerPO;
@@ -120,6 +121,8 @@ public class MenuService extends ServiceImpl<MenuMapper, MenuPO> {
         if (ProjectCache.getProjectByProjectId(menuEditParamPO.getProjectId()) == null)
             throw new KPServiceException("项目不存在");
 
+        if (menuEditParamPO.getMenuType().equals(MenuTypeEnum.CATALOGUE.code()) && KPStringUtil.isNotEmpty(menuEditParamPO.getParentId())) throw new KPServiceException("目录类型不能有父菜单");
+
         List<MenuPO> projectMenuList = this.baseMapper.selectList(Wrappers.lambdaQuery(MenuPO.class).eq(MenuPO::getProjectId, menuEditParamPO.getProjectId()));
         MenuUtil.verify(menuEditParamPO, projectMenuList);
 
@@ -161,6 +164,8 @@ public class MenuService extends ServiceImpl<MenuMapper, MenuPO> {
     public void updateMenu(MenuEditParamPO menuEditParamPO) {
         if (ProjectCache.getProjectByProjectId(menuEditParamPO.getProjectId()) == null)
             throw new KPServiceException("项目不存在");
+
+        if (menuEditParamPO.getMenuType().equals(MenuTypeEnum.CATALOGUE.code()) && KPStringUtil.isNotEmpty(menuEditParamPO.getParentId())) throw new KPServiceException("目录类型不能有父菜单");
 
         List<MenuPO> projectMenuList = this.baseMapper.selectList(Wrappers.lambdaQuery(MenuPO.class)
                 .eq(MenuPO::getProjectId, menuEditParamPO.getProjectId())

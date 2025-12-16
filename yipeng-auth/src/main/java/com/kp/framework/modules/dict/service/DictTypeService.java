@@ -23,6 +23,7 @@ import com.kp.framework.modules.dict.po.customer.DictTypeListCustomerPO;
 import com.kp.framework.modules.dict.po.param.DictTypeEditParamPO;
 import com.kp.framework.modules.dict.po.param.DictTypeListParamPO;
 import com.kp.framework.modules.project.po.ProjectPO;
+import com.kp.framework.utils.kptool.KPDatabaseUtil;
 import com.kp.framework.utils.kptool.KPJsonUtil;
 import com.kp.framework.utils.kptool.KPStringUtil;
 import com.kp.framework.utils.kptool.KPVerifyUtil;
@@ -60,7 +61,8 @@ public class DictTypeService extends ServiceImpl<DictTypeMapper, DictTypePO> {
     public List<DictTypeListCustomerPO> queryPageList(DictTypeListParamPO dictTypeListParamPO) {
         MPJLambdaWrapper<DictTypePO> wrapper = new MPJLambdaWrapper<DictTypePO>("dictType")
                 .selectAll(DictTypePO.class, "dictType")
-                .select("GROUP_CONCAT(DISTINCT project.project_name SEPARATOR ', ' ) AS projectNames")
+                .select(KPDatabaseUtil.groupDistinctConcat("project.project_name", "projectNames"))
+//                .select("GROUP_CONCAT(DISTINCT project.project_name SEPARATOR ', ' ) AS projectNames")
                 .leftJoin(DictTypeProjectPO.class, on -> on
                         .eq(DictTypeProjectPO::getDictTypeId, DictTypePO::getDictTypeId)
                         .eq(DictTypeProjectPO::getDeleteFlag, DeleteFalgEnum.NORMAL.code())
@@ -75,6 +77,7 @@ public class DictTypeService extends ServiceImpl<DictTypeMapper, DictTypePO> {
                 .like(KPStringUtil.isNotEmpty(dictTypeListParamPO.getDictType()), DictTypePO::getDictType, dictTypeListParamPO.getDictType())
                 .eq(KPStringUtil.isNotEmpty(dictTypeListParamPO.getProjectId()), DictTypeProjectPO::getProjectId, dictTypeListParamPO.getProjectId())
                 .eq(KPStringUtil.isNotEmpty(dictTypeListParamPO.getStatus()), DictTypePO::getStatus, dictTypeListParamPO.getStatus());
+        KPDatabaseUtil.groupFieldsBy(wrapper, "dictType", DictTypePO.class);
 
         Page page = PageHelper.startPage(dictTypeListParamPO.getPageNum(), dictTypeListParamPO.getPageSize(), dictTypeListParamPO.getOrderBy(DictTypePO.class));
         page.setCountColumn("distinct dict_type_id");

@@ -21,6 +21,7 @@ import com.kp.framework.modules.role.po.param.RoleEditParamPO;
 import com.kp.framework.modules.role.po.param.RoleListParamPO;
 import com.kp.framework.modules.user.mapper.UserRoleMapper;
 import com.kp.framework.modules.user.po.UserRolePO;
+import com.kp.framework.utils.kptool.KPDatabaseUtil;
 import com.kp.framework.utils.kptool.KPJsonUtil;
 import com.kp.framework.utils.kptool.KPStringUtil;
 import com.kp.framework.utils.kptool.KPVerifyUtil;
@@ -53,7 +54,8 @@ public class RoleService extends ServiceImpl<RoleMapper, RolePO> {
     public List<RoleListCustomerPO> queryPageList(RoleListParamPO roleListParamPO) {
         MPJLambdaWrapper<RolePO> wrapper = new MPJLambdaWrapper<RolePO>("role")
                 .selectAll(RolePO.class, "role")
-                .select("GROUP_CONCAT( project.project_name SEPARATOR ', ' ) AS projectName")
+                .select(KPDatabaseUtil.groupConcat("project.project_name", false, "projectName"))
+//                .select("GROUP_CONCAT( project.project_name SEPARATOR ', ' ) AS projectName")
                 .leftJoin(RoleProjectRelevancePO.class, on -> on
                         .eq(RoleProjectRelevancePO::getRoleId, RolePO::getRoleId)
                         .eq(RoleProjectRelevancePO::getDeleteFlag, DeleteFalgEnum.NORMAL.code())
@@ -63,10 +65,13 @@ public class RoleService extends ServiceImpl<RoleMapper, RolePO> {
                         .eq(ProjectPO::getDeleteFlag, DeleteFalgEnum.NORMAL.code())
                 )
                 .disableSubLogicDel()
-                .groupBy(RolePO::getRoleId)
+//                .groupBy(RolePO::getRoleId)
                 .like(KPStringUtil.isNotEmpty(roleListParamPO.getProjectId()), ProjectPO::getProjectId, roleListParamPO.getProjectId())
                 .like(KPStringUtil.isNotEmpty(roleListParamPO.getRoleName()), RolePO::getRoleName, roleListParamPO.getRoleName())
+                .like(KPStringUtil.isNotEmpty(roleListParamPO.getRoleCode()), RolePO::getRoleCode, roleListParamPO.getRoleCode())
                 .eq(KPStringUtil.isNotEmpty(roleListParamPO.getStatus()), RolePO::getStatus, roleListParamPO.getStatus());
+        KPDatabaseUtil.groupFieldsBy(wrapper, "role", RolePO.class);
+
         Page page = PageHelper.startPage(roleListParamPO.getPageNum(), roleListParamPO.getPageSize(), roleListParamPO.getOrderBy(RolePO.class));
         page.setCountColumn("distinct role_id");
         return this.baseMapper.selectJoinList(RoleListCustomerPO.class, wrapper);

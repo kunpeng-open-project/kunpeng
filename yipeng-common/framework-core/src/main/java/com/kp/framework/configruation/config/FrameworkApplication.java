@@ -45,7 +45,7 @@ public class FrameworkApplication implements AsyncConfigurer {
 
     @PostConstruct
     public void init() {
-        KPIconUtil.println(KPIconUtil.PURPLE, Arrays.asList("加载模块 [framework-core] 框架核心模块!", "版本      1.1.1-SNAPSHOT"));
+        KPIconUtil.println(KPIconUtil.PURPLE, Arrays.asList("加载模块 [framework-core] 框架核心模块!", "版本      1.2.0-SNAPSHOT"));
         logger.info("加载模块 [framework-core] 框架核心模块!");
     }
 

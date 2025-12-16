@@ -16,6 +16,19 @@ import java.util.stream.Collectors;
 
 @UtilityClass
 public class KPDatabaseUtil {
+
+
+    /**
+     * @Author lipeng
+     * @Description 获取数据库类型标识
+     * @Date 2025/12/11
+     * @param
+     * @return java.lang.String
+     **/
+    public static String getDatabaseId() {
+        SqlSessionFactory sqlSessionFactory = KPServiceUtil.getBean(SqlSessionFactory.class);
+        return sqlSessionFactory.getConfiguration().getDatabaseId();
+    }
     /**
      * 聚合函数：将字段按指定分隔符拼接（替代MySQL的GROUP_CONCAT）
      * @param column 字段名

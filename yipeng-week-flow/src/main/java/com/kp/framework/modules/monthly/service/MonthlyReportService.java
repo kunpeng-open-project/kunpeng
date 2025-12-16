@@ -155,7 +155,8 @@ public class MonthlyReportService extends ServiceImpl<MonthlyReportMapper, Month
                 .setPlanDate(KPLocalDateUtil.parse(monthlyReportEditParamPO.getPlanTime() + "-01", KPLocalDateUtil.DATE_PATTERN))
                 .setStartDate(monthlyReportEditParamPO.getCompleteDate().get(0))
                 .setEndDate(monthlyReportEditParamPO.getCompleteDate().get(1))
-                .setProgress(0);
+                .setProgress(0)
+                .setStatus(MonthlyReportStatusEnum.DRAFT.code());
 
         if (this.baseMapper.insert(monthlyReportPO) == 0)
             throw new KPServiceException(ReturnFinishedMessageConstant.ERROR);

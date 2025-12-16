@@ -37,6 +37,7 @@ import com.kp.framework.modules.user.po.customer.UserListCustomerPO;
 import com.kp.framework.modules.user.po.param.UserEditParamPO;
 import com.kp.framework.modules.user.po.param.UserListParamPO;
 import com.kp.framework.modules.user.util.UserUtil;
+import com.kp.framework.utils.kptool.KPDatabaseUtil;
 import com.kp.framework.utils.kptool.KPJsonUtil;
 import com.kp.framework.utils.kptool.KPMinioUtil;
 import com.kp.framework.utils.kptool.KPRedisUtil;
@@ -86,10 +87,12 @@ public class UserService extends ServiceImpl<UserMapper, UserPO> {
         if (KPStringUtil.isNotEmpty(userListParamPO.getDeptId()))
             deptList = deptCustomerMapper.queryDepeSubsetId(userListParamPO.getDeptId());
 
-        MPJLambdaWrapper<UserPO> wrapper = new MPJLambdaWrapper<UserPO>("user")
-                .selectAll(UserPO.class, "user")
-                .select("GROUP_CONCAT(DISTINCT post.post_name SEPARATOR ', ' ) AS postNames")
-                .select("GROUP_CONCAT(DISTINCT dept.dept_name SEPARATOR ', ' ) AS deptNames")
+        MPJLambdaWrapper<UserPO> wrapper = new MPJLambdaWrapper<UserPO>("u")
+                .selectAll(UserPO.class, "u")
+                .select(KPDatabaseUtil.groupDistinctConcat("post.post_name", "postNames"))
+                .select(KPDatabaseUtil.groupDistinctConcat("dept.dept_name", "deptNames"))
+//                .select("GROUP_CONCAT(DISTINCT post.post_name SEPARATOR ', ' ) AS postNames")
+//                .select("GROUP_CONCAT(DISTINCT dept.dept_name SEPARATOR ', ' ) AS deptNames")
                 .leftJoin(UserPostPO.class, on -> on
                         .eq(UserPostPO::getUserId, UserPO::getUserId)
                         .eq(UserPostPO::getDeleteFlag, DeleteFalgEnum.NORMAL.code())
@@ -111,7 +114,7 @@ public class UserService extends ServiceImpl<UserMapper, UserPO> {
                         .eq(UserRolePO::getDeleteFlag, DeleteFalgEnum.NORMAL.code())
                 )
                 .disableSubLogicDel()
-                .groupBy(UserPO::getUserId)
+                //.groupBy(UserPO::getUserId)
                 .like(KPStringUtil.isNotEmpty(userListParamPO.getUserName()), UserPO::getUserName, userListParamPO.getUserName())
                 .like(KPStringUtil.isNotEmpty(userListParamPO.getJobNumber()), UserPO::getJobNumber, userListParamPO.getJobNumber())
                 .like(KPStringUtil.isNotEmpty(userListParamPO.getPhoneNumber()), UserPO::getPhoneNumber, userListParamPO.getPhoneNumber())
@@ -123,6 +126,8 @@ public class UserService extends ServiceImpl<UserMapper, UserPO> {
                 .in(KPStringUtil.isNotEmpty(userListParamPO.getRoleId()), UserRolePO::getRoleId, userListParamPO.getRoleId())
                 .notIn(KPStringUtil.isNotEmpty(userListParamPO.getNeUserIds()), UserPO::getUserId, userListParamPO.getNeUserIds())
                 .in(KPStringUtil.isNotEmpty(userListParamPO.getEqUserIds()), UserRolePO::getUserId, userListParamPO.getEqUserIds());
+
+        KPDatabaseUtil.groupFieldsBy(wrapper, "u", UserPO.class);
 
         if (KPStringUtil.isNotEmpty(userListParamPO.getName())) {
             wrapper.and(e -> e.like(UserPO::getRealName, userListParamPO.getName())
@@ -153,11 +158,14 @@ public class UserService extends ServiceImpl<UserMapper, UserPO> {
         if (KPStringUtil.isNotEmpty(userListParamPO.getDeptId()))
             deptList = deptCustomerMapper.queryDepeSubsetId(userListParamPO.getDeptId());
 
-        MPJLambdaWrapper<UserPO> wrapper = new MPJLambdaWrapper<UserPO>("user")
-                .selectAll(UserPO.class, "user")
-                .select("GROUP_CONCAT(DISTINCT post.post_name SEPARATOR ', ' ) AS postNames")
-                .select("GROUP_CONCAT(DISTINCT dept.dept_name SEPARATOR ', ' ) AS deptNames")
-                .select("GROUP_CONCAT(DISTINCT role.role_name SEPARATOR ', ' ) AS roleNames")
+        MPJLambdaWrapper<UserPO> wrapper = new MPJLambdaWrapper<UserPO>("u")
+                .selectAll(UserPO.class, "u")
+                .select(KPDatabaseUtil.groupDistinctConcat("post.post_name", "postNames"))
+                .select(KPDatabaseUtil.groupDistinctConcat("dept.dept_name", "deptNames"))
+                .select(KPDatabaseUtil.groupDistinctConcat("role.role_name", "roleNames"))
+//                .select("GROUP_CONCAT(DISTINCT post.post_name SEPARATOR ', ' ) AS postNames")
+//                .select("GROUP_CONCAT(DISTINCT dept.dept_name SEPARATOR ', ' ) AS deptNames")
+//                .select("GROUP_CONCAT(DISTINCT role.role_name SEPARATOR ', ' ) AS roleNames")
                 .leftJoin(UserPostPO.class, on -> on
                         .eq(UserPostPO::getUserId, UserPO::getUserId)
                         .eq(UserPostPO::getDeleteFlag, DeleteFalgEnum.NORMAL.code())
@@ -183,7 +191,7 @@ public class UserService extends ServiceImpl<UserMapper, UserPO> {
                         .eq(RolePO::getDeleteFlag, DeleteFalgEnum.NORMAL.code())
                 )
                 .disableSubLogicDel()
-                .groupBy(UserPO::getUserId)
+                //.groupBy(UserPO::getUserId)
                 .like(KPStringUtil.isNotEmpty(userListParamPO.getUserName()), UserPO::getUserName, userListParamPO.getUserName())
                 .like(KPStringUtil.isNotEmpty(userListParamPO.getJobNumber()), UserPO::getJobNumber, userListParamPO.getJobNumber())
                 .like(KPStringUtil.isNotEmpty(userListParamPO.getPhoneNumber()), UserPO::getPhoneNumber, userListParamPO.getPhoneNumber())
@@ -194,6 +202,7 @@ public class UserService extends ServiceImpl<UserMapper, UserPO> {
                 .in(KPStringUtil.isNotEmpty(userListParamPO.getDeptId()), UserDeptPO::getDeptId, deptList)
                 .in(KPStringUtil.isNotEmpty(userListParamPO.getRoleId()), UserRolePO::getRoleId, userListParamPO.getRoleId())
                 .notIn(KPStringUtil.isNotEmpty(userListParamPO.getNeUserIds()), UserPO::getUserId, userListParamPO.getNeUserIds());
+        KPDatabaseUtil.groupFieldsBy(wrapper, "u", UserPO.class);
 
         if (KPStringUtil.isNotEmpty(userListParamPO.getName())) {
             wrapper.and(e -> e.like(UserPO::getRealName, userListParamPO.getName())
@@ -217,8 +226,8 @@ public class UserService extends ServiceImpl<UserMapper, UserPO> {
         UserPO userPO = KPJsonUtil.toJavaObject(parameter, UserPO.class);
         KPVerifyUtil.notNull(userPO.getUserId(), "请输入userId");
 
-        MPJLambdaWrapper<UserPO> wrapper = new MPJLambdaWrapper<UserPO>("user")
-                .selectAll(UserPO.class, "user")
+        MPJLambdaWrapper<UserPO> wrapper = new MPJLambdaWrapper<UserPO>("u")
+                .selectAll(UserPO.class, "u")
 //                .selectCollection(UserDeptPO.class, UserDetailsCustomerPO::getUserDeptList, map->map
 //                        .result(UserDeptPO::getDeptId)
 //                        .result(UserDeptPO::getPrincipal)

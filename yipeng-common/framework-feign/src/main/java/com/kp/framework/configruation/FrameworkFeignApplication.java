@@ -22,7 +22,7 @@ public class FrameworkFeignApplication {
 
     @PostConstruct
     public void init() {
-        KPIconUtil.println(KPIconUtil.PURPLE, Arrays.asList("加载模块 [framework-feign] feign调用模块!", "版本      1.1.1-SNAPSHOT"));
+        KPIconUtil.println(KPIconUtil.PURPLE, Arrays.asList("加载模块 [framework-feign] feign调用模块!", "版本      1.2.0-SNAPSHOT"));
         log.info("加载模块 [framework-feign] feign核心模块!");
     }
 
