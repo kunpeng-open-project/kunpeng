@@ -1,17 +1,17 @@
 spring:
   cloud:
     nacos:
-      username: nacos
-      password: nacos123LP@#
+      username: username
+      password: password
       discovery:
-        server-addr: http://nas.kunpengtool.cn
-        namespace: 62650fa8-471d-4f50-81b5-dd34119649bc
+        server-addr: http://127.0.0.1:8848
+        namespace: b502bb03-dd78-4078-8934-951beb952915
       config:
-        server-addr: http://nas.kunpengtool.cn
-        namespace: 62650fa8-471d-4f50-81b5-dd34119649bc
+        server-addr: http://127.0.0.1:8848
+        namespace: b502bb03-dd78-4078-8934-951beb952915
         group: DEFAULT_GROUP
         file-extension: yaml
-        prefix: weekFlow
+        prefix: authentication
         extension-configs:
           - data-id: yipeng.core.yaml
             group: DEFAULT_GROUP
@@ -30,7 +30,5 @@ logging:
 #    io.lettuce.core: DEBUG
 #    # Spring Redis 连接池日志
 #    org.springframework.data.redis.connection.lettuce: DEBUG
-
-
 log:
-  path: ./logs/weekFlow   # 相对路径：文件夹不存在自动创建
+  path: ./logs/auth   # 相对路径：文件夹不存在自动创建

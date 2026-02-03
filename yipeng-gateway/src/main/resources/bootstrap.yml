@@ -1,7 +1,6 @@
 spring:
   profiles:
-    active: mysql
-#    active: pgsql
+    active: dev
 
 
 

@@ -1,18 +1,14 @@
-server:
-  port: 9002
 spring:
   cloud:
     nacos:
-      username: nacos
-      password: nacos123LP@#
+      username: username
+      password: password
       discovery:
-#        ip: 47.94.202.72
-#        port: 10068
-        server-addr: http://nas.kunpengtool.cn
-        namespace: 6e57bb5f-703c-400c-b178-69aed29a9b00
+        server-addr: http://127.0.0.1:8848
+        namespace: 17535008-0f0d-4cbb-90ae-7e2ca5515758
       config:
-        server-addr: http://nas.kunpengtool.cn
-        namespace: 6e57bb5f-703c-400c-b178-69aed29a9b00
+        server-addr: http://127.0.0.1:8848
+        namespace: 17535008-0f0d-4cbb-90ae-7e2ca5515758
         group: DEFAULT_GROUP
         file-extension: yaml
         prefix: weekFlow

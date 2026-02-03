@@ -39,44 +39,4 @@
         <appender-ref ref="all"/>
     </root>
 
-    <!-- 2. HTTP请求日志 Appender（核心修正：additivity=false） -->
-    <appender name="okHttp" class="ch.qos.logback.core.rolling.RollingFileAppender">
-        <prudent>false</prudent>
-        <File>${logPath}/http.log</File>
-        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
-            <fileNamePattern>${archivePath}/http-%d{yyyyMMdd}.%i.log</fileNamePattern>
-            <maxHistory>60</maxHistory>
-            <maxFileSize>30MB</maxFileSize>
-            <totalSizeCap>1GB</totalSizeCap>
-            <cleanHistoryOnStart>true</cleanHistoryOnStart>
-        </rollingPolicy>
-        <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
-            <pattern>${LOG_PATTERN}</pattern>
-            <charset>${LOG_CHARSET}</charset>
-        </encoder>
-    </appender>
-    <logger name="com.kp.framework.utils.kptool.KPOkHttpHelperUtil" level="info" additivity="true">
-        <appender-ref ref="okHttp"/>
-    </logger>
-
-    <!-- 5. Feign日志 Appender（核心修正：additivity=false） -->
-    <appender name="feignLoad" class="ch.qos.logback.core.rolling.RollingFileAppender">
-        <prudent>false</prudent>
-        <File>${logPath}/feign.log</File>
-        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
-            <fileNamePattern>${archivePath}/feign-%d{yyyyMMdd}.%i.log</fileNamePattern>
-            <maxHistory>60</maxHistory>
-            <maxFileSize>30MB</maxFileSize>
-            <totalSizeCap>1GB</totalSizeCap>
-            <cleanHistoryOnStart>true</cleanHistoryOnStart>
-        </rollingPolicy>
-        <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
-            <pattern>${LOG_PATTERN}</pattern>
-            <charset>${LOG_CHARSET}</charset>
-        </encoder>
-    </appender>
-    <logger name="com.kp.framework.configruation.config.FeignAspectConfig" level="info" additivity="true">
-        <appender-ref ref="feignLoad"/>
-    </logger>
-
 </configuration>
