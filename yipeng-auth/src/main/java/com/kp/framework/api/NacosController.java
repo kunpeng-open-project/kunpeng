@@ -14,8 +14,9 @@ import com.kp.framework.utils.kptool.KPJsonUtil;
 import com.kp.framework.utils.kptool.KPRedisUtil;
 import com.kp.framework.utils.kptool.KPStringUtil;
 import com.kp.framework.utils.kptool.KPThreadUtil;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -27,15 +28,16 @@ import java.util.Properties;
 
 @RestController
 @RequestMapping("/api/nacos")
-@Api(tags = "API-nacos相关接口", value = "API-nacos相关接口")
-@ApiSupport(order = 0)
+@Tag(name = "API-nacos相关接口")
+@ApiSupport(author = "lipeng", order = 10)
+@Slf4j
 public class NacosController {
 
     @Autowired
     private NacosDiscoveryProperties nacosDiscoveryProperties;
 
 
-    @ApiOperation(value = "获取Nacos注册服务下拉框")
+    @Operation(summary = "获取Nacos注册服务下拉框")
     @PostMapping("/register/select")
     public KPResult<List<DictionaryBO>> queryNacosRegisterServiceSelect() {
         String redisKey = RedisSecurityConstant.AUTHENTICATION + "nacos:service";
@@ -58,7 +60,7 @@ public class NacosController {
         return KPResult.success(body);
     }
 
-    @ApiOperation(value = "获取Nacos注册服务列表")
+    @Operation(summary = "获取Nacos注册服务列表")
     @PostMapping("/register/list")
     public KPResult<List<JSONObject>> queryNacosRegisterServiceList() {
         List<JSONObject> body = new ArrayList<>();
@@ -104,6 +106,7 @@ public class NacosController {
                     try {
                         namingService.shutDown();
                     } catch (Exception e) {
+                        log.error(KPStringUtil.format("关闭NamingService时发生异常, 异常信息：{0}", e.getMessage()));
                     }
                 }
             }

@@ -6,22 +6,19 @@ import com.kp.framework.annotation.impl.ProhibitCrawlerBuilder;
 import com.kp.framework.annotation.impl.RequestSubmitBuilder;
 import com.kp.framework.annotation.impl.verify.KPVerifyBuilder;
 import com.kp.framework.annotation.verify.KPVerifyNote;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.HandlerInterceptor;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
-
 /**
- * @Author lipeng
- * @Description 全局拦截器 ，如果有全局拦截任务建议写在这里 别写多个拦截器
- * @Date 2023/12/27 10:55
- * @return  HandlerInterceptorAdapter
- **/
+ * 全局拦截器 ，如果有全局拦截任务建议写在这里 别写多个拦截器。
+ * @author lipeng
+ * 2023/12/27
+ */
 @Component
 public class GlobalHandlerInstantiator implements HandlerInterceptor {
 
@@ -31,7 +28,6 @@ public class GlobalHandlerInstantiator implements HandlerInterceptor {
     private ProhibitCrawlerBuilder prohibitCrawlerBuilder;
     @Autowired
     private KPVerifyBuilder kpVerifyBuilder;
-
 
 
     @Override
@@ -52,14 +48,4 @@ public class GlobalHandlerInstantiator implements HandlerInterceptor {
         }
         return true;
     }
-
-
-
-
-
-
-
-
-
-
 }

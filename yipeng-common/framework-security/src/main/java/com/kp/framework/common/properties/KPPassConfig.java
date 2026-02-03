@@ -9,18 +9,16 @@ import java.util.Arrays;
 import java.util.List;
 
 /**
- * @Author lipeng
- * @Description 白名单
- * @Date 2024/4/19
- * @return
- **/
+ * 白名单。
+ * @author lipeng
+ * 2024/4/19
+ */
 @Data
 @ConfigurationProperties(prefix = "kp.white")
 @Component
 public class KPPassConfig {
 
     private List<String> urls = new ArrayList<>();
-
 
     public List<String> getUrls() {
         List<String> urls2 = this.urls;
@@ -30,7 +28,7 @@ public class KPPassConfig {
                     "/entrance/admin/**", "/minio/file/**",
                     "/actuator/**",
                     "/*.html", "/**/*.html", "/**/*.css", "/*.css", "/**/*.js", "/*.js", "/*.ico",
-                    "/swagger/**", "/swagger-ui.html", "/swagger-resources/**", "/*/api-docs", "/doc.html", "/webjars/**",
+                    "/swagger/**", "/swagger-resources/**", "/*/api-docs", "/doc.html", "/webjars/**", "/v3/api-docs/**", "/swagger-ui/**",
                     "/druid/**",
                     "/open/**"
             ));
@@ -38,5 +36,4 @@ public class KPPassConfig {
 
         return urls2;
     }
-
 }

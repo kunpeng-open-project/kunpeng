@@ -10,13 +10,11 @@ import org.springframework.context.ApplicationContextAware;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
-/* *
- * @Author 李鹏
- * @Description 管理spring 中的bean
- * @Date 2020/5/18 22:37
- * @Param
- * @return
- **/
+/**
+ * 管理spring 中的bean。
+ * @author lipeng
+ * 2020/5/18
+ */
 @Component
 @Order(9999)
 public final class KPServiceUtil implements ApplicationContextAware {
@@ -35,49 +33,52 @@ public final class KPServiceUtil implements ApplicationContextAware {
         log.info("ApplicationContext获取成功！");
     }
 
-    //获取applicationContext
+    /**
+     * 获取applicationContext
+     */
     public static ApplicationContext getApplicationContext() {
         return applicationContext;
     }
 
 
     /**
-     * @Author lipeng
-     * @Description 通过name获取 Bean.
-     * @param name
-     * @return T
-     **/
+     * 通过name获取 Bean.
+     * @author lipeng
+     * 2020/5/18
+     */
     public static <T> T getBean(String name) {
         try {
-            return (T)getApplicationContext().getBean(name);
-        }catch (Exception e){
+            return (T) getApplicationContext().getBean(name);
+        } catch (Exception e) {
             throw new KPServiceException("未找到对应的service");
         }
 
     }
 
     /**
-     * @Author lipeng
-     * @Description 通过class获取Bean.
-     * @param clazz
+     * 通过class获取Bean.
+     * @author lipeng
+     * 2026/1/21
+     * @param clazz   class
      * @return T
-     **/
+     */
     public static <T> T getBean(Class<T> clazz) {
         try {
             return (T) getApplicationContext().getBean(KPStringUtil.initialsLowerCase(clazz.getSimpleName()), clazz);
-        }catch (Exception ex){
+        } catch (Exception ex) {
             return getApplicationContext().getBean(clazz);
         }
     }
 
     /**
-     * @Author lipeng
-     * @Description 通过name,以及Clazz返回指定的Bean
-     * @param name
-     * @param clazz
+     * 通过name, 以及Clazz返回指定的Bean
+     * @author lipeng
+     * 2026/1/21
+     * @param name   name
+     * @param clazz   class
      * @return T
-     **/
-    public static <T> T getBean(String name, Class<T> clazz)  {
+     */
+    public static <T> T getBean(String name, Class<T> clazz) {
         return getApplicationContext().getBean(name, clazz);
     }
 }

@@ -1,13 +1,11 @@
 package com.kp.framework.utils.kptool;
 
-
 import com.baomidou.mybatisplus.generator.FastAutoGenerator;
 import com.baomidou.mybatisplus.generator.config.GlobalConfig;
 import com.baomidou.mybatisplus.generator.config.InjectionConfig;
 import com.baomidou.mybatisplus.generator.config.OutputFile;
 import com.baomidou.mybatisplus.generator.config.PackageConfig;
 import com.baomidou.mybatisplus.generator.config.StrategyConfig;
-import com.baomidou.mybatisplus.generator.config.TemplateConfig;
 import com.baomidou.mybatisplus.generator.config.TemplateType;
 import com.baomidou.mybatisplus.generator.config.builder.CustomFile;
 import com.baomidou.mybatisplus.generator.config.rules.DbColumnType;
@@ -33,11 +31,10 @@ import java.util.List;
 import java.util.function.Consumer;
 
 /**
- * @Author lipeng
- * @Description plus 代码生成器
- * @Date 2022/3/20 16:13
- * @return
- **/
+ * 代码生成器。
+ * @author lipeng
+ * 2022/3/20
+ */
 @Component
 public class KPMyBatisPlusNew {
 
@@ -47,8 +44,8 @@ public class KPMyBatisPlusNew {
     @Autowired
     private DatabaseConfig databaseConfig;
 
-    //原始 启用
-    public void generate(GeneratorPO generatorPO) throws Exception {
+    //原始 启用 留着备份
+    private void generate(GeneratorPO generatorPO) throws Exception {
         String userName = databaseConfig.getDatasource().get(generatorPO.getDatabaseName()).getUsername();
         String url = databaseConfig.getDatasource().get(generatorPO.getDatabaseName()).getUrl();
         String password = databaseConfig.getDatasource().get(generatorPO.getDatabaseName()).getPassword();
@@ -174,14 +171,12 @@ public class KPMyBatisPlusNew {
                 .execute();
     }
 
-
     /**
-     * @Author lipeng
-     * @Description 首次生成
-     * @Date 2025/4/7 16:59
-     * @param generatorPO
-     * @return void
-     **/
+     * 首次生成。
+     * @author lipeng
+     * 2025/4/7
+     * @param generatorPO 入参
+     */
     public void firstGenerate(GeneratorPO generatorPO) {
         String path = createPath();
         String packName = createPack(generatorPO);
@@ -189,21 +184,18 @@ public class KPMyBatisPlusNew {
         createFastAutoGenerator(generatorPO)
                 .globalConfig(configureGlobal(generatorPO.getAuthor(), path))
                 .packageConfig(configurePackage(path, packName))
-                .templateConfig(configureTemplate())
                 .injectionConfig(configureInjection(path, packName))
                 .strategyConfig(configureStrategy(generatorPO))
                 .templateEngine(new EnhanceFreemarkerTemplateEngine())
                 .execute();
     }
 
-
     /**
-     * @Author lipeng
-     * @Description 重新生成
-     * @Date 2025/4/7 17:10
-     * @param generatorPO
-     * @return void
-     **/
+     * 重新生成。
+     * @author lipeng
+     * 2025/4/7
+     * @param generatorPO 入参
+     */
     public void againGenerate(GeneratorPO generatorPO) {
         String path = createPath();
         String packName = createPack(generatorPO);
@@ -225,14 +217,12 @@ public class KPMyBatisPlusNew {
                 .execute();
     }
 
-
     /**
-     * @Author lipeng
-     * @Description 生成的目录跟文件
-     * @Date 2025/4/7 16:57
-     * @param
+     * 生成的目录跟文件。
+     * @author lipeng
+     * 2025/4/7
      * @return java.lang.String
-     **/
+     */
     private String createPath() {
         Resource resource = new ClassPathResource("");
         String path = null;
@@ -245,14 +235,13 @@ public class KPMyBatisPlusNew {
         return path;
     }
 
-
     /**
-     * @Author lipeng
-     * @Description 包名配置
-     * @Date 2025/4/7 16:58
-     * @param generatorPO
+     * 包名配置。
+     * @author lipeng
+     * 2025/4/7
+     * @param generatorPO 入参
      * @return java.lang.String
-     **/
+     */
     private String createPack(GeneratorPO generatorPO) {
         String packName = new StringBuilder()
                 .append(generatorPO.getBackageName())
@@ -263,16 +252,20 @@ public class KPMyBatisPlusNew {
         return packName;
     }
 
-
     /**
-     * @Author lipeng
-     * @Description 配置数据源和数据模式
-     * @Date 2025/4/7 16:20
-     * @param generatorPO
+     * 配置数据源和数据模式。
+     * @author lipeng
+     * 2025/4/7
+     * @param generatorPO 入参
      * @return com.baomidou.mybatisplus.generator.FastAutoGenerator
-     **/
+     */
     private FastAutoGenerator createFastAutoGenerator(GeneratorPO generatorPO) {
-        String userName = databaseConfig.getDatasource().get(generatorPO.getDatabaseName()).getUsername();
+        String userName = null;
+        try {
+            userName = databaseConfig.getDatasource().get(generatorPO.getDatabaseName()).getUsername();
+        } catch (Exception ex) {
+            throw new KPServiceException(KPStringUtil.format("当前项目未配置{0}数据库", generatorPO.getDatabaseName()));
+        }
         String url = databaseConfig.getDatasource().get(generatorPO.getDatabaseName()).getUrl();
         String password = databaseConfig.getDatasource().get(generatorPO.getDatabaseName()).getPassword();
 
@@ -292,15 +285,14 @@ public class KPMyBatisPlusNew {
                 );
     }
 
-
     /**
-     * @Author lipeng
-     * @Description 全局配置
-     * @Date 2025/4/7 16:38
+     * 全局配置。
+     * @author lipeng
+     * 2025/4/7
      * @param author 作者
      * @param path 生成的路径
      * @return java.util.function.Consumer<com.baomidou.mybatisplus.generator.config.GlobalConfig.Builder>
-     **/
+     */
     private Consumer<GlobalConfig.Builder> configureGlobal(String author, String path) {
         return builder -> {
             builder.author(author) //生成的作者名字
@@ -312,15 +304,14 @@ public class KPMyBatisPlusNew {
         };
     }
 
-
     /**
-     * @Author lipeng
-     * @Description 包配置
-     * @Date 2025/4/7 16:39
+     * 包配置。
+     * @author lipeng
+     * 2025/4/7
      * @param path 生成的路径
      * @param packName 生成的包名
      * @return java.util.function.Consumer<com.baomidou.mybatisplus.generator.config.PackageConfig.Builder>
-     **/
+     */
     private Consumer<PackageConfig.Builder> configurePackage(String path, String packName) {
         return builder -> {
             builder.parent(packName) // 自定义包路径
@@ -334,34 +325,14 @@ public class KPMyBatisPlusNew {
         };
     }
 
-
     /**
-     * @Author lipeng
-     * @Description 模版配置
-     * @Date 2025/4/7 16:46
-     * @return java.util.function.Consumer<com.baomidou.mybatisplus.generator.config.TemplateConfig.Builder>
-     **/
-    private Consumer<TemplateConfig.Builder> configureTemplate() {
-        return builder -> {
-            builder.disable(TemplateType.SERVICE)
-                    .controller("freemarker/controller.java")
-//                    .service(null)
-                    .serviceImpl("freemarker/serviceImpl.java")
-                    .mapper("freemarker/mapper.java")
-                    .entity("freemarker/entity.java")
-                    .xml("freemarker/mapper.xml");
-        };
-    }
-
-
-    /**
-     * @Author lipeng
-     * @Description 注入配置 (自定义模版配置)
-     * @Date 2025/4/7 16:50
+     * 注入配置 (自定义模版配置)。
+     * @author lipeng
+     * 2025/4/7
      * @param path 生成的路径
      * @param packName 生成的包名
      * @return java.util.function.Consumer<com.baomidou.mybatisplus.generator.config.InjectionConfig.Builder>
-     **/
+     */
     private Consumer<InjectionConfig.Builder> configureInjection(String path, String packName) {
         return builder -> {
             builder.customFile(Arrays.asList(
@@ -384,14 +355,13 @@ public class KPMyBatisPlusNew {
         };
     }
 
-
     /**
-     * @Author lipeng
-     * @Description 策略配置
-     * @Date 2025/4/7 17:13
-     * @param generatorPO
+     * 策略配置。
+     * @author lipeng
+     * 2025/4/7
+     * @param generatorPO 生成参数
      * @return java.util.function.Consumer<com.baomidou.mybatisplus.generator.config.StrategyConfig.Builder>
-     **/
+     */
     private Consumer<StrategyConfig.Builder> configureStrategy(GeneratorPO generatorPO) {
         return builder -> {
             builder.enableCapitalMode() // enableCapitalMode
@@ -403,9 +373,13 @@ public class KPMyBatisPlusNew {
                     .enableHyphenStyle() //开启驼峰转连字符
                     .enableRestStyle()//开启生成@RestController 控制器
                     .formatFileName("%sController")     //格式化文件名称
+                    .template("freemarker/controller.java")
 
                     .serviceBuilder()//服务层
+                    .disableService()
                     .formatServiceImplFileName("%sService") //格式化文件名称
+                    .serviceImplTemplate("freemarker/serviceImpl.java")
+
 //                                .
                     .entityBuilder()//实体类
                     .superClass(ParentBO.class)
@@ -416,6 +390,7 @@ public class KPMyBatisPlusNew {
                     .enableRemoveIsPrefix() // 开启 Boolean 类型字段移除 is 前缀
                     .enableTableFieldAnnotation() //开启生成实体时生成字段注解 数据库名称
                     .formatFileName("%sPO") //格式化文件名称
+                    .javaTemplate("freemarker/entity.java")
 
                     .mapperBuilder()
                     .enableFileOverride() //覆盖已生成文件
@@ -424,7 +399,9 @@ public class KPMyBatisPlusNew {
                     .enableBaseColumnList() //启用 BaseColumnList
                     .formatMapperFileName("%sMapper") //格式化文件名称
                     .formatXmlFileName("%sMapper") //格式化文件名称
-                    .superClass(ParentMapper.class);
+                    .superClass(ParentMapper.class)
+                    .mapperTemplate("freemarker/mapper.java")
+                    .mapperXmlTemplate("freemarker/mapper.xml");
 //                                .cache(LoggingEhcache.class)
 
 //                        .enableActiveRecord() //开启 ActiveRecord 模型 也就是实体类继承Model

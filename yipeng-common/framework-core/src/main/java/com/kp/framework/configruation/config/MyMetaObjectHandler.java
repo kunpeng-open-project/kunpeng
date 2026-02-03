@@ -11,13 +11,11 @@ import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
 
-
 /**
- * @Author lipeng
- * @Description
- * @Date 2023/11/16
- * @return
- **/
+ * 自动填充自动。
+ * @author lipeng
+ * 2023/11/16
+ */
 @Component
 public class MyMetaObjectHandler implements MetaObjectHandler {
 
@@ -109,7 +107,5 @@ public class MyMetaObjectHandler implements MetaObjectHandler {
             } catch (Exception ex) {
             }
         }
-
     }
-
 }

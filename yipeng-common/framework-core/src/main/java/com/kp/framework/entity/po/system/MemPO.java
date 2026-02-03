@@ -1,33 +1,34 @@
 package com.kp.framework.entity.po.system;
 
-
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+/**
+ * 内存统计信息。
+ * @author lipeng
+ * 2025/10/17
+ */
 @Data
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-@ApiModel(value="Mem", description="Mem")
+@Schema(name = "Mem", description = "内存信息")
 public class MemPO {
 
-    @ApiModelProperty(value = "内存总量G")
+    @Schema(description = "内存总量G")
     private String total;
 
-    @ApiModelProperty(value = "已用内存")
+    @Schema(description = "已用内存")
     private String used;
 
-    @ApiModelProperty(value = "剩余内存")
+    @Schema(description = "剩余内存")
     private String free;
 
-
-    @ApiModelProperty(value = "使用率")
+    @Schema(description = "使用率")
     private String usedRate;
-
 
 //    public double getTotal() {
 //        return new KPBigDecimalUtils(total).divide(1024 * 1024 * 1024, 2, RoundingMode.HALF_UP).buildDouble();

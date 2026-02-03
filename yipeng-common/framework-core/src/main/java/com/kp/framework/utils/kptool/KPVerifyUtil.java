@@ -1,6 +1,5 @@
 package com.kp.framework.utils.kptool;
 
-
 import lombok.experimental.UtilityClass;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -9,14 +8,11 @@ import java.util.Date;
 import java.util.List;
 import java.util.regex.Pattern;
 
-
 /**
- * @Author lipeng
- * @Description 校验器  对  Assert.的扩展
- * @Date 2020/9/10
- * @Param
- * @return
- **/
+ * 校验器  对  Assert.的扩展。
+ * @author lipeng
+ * 2020/9/10
+ */
 @UtilityClass
 public final class KPVerifyUtil {
 
@@ -41,45 +37,53 @@ public final class KPVerifyUtil {
 
 
     //---------------------------  非空校验开始   str 校验内容   errMeg 错误信息 -----------------------------------
-    public final static void notNull(Object str, String errMeg) {
+    public static void notNull(Object str, String errMeg) {
         if (KPStringUtil.isEmpty(str))
             throw new IllegalArgumentException(errMeg);
     }
-    public final static void notNull(String str, String errMeg) {
+
+    public static void notNull(String str, String errMeg) {
         if (KPStringUtil.isEmpty(str))
             throw new IllegalArgumentException(errMeg);
     }
-    public final static void notNull(Integer num, String errMeg) {
+
+    public static void notNull(Integer num, String errMeg) {
         if (num == null)
             throw new IllegalArgumentException(errMeg);
     }
-    public final static void notNull(Long num, String errMeg) {
+
+    public static void notNull(Long num, String errMeg) {
         if (num == null)
             throw new IllegalArgumentException(errMeg);
     }
-    public final static void notNull(Double num, String errMeg) {
+
+    public static void notNull(Double num, String errMeg) {
         if (num == null)
             throw new IllegalArgumentException(errMeg);
     }
-    public final static void notNull(Date date, String errMeg) {
+
+    public static void notNull(Date date, String errMeg) {
         if (date == null)
             throw new IllegalArgumentException(errMeg);
     }
-    public final static void notNull(BigDecimal str, String errMeg) {
+
+    public static void notNull(BigDecimal str, String errMeg) {
         if (str == null)
             throw new IllegalArgumentException(errMeg);
 
         if (KPStringUtil.isEmpty(str.toString()))
             throw new IllegalArgumentException(errMeg);
     }
-    public final static void notNull(List<?> list, String errMeg) {
+
+    public static void notNull(List<?> list, String errMeg) {
         if (list == null)
             throw new IllegalArgumentException(errMeg);
 
         if (list.size() == 0)
             throw new IllegalArgumentException(errMeg);
     }
-    public final static void notNull(MultipartFile file) {
+
+    public static void notNull(MultipartFile file) {
         if (file == null)
             throw new IllegalArgumentException("请选择上传的文件！");
         if (file.isEmpty() || file.getSize() == 0)
@@ -88,37 +92,37 @@ public final class KPVerifyUtil {
     //---------------------------  非空校验结束   str 校验内容   errMeg 错误信息 -----------------------------------
 
 
-
-
-
-
     //---------------------------  校验长度开始 str 校验内容  min最小值 max最大值  errMeg 错误信息 -----------------------------------
-    public final static void length(String str, Integer min, Integer max, String errMeg) {
+    public static void length(String str, Integer min, Integer max, String errMeg) {
         if (KPStringUtil.isEmpty(str) && min == 0) return;
         KPVerifyUtil.notNull(str, errMeg);
 
         if (str.length() < min || str.length() > max)
             throw new IllegalArgumentException(errMeg);
     }
-    public final static void length(Integer num, Integer min, Integer max, String errMeg) {
+
+    public static void length(Integer num, Integer min, Integer max, String errMeg) {
         KPVerifyUtil.notNull(num, errMeg);
 
         if (num < min || num > max)
             throw new IllegalArgumentException(errMeg);
     }
-    public final static void length(BigDecimal str, Integer min, Integer max, String errMeg) {
+
+    public static void length(BigDecimal str, Integer min, Integer max, String errMeg) {
         KPVerifyUtil.notNull(str, errMeg);
 
         if (str.intValue() < min || str.intValue() > max)
             throw new IllegalArgumentException(errMeg);
     }
-    public final static void length(Double str, Integer min, Integer max, String errMeg) {
+
+    public static void length(Double str, Integer min, Integer max, String errMeg) {
         KPVerifyUtil.notNull(str, errMeg);
 
         if (str < min || str > max)
             throw new IllegalArgumentException(errMeg);
     }
-    public final static void length(Long str, Integer min, Integer max, String errMeg) {
+
+    public static void length(Long str, Integer min, Integer max, String errMeg) {
         KPVerifyUtil.notNull(str, errMeg);
 
         if (str < min || str > max)
@@ -127,29 +131,29 @@ public final class KPVerifyUtil {
     //---------------------------  校验长度结束   str 校验内容  min最小值 max最大值  errMeg 错误信息 -----------------------------------
 
 
-
-
-
     //---------------------------  最小长度开始   str 校验内容  min最小值 errMeg 错误信息 -----------------------------------
-    public final static void minLength(String str, Integer min, String errMeg) {
+    public static void minLength(String str, Integer min, String errMeg) {
         if (KPStringUtil.isEmpty(str)) return;
 
         if (min > str.length())
             throw new IllegalArgumentException(errMeg);
     }
-    public final static void minLength(Integer num, Integer min, String errMeg) {
+
+    public static void minLength(Integer num, Integer min, String errMeg) {
         if (KPStringUtil.isEmpty(num)) return;
 
         if (min > num)
             throw new IllegalArgumentException(errMeg);
     }
-    public final static void minLength(Double num, Integer min, String errMeg) {
+
+    public static void minLength(Double num, Integer min, String errMeg) {
         if (KPStringUtil.isEmpty(num)) return;
 
         if (min > num)
             throw new IllegalArgumentException(errMeg);
     }
-    public final static void minLength(Long num, Integer min, String errMeg) {
+
+    public static void minLength(Long num, Integer min, String errMeg) {
         if (KPStringUtil.isEmpty(num)) return;
 
         if (min > num)
@@ -158,28 +162,29 @@ public final class KPVerifyUtil {
     //---------------------------  最小长度结束   str 校验内容  min最小值 errMeg 错误信息 -----------------------------------
 
 
-
-
     //---------------------------  最大长度开始   str 校验内容  max最小值 errMeg 错误信息 -----------------------------------
-    public final static void maxLength(String str, Integer max, String errMeg) {
+    public static void maxLength(String str, Integer max, String errMeg) {
         if (KPStringUtil.isEmpty(str)) return;
 
         if (str.length() > max)
             throw new IllegalArgumentException(errMeg);
     }
-    public final static void maxLength(Integer str, Integer max, String errMeg) {
+
+    public static void maxLength(Integer str, Integer max, String errMeg) {
         if (KPStringUtil.isEmpty(str)) return;
 
         if (str > max)
             throw new IllegalArgumentException(errMeg);
     }
-    public final static void maxLength(Long str, Integer max, String errMeg) {
+
+    public static void maxLength(Long str, Integer max, String errMeg) {
         if (KPStringUtil.isEmpty(str)) return;
 
         if (str > max)
             throw new IllegalArgumentException(errMeg);
     }
-    public final static void maxLength(Double str, Integer max, String errMeg) {
+
+    public static void maxLength(Double str, Integer max, String errMeg) {
         if (KPStringUtil.isEmpty(str)) return;
 
         if (str > max)
@@ -189,32 +194,36 @@ public final class KPVerifyUtil {
 
 
     //---------------------------  有值就校验长度开始 str 校验内容  min最小值 max最大值  errMeg 错误信息 -----------------------------------
-    public final static void lengthIsNot(String str, Integer min, Integer max, String errMeg) {
+    public static void lengthIsNot(String str, Integer min, Integer max, String errMeg) {
         if (min == 0 && KPStringUtil.isEmpty(str)) return;
         if (min != 0 && KPStringUtil.isEmpty(str)) throw new IllegalArgumentException(errMeg);
 
         if (str.length() < min || str.length() > max)
             throw new IllegalArgumentException(errMeg);
     }
-    public final static void lengthIsNot(Integer num, Integer min, Integer max, String errMeg) {
+
+    public static void lengthIsNot(Integer num, Integer min, Integer max, String errMeg) {
         if (KPStringUtil.isEmpty(num)) throw new IllegalArgumentException(errMeg);
 
         if (num < min || num > max)
             throw new IllegalArgumentException(errMeg);
     }
-    public final static void lengthIsNot(BigDecimal str, Integer min, Integer max, String errMeg) {
+
+    public static void lengthIsNot(BigDecimal str, Integer min, Integer max, String errMeg) {
         if (KPStringUtil.isEmpty(str)) throw new IllegalArgumentException(errMeg);
 
         if (str.intValue() < min || str.intValue() > max)
             throw new IllegalArgumentException(errMeg);
     }
-    public final static void lengthIsNot(Double str, Integer min, Integer max, String errMeg) {
+
+    public static void lengthIsNot(Double str, Integer min, Integer max, String errMeg) {
         if (KPStringUtil.isEmpty(str)) throw new IllegalArgumentException(errMeg);
 
         if (str < min || str > max)
             throw new IllegalArgumentException(errMeg);
     }
-    public final static void lengthIsNot(Long str, Integer min, Integer max, String errMeg) {
+
+    public static void lengthIsNot(Long str, Integer min, Integer max, String errMeg) {
         if (KPStringUtil.isEmpty(str)) throw new IllegalArgumentException(errMeg);
 
         if (str < min || str > max)
@@ -223,19 +232,16 @@ public final class KPVerifyUtil {
     //---------------------------  校验长度结束   str 校验内容  min最小值 max最大值  errMeg 错误信息 -----------------------------------
 
 
-
-
     /**
-     * @Author lipeng
-     * @Description 二选一
-     * @Date 2024/6/24
+     * 二选一
+     * @author lipeng
+     * 2024/6/24
      * @param fileId1 字段
      * @param fileId1Name 字段名称
      * @param fileId2 字段
      * @param fileId2Name 字段名称
      * @param isEmpty 是否允许为空 true 允许 false  最少有一个
-     * @return void
-     **/
+     */
     public static void twoChoiceOne(Object fileId1, String fileId1Name, List<String> fileId2, String fileId2Name, boolean isEmpty) {
         if (isEmpty) {
             if (KPStringUtil.isEmpty(fileId1) && KPStringUtil.isEmpty(fileId2))
@@ -250,6 +256,7 @@ public final class KPVerifyUtil {
                 throw new IllegalArgumentException(fileId1Name + "和" + fileId2Name + " 只能选一个！");
         }
     }
+
     public static void twoChoiceOne(Object fileId1, String fileId1Name, Object fileId2, String fileId2Name, boolean isEmpty) {
         if (isEmpty) {
             if (KPStringUtil.isEmpty(fileId1) && KPStringUtil.isEmpty(fileId2))
@@ -264,6 +271,7 @@ public final class KPVerifyUtil {
                 throw new IllegalArgumentException(fileId1Name + "和" + fileId2Name + " 只能选一个！");
         }
     }
+
     public static void twoChoiceOne(List<Object> fileId1, String fileId1Name, List<Object> fileId2, String fileId2Name, boolean isEmpty) {
         if (isEmpty) {
             if (KPStringUtil.isEmpty(fileId1) && KPStringUtil.isEmpty(fileId2))
@@ -279,16 +287,14 @@ public final class KPVerifyUtil {
         }
     }
 
-
     /**
-     * @param errMeg
-     * @param str
-     * @return void
-     * @Author lipeng
-     * @Description 校验多个参数必穿一个
-     * @Date 2023/10/23
-     **/
-    public final static void notNullByMultipleChoice(String errMeg, String... str) {
+     * 校验多个参数必穿一个。
+     * @author lipeng
+     * 2023/10/23
+     * @param errMeg 错误信息
+     * @param str 参数
+     */
+    public static void notNullByMultipleChoice(String errMeg, String... str) {
         boolean flag = false;
         for (int i = 0; i < str.length; i++) {
             if (KPStringUtil.isNotEmpty(str[i])) {
@@ -300,48 +306,47 @@ public final class KPVerifyUtil {
             throw new IllegalArgumentException(errMeg);
     }
 
-
     /**
-     * @return void
-     * @Author lipeng
-     * @Description 根据规则校验  不满足规则
-     * @Date 2020/9/10
-     * @Param [str, Regex, errMeg]
-     **/
-    public final static void matchesRuleMistake(String str, String Regex, String errMeg) {
+     *  根据规则校验  不满足规则。
+     * @author lipeng
+     * 2020/9/10
+     * @param str 校验内容
+     * @param Regex 正则
+     * @param errMeg 错误信息
+     */
+    public static void matchesRuleMistake(String str, String Regex, String errMeg) {
         KPVerifyUtil.notNull(str, errMeg);
         Pattern pattern = Pattern.compile(Regex);
         if (pattern.matcher(str).matches())
             throw new IllegalArgumentException(errMeg);
     }
 
-
     /**
-     * @param str
-     * @param Regex
-     * @param errMeg
-     * @return void
-     * @Author lipeng
-     * @Description 根据规则校验  满足规则
-     * @Date 2023/12/21
-     **/
-    public final static void matchesRule(String str, String Regex, String errMeg) {
+     * 根据规则校验  满足规则。
+     * @author lipeng
+     * 2023/12/21
+     * @param str 校验内容
+     * @param Regex 正则
+     * @param errMeg 错误信息
+     */
+    public static void matchesRule(String str, String Regex, String errMeg) {
         KPVerifyUtil.notNull(str, errMeg);
         Pattern pattern = Pattern.compile(Regex);
         if (!pattern.matcher(str).matches())
             throw new IllegalArgumentException(errMeg);
     }
 
-
-
     /**
-     * @return void
-     * @Author lipeng
-     * @Description 出现的次数
-     * @Date 2020/10/9 16:19
-     * @Param [source, target, min, max, errMeg]
-     **/
-    public final static void frequency(String source, String target, Integer min, Integer max, String errMeg) {
+     * 出现的次数。
+     * @author lipeng
+     * 2020/10/9
+     * @param source 源字符串
+     * @param target 目标字符串
+     * @param min 最小次数
+     * @param max 最大次数
+     * @param errMeg 错误信息
+     */
+    public static void frequency(String source, String target, Integer min, Integer max, String errMeg) {
         Integer start = source.length();
         Integer end = source.replaceAll(target, "").length();
         //出现次数
@@ -350,17 +355,15 @@ public final class KPVerifyUtil {
             throw new IllegalArgumentException(errMeg);
     }
 
-
     /**
-     * @param source 经验的字符串
-     * @param str    指定字符串
+     * 以str后的最大长度。
+     * @author lipeng
+     * 2021/4/20
+     * @param source 校验的字符串
+     * @param str 指定字符串
      * @param maxNum 最大位数
      * @param errMeg 异常提醒
-     * @return void
-     * @Author lipeng
-     * @Description 以str后的最大长度
-     * @Date 2021/4/20 14:09
-     **/
+     */
     public static void lengthByString(String source, String str, Integer maxNum, String errMeg) {
         if (source.indexOf(str) == -1) return;
 
@@ -369,26 +372,20 @@ public final class KPVerifyUtil {
             throw new IllegalArgumentException(errMeg);
     }
 
-
-
     /**
-     * @Author lipeng
-     * @Description 校验邮箱
-     * @Date 2025/1/2 17:44
+     * 校验邮箱。
+     * @author lipeng
+     * 2025/1/2
      * @param email 邮箱
      * @param errMeg 错误提示
      * @param IsNull 是否可以为空
-     * @return void
-     **/
+     */
     public static void email(String email, String errMeg, Boolean IsNull) {
         if (IsNull && KPStringUtil.isEmpty(email)) {
             return;
-        }else{
+        } else {
             KPVerifyUtil.notNull(email, errMeg);
         }
         KPVerifyUtil.matchesRule(email, KPVerifyUtil.EMAIL_REGEX, errMeg);
     }
-
-
-
 }

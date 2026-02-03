@@ -19,6 +19,8 @@ import com.kp.framework.utils.kptool.KPRedisUtil;
 import com.kp.framework.utils.kptool.KPStringUtil;
 import com.kp.framework.utils.kptool.KPVerifyUtil;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -27,10 +29,10 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
- * @Author lipeng
- * @Description 项目菜单关联表 服务实现类
- * @Date 2025-05-16
- **/
+ * 项目菜单关联表 服务实现类。
+ * @author lipeng
+ * 2025-05-16
+ */
 @Service
 public class ProjectMenuService extends ServiceImpl<ProjectMenuMapper, ProjectMenuPO> {
 
@@ -38,12 +40,12 @@ public class ProjectMenuService extends ServiceImpl<ProjectMenuMapper, ProjectMe
     private MenuMapper menuMapper;
 
     /**
-     * @Author lipeng
-     * @Description 设置权限
-     * @Date 2025/5/16
-     * @param projectMenuInstallParamPO
-     * @return void
-     **/
+     * 设置权限。
+     * @author lipeng
+     * 2025/5/16
+     * @param projectMenuInstallParamPO 参数
+     */
+    @CacheEvict(value = "projectCache", allEntries = true)
     public void doMenuInstall(ProjectMenuInstallParamPO projectMenuInstallParamPO) {
         ProjectPO projectPO = ProjectCache.getProjectByProjectId(projectMenuInstallParamPO.getProjectId());
         if (projectPO == null)
@@ -56,7 +58,7 @@ public class ProjectMenuService extends ServiceImpl<ProjectMenuMapper, ProjectMe
                 .eq(ProjectMenuPO::getPurviewProjectId, projectMenuInstallParamPO.getPurviewProjectId())
                 .eq(ProjectMenuPO::getProjectId, projectMenuInstallParamPO.getProjectId());
         List<String> apmIds = this.baseMapper.selectList(deleteWrapper).stream().map(ProjectMenuPO::getApmId).collect(Collectors.toList());
-        if (KPStringUtil.isNotEmpty(apmIds)) this.baseMapper.deleteAllByIds(apmIds);
+        if (KPStringUtil.isNotEmpty(apmIds)) this.baseMapper.kpDeleteAllByIds(apmIds);
 
         List<ProjectMenuPO> projectMenuPOList = new ArrayList<>();
         projectMenuInstallParamPO.getMenuIds().forEach(menuId -> {
@@ -71,15 +73,15 @@ public class ProjectMenuService extends ServiceImpl<ProjectMenuMapper, ProjectMe
         //删除授权
         KPRedisUtil.remove(RedisSecurityConstant.REDIS_AUTHENTICATION_TOKEN + projectPO.getProjectCode() + ":" + projectPO.getAppId());
     }
-
-
+    
     /**
-     * @Author lipeng
-     * @Description 查询选中的权限
-     * @Date 2025/5/16
-     * @param parameter
+     * 查询选中的权限。
+     * @author lipeng
+     * 2025/5/16
+     * @param parameter 参数
      * @return java.util.List<java.lang.String>
-     **/
+     */
+    @Cacheable(value = "projectCache", keyGenerator = "pageKeyGenerator", unless = "T(com.kp.framework.utils.kptool.KPStringUtil).isEmpty(#result)")
     public List<String> queryMenuInstall(JSONObject parameter) {
         KPVerifyUtil.notNull(parameter.getString("projectId"), "请输入项目Id");
         KPVerifyUtil.notNull(parameter.getString("purviewProjectId"), "请输入权限项目Id");
@@ -93,7 +95,7 @@ public class ProjectMenuService extends ServiceImpl<ProjectMenuMapper, ProjectMe
                 .eq(ProjectMenuPO::getProjectId, parameter.getString("projectId"))
                 .eq(ProjectMenuPO::getPurviewProjectId, parameter.getString("purviewProjectId"))
         ).forEach(menuPO -> {
-            if (map.get(menuPO.getMenuId()) == null)  row.add(menuPO.getMenuId());
+            if (map.get(menuPO.getMenuId()) == null) row.add(menuPO.getMenuId());
         });
         return row;
     }

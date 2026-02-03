@@ -1,44 +1,45 @@
 
 package com.kp.framework.modules.user.po.customer;
 
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
 
+import java.io.Serial;
+import java.io.Serializable;
 import java.util.List;
 
 /**
- * <p>
- * 用户信息表
- * </p>
- *
+ * 用户信息表。
  * @author lipeng
- * @since 2024-04-18
+ * 2024-04-18
  */
 @Data
+@EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
-@ApiModel(value="AuthorizationCustomerPO", description="AuthorizationCustomerPO")
-public class AuthorizationCustomerPO {
+@Schema(name = "AuthorizationCustomerPO", description = "AuthorizationCustomerPO")
+public class AuthorizationCustomerPO implements Serializable {
 
+    @Serial
     private static final long serialVersionUID = 1L;
 
-    @ApiModelProperty(value = "token")
+    @Schema(description = "token")
     private String accessToken;
 
-    @ApiModelProperty(value = "过期时间， 单位 秒")
+    @Schema(description = "过期时间， 单位 秒")
     private Integer invalidTime;
 
-    @ApiModelProperty(value = "项目名称")
+    @Schema(description = "项目名称")
     private String projectName;
 
-    @ApiModelProperty(value = "项目编号")
+    @Schema(description = "项目编号")
     private String projectCode;
 
-    @ApiModelProperty(value = "剩余授权次数")
+    @Schema(description = "剩余授权次数")
     private Integer remainingNum;
 
-    @ApiModelProperty(value = "权限")
+    @Schema(description = "权限")
     private List<String> permissions;
 
 }

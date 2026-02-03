@@ -1,29 +1,32 @@
 package com.kp.framework.modules.week.po.customer;
 
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import lombok.experimental.Accessors;
 
+import java.io.Serial;
+import java.io.Serializable;
 
 /**
- * @Author lipeng
- * @Description 月计划拆分完成度统计
- * @Date 2025/9/23
- * @return
- **/
+ * 月计划拆分完成度统计。
+ * @author lipeng
+ * 2025/9/23
+ */
 @Data
 @Accessors(chain = true)
-@ApiModel(value = "WeeklyPalanCustomerCustomerPO", description = "WeeklyPalanCustomerCustomerPO")
-public class WeeklyPalanCustomerCustomerPO {
+@Schema(name = "WeeklyPalanCustomerCustomerPO", description = "WeeklyPalanCustomerCustomerPO")
+public class WeeklyPalanCustomerCustomerPO implements Serializable {
 
-    @ApiModelProperty("周数")
+    @Serial
+    private static final long serialVersionUID = 1L;
+
+    @Schema(description = "周数")
     private String taskWeek;
 
-    @ApiModelProperty("总任务数")
+    @Schema(description = "总任务数")
     private Integer totalTaskCount;
 
-    @ApiModelProperty("已完成任务数")
+    @Schema(description = "已完成任务数")
     private Integer completedTaskCount;
 }
 

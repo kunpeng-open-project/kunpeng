@@ -30,6 +30,7 @@ import com.kp.framework.utils.kptool.KPJsonUtil;
 import com.kp.framework.utils.kptool.KPLocalDateUtil;
 import com.kp.framework.utils.kptool.KPStringUtil;
 import com.kp.framework.utils.kptool.KPVerifyUtil;
+import jakarta.annotation.Resource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -41,10 +42,10 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 /**
- * @Author lipeng
- * @Description 周计划表 服务实现类
- * @Date 2025-09-20
- **/
+ * 周计划表 服务实现类。
+ * @author lipeng
+ * 2025-09-20
+ */
 @Service
 public class WeeklyPalanService extends ServiceImpl<WeeklyPalanMapper, WeeklyPalanPO> {
 
@@ -57,7 +58,7 @@ public class WeeklyPalanService extends ServiceImpl<WeeklyPalanMapper, WeeklyPal
     @Autowired
     private WeeklyUtil weeklyUtil;
 
-    @Autowired
+    @Resource
     private FeignAuthUtil feignAuthUtil;
 
 
@@ -88,12 +89,12 @@ public class WeeklyPalanService extends ServiceImpl<WeeklyPalanMapper, WeeklyPal
 
 
     /**
-     * @Author lipeng
-     * @Description 根据周计划id查询详情
-     * @Date 2025-09-20
-     * @param parameter
-     * @return JSONObject
-     **/
+     * 根据周计划id查询详情。
+     * @author lipeng
+     * 2025-09-20
+     * @param parameter 查询参数
+     * @return com.alibaba.fastjson2.JSONObject
+     */
     public JSONObject queryDetailsById(JSONObject parameter) {
         WeeklyPalanPO weeklyPalanPO = KPJsonUtil.toJavaObject(parameter, WeeklyPalanPO.class);
         KPVerifyUtil.notNull(weeklyPalanPO.getWeeklyId(), "请输入weeklyId");
@@ -104,17 +105,15 @@ public class WeeklyPalanService extends ServiceImpl<WeeklyPalanMapper, WeeklyPal
         return row;
     }
 
-
     /**
-     * @Author lipeng
-     * @Description 新增周计划
-     * @Date 2025-09-20
-     * @param weeklyPalanEditParamPO
-     * @return void
-     **/
+     * 新增周计划。
+     * @author lipeng
+     * 2025-09-20
+     * @param weeklyPalanEditParamPO 新增参数
+     */
     public void saveWeeklyPalan(WeeklyPalanEditParamPO weeklyPalanEditParamPO) {
         WeeklyPalanPO weeklyPalanPO = KPJsonUtil.toJavaObjectNotEmpty(weeklyPalanEditParamPO, WeeklyPalanPO.class);
-        String myUserId = LoginUserBO.getLoginUser().getIdentification();
+        String myUserId = LoginUserBO.getLoginUserNotEmpty().getIdentification();
 
         MonthlyReportPO monthlyReportPO = monthlyReportMapper.selectById(weeklyPalanPO.getMonthlyId());
         if (monthlyReportPO == null) throw new KPServiceException("月度计划不存在");
@@ -133,7 +132,7 @@ public class WeeklyPalanService extends ServiceImpl<WeeklyPalanMapper, WeeklyPal
         if (KPStringUtil.isNotEmpty(userPOList)) throw new KPServiceException("拆分标题已存在，请勿重复添加");
 
         weeklyPalanPO.setMonthlyPlanDate(monthlyReportPO.getPlanDate())
-                .setTaskUserId(LoginUserBO.getLoginUser().getIdentification())
+                .setTaskUserId(LoginUserBO.getLoginUserNotEmpty().getIdentification())
                 .setTaskStatus(WeeklyPalanStatusEnum.NOT_STARTED.code())
                 .setTaskStartDate(weeklyPalanEditParamPO.getCompleteDate().get(0))
                 .setTaskEndDate(weeklyPalanEditParamPO.getCompleteDate().get(1));
@@ -151,14 +150,12 @@ public class WeeklyPalanService extends ServiceImpl<WeeklyPalanMapper, WeeklyPal
         weeklyUtil.calculateMonthlyPlanprogress(weeklyPalanPO.getMonthlyId());
     }
 
-
     /**
-     * @Author lipeng
-     * @Description 修改周计划
-     * @Date 2025-09-20
-     * @param weeklyPalanEditParamPO
-     * @return void
-     **/
+     * 修改周计划。
+     * @author lipeng
+     * 2025-09-20
+     * @param weeklyPalanEditParamPO 修改参数
+     */
     public void updateWeeklyPalan(WeeklyPalanEditParamPO weeklyPalanEditParamPO) {
         WeeklyPalanPO weeklyPalanPO = KPJsonUtil.toJavaObjectNotEmpty(weeklyPalanEditParamPO, WeeklyPalanPO.class);
 
@@ -198,14 +195,13 @@ public class WeeklyPalanService extends ServiceImpl<WeeklyPalanMapper, WeeklyPal
 //        return KPStringUtil.format("删除成功{0}条数据", row);
 //    }
 
-
     /**
-     * @Author lipeng
-     * @Description 查询我的周计划列表
-     * @Date 2025/9/20
-     * @param parameter
-     * @return java.util.Map<java.lang.String,java.util.List<com.kp.framework.modules.week.po.WeeklyPalanPO>>
-     **/
+     * 查询我的周计划列表。
+     * @author lipeng
+     * 2025/9/20
+     * @param parameter 查询参数
+     * @return java.util.Map<java.lang.String,java.util.List<WeeklyPalanListCustomerPO>>
+     */
     public Map<String, List<WeeklyPalanListCustomerPO>> queryMyList(JSONObject parameter) {
         KPVerifyUtil.notNull(parameter.getString("planTime"), "请选择计划时间");
 
@@ -217,21 +213,19 @@ public class WeeklyPalanService extends ServiceImpl<WeeklyPalanMapper, WeeklyPal
                         .eq(MonthlyReportPO::getDeleteFlag, DeleteFalgEnum.NORMAL.code())
                 )
                 .disableSubLogicDel()
-                .eq(WeeklyPalanPO::getTaskUserId, LoginUserBO.getLoginUser().getIdentification())
+                .eq(WeeklyPalanPO::getTaskUserId, LoginUserBO.getLoginUserNotEmpty().getIdentification())
                 .eq(WeeklyPalanPO::getMonthlyPlanDate, KPLocalDateUtil.parse(parameter.getString("planTime") + "-01", KPLocalDateUtil.DATE_PATTERN))
                 .orderByAsc(WeeklyPalanPO::getTaskPriority));
 
         return list.stream().collect(Collectors.groupingBy(WeeklyPalanPO::getTaskWeek));
     }
 
-
     /**
-     * @Author lipeng
-     * @Description 删除周计划
-     * @Date 2025/9/20
-     * @param parameter
-     * @return void
-     **/
+     * 删除周计划。
+     * @author lipeng
+     * 2025/9/20
+     * @param parameter 删除参数
+     */
     public void remove(JSONObject parameter) {
         KPVerifyUtil.notNull(parameter.getString("weeklyId"), "请选择要删除的内容！");
 
@@ -246,14 +240,12 @@ public class WeeklyPalanService extends ServiceImpl<WeeklyPalanMapper, WeeklyPal
         weeklyUtil.calculateMonthlyPlanprogress(oldWeeklyPalanPO.getMonthlyId());
     }
 
-
     /**
-     * @Author lipeng
-     * @Description 废弃周计划
-     * @Date 2025/9/20
-     * @param parameter
-     * @return void
-     **/
+     * 废弃周计划。
+     * @author lipeng
+     * 2025/9/20
+     * @param parameter 废弃参数
+     */
     public void discard(JSONObject parameter) {
         KPVerifyUtil.notNull(parameter.getString("weeklyId"), "请选择要废弃的内容！");
 
@@ -270,19 +262,18 @@ public class WeeklyPalanService extends ServiceImpl<WeeklyPalanMapper, WeeklyPal
         weeklyUtil.calculateMonthlyPlanprogress(weeklyPalanPO.getMonthlyId());
     }
 
-
     /**
-     * @Author lipeng
-     * @Description 查询本人月计划拆分完成度
-     * @Date 2025/9/23
-     * @param parameter
-     * @return com.kp.framework.modules.week.po.customer.WeeklyPalanCustomerCustomerPO
-     **/
+     * 查询本人月计划拆分完成度。
+     * @author lipeng
+     * 2025/9/23
+     * @param parameter 查询参数
+     * @return java.util.List<WeeklyPalanCustomerCustomerPO>
+     */
     public List<WeeklyPalanCustomerCustomerPO> queryWeeklyPalanCustomer(JSONObject parameter) {
         KPVerifyUtil.notNull(parameter.getString("planTime"), "请选择计划时间");
 
         LambdaQueryWrapper<WeeklyPalanPO> wrappers = Wrappers.lambdaQuery(WeeklyPalanPO.class)
-                .eq(WeeklyPalanPO::getTaskUserId, LoginUserBO.getLoginUser().getIdentification())
+                .eq(WeeklyPalanPO::getTaskUserId, LoginUserBO.getLoginUserNotEmpty().getIdentification())
                 .eq(WeeklyPalanPO::getMonthlyPlanDate, KPLocalDateUtil.parse(parameter.getString("planTime") + "-01", KPLocalDateUtil.DATE_PATTERN))
                 .ne(WeeklyPalanPO::getTaskStatus, WeeklyPalanStatusEnum.DISCARD.code())
                 .eq(WeeklyPalanPO::getDeleteFlag, DeleteFalgEnum.NORMAL.code());
@@ -290,33 +281,31 @@ public class WeeklyPalanService extends ServiceImpl<WeeklyPalanMapper, WeeklyPal
         return weeklyPalanCustomerMapper.queryWeeklyPalanCustomer(wrappers);
     }
 
-
     /**
-     * @Author lipeng
-     * @Description 查询本人周计划统计数
-     * @Date 2025/9/26
-     * @param parameter
-     * @return java.util.List<com.kp.framework.modules.week.po.customer.WeellyTaskSummaryCustomerPO>
-     **/
+     * 查询本人周计划统计数。
+     * @author lipeng
+     * 2025/9/26
+     * @param parameter 查询参数
+     * @return WeellyTaskSummaryCustomerPO
+     */
     public WeellyTaskSummaryCustomerPO queryWeeklyNumber(JSONObject parameter) {
         KPVerifyUtil.notNull(parameter.getString("planTime"), "请选择计划时间");
 
         LambdaQueryWrapper<WeeklyPalanPO> queryWrapper = Wrappers.lambdaQuery(WeeklyPalanPO.class)
-                .eq(WeeklyPalanPO::getTaskUserId, LoginUserBO.getLoginUser().getIdentification())
+                .eq(WeeklyPalanPO::getTaskUserId, LoginUserBO.getLoginUserNotEmpty().getIdentification())
                 .eq(WeeklyPalanPO::getMonthlyPlanDate, KPLocalDateUtil.parse(parameter.getString("planTime") + "-01", KPLocalDateUtil.DATE_PATTERN))
                 .eq(WeeklyPalanPO::getDeleteFlag, DeleteFalgEnum.NORMAL.code());
 
         return weeklyPalanCustomerMapper.queryWeeklyNumber(queryWrapper);
     }
 
-
     /**
-     * @Author lipeng
-     * @Description 查询我的周计划列表(按状态分组)
-     * @Date 2025/9/27
-     * @param parameter
-     * @return java.util.Map<java.lang.Integer,java.util.List<com.kp.framework.modules.week.po.WeeklyPalanPO>>
-     **/
+     * 查询我的周计划列表(按状态分组)。
+     * @author lipeng
+     * 2025/9/27
+     * @param parameter 查询参数
+     * @return java.util.Map<java.lang.Integer,java.util.List<framework.modules.week.po.customer.WeeklyPalanListCustomerPO>>
+     */
     public Map<Integer, List<WeeklyPalanListCustomerPO>> queryMyListByStatus(JSONObject parameter) {
         KPVerifyUtil.notNull(parameter.getString("planTime"), "请选择计划时间");
 
@@ -329,7 +318,7 @@ public class WeeklyPalanService extends ServiceImpl<WeeklyPalanMapper, WeeklyPal
                         .eq(MonthlyReportPO::getDeleteFlag, DeleteFalgEnum.NORMAL.code())
                 )
                 .disableSubLogicDel()
-                .eq(WeeklyPalanPO::getTaskUserId, LoginUserBO.getLoginUser().getIdentification())
+                .eq(WeeklyPalanPO::getTaskUserId, LoginUserBO.getLoginUserNotEmpty().getIdentification())
                 .eq(WeeklyPalanPO::getMonthlyPlanDate, KPLocalDateUtil.parse(parameter.getString("planTime") + "-01", KPLocalDateUtil.DATE_PATTERN))
                 .ne(WeeklyPalanPO::getTaskStatus, WeeklyPalanStatusEnum.DISCARD.code())
                 .orderByAsc(WeeklyPalanPO::getTaskPriority));
@@ -344,14 +333,12 @@ public class WeeklyPalanService extends ServiceImpl<WeeklyPalanMapper, WeeklyPal
         return list.stream().collect(Collectors.groupingBy(WeeklyPalanPO::getTaskStatus));
     }
 
-
     /**
-     * @Author lipeng
-     * @Description 移动设置周计划状态
-     * @Date 2025/9/27
-     * @param parameter
-     * @return void
-     **/
+     * 移动设置周计划状态。
+     * @author lipeng
+     * 2025/9/27
+     * @param parameter 移动参数
+     */
     public void updateMoveStatus(JSONObject parameter) {
         WeeklyPalanPO weekParameter = KPJsonUtil.toJavaObjectNotEmpty(parameter, WeeklyPalanPO.class);
         KPVerifyUtil.notNull(weekParameter.getWeeklyId(), "请选择要移动的内容！");
@@ -364,8 +351,10 @@ public class WeeklyPalanService extends ServiceImpl<WeeklyPalanMapper, WeeklyPal
             throw new KPServiceException("周计划已处于该状态！");
 
         //校验是否可以回退状态
-        if (weeklyPalanPO.getTaskStatus().equals(WeeklyPalanStatusEnum.COMPLETED.code())
-                && !weekParameter.getTaskStatus().equals(WeeklyPalanStatusEnum.COMPLETED.code())) {
+//        todo 待校验
+//        if (weeklyPalanPO.getTaskStatus().equals(WeeklyPalanStatusEnum.COMPLETED.code())
+//                && !weekParameter.getTaskStatus().equals(WeeklyPalanStatusEnum.COMPLETED.code())) {
+        if (weeklyPalanPO.getTaskStatus().equals(WeeklyPalanStatusEnum.COMPLETED.code())) {
             MonthlyReportPO monthlyReportPO = monthlyReportMapper.selectById(weeklyPalanPO.getMonthlyId());
             if (monthlyReportPO == null) throw new KPServiceException("月度计划不存在");
             if (monthlyReportPO.getStatus().equals(MonthlyReportStatusEnum.COMPLETED.code()))
@@ -381,14 +370,13 @@ public class WeeklyPalanService extends ServiceImpl<WeeklyPalanMapper, WeeklyPal
         weeklyUtil.calculateMonthlyPlanprogress(weeklyPalanPO.getMonthlyId());
     }
 
-
     /**
-     * @Author lipeng
-     * @Description 查询周计划列表 不带分页
-     * @Date 2025/9/30
-     * @param weeklyPalanListParamPO
-     * @return java.util.List<com.kp.framework.modules.week.po.customer.WeeklyPalanListCustomerPO>
-     **/
+     * 查询周计划列表 不带分页。
+     * @author lipeng
+     * 2025/9/30
+     * @param weeklyPalanListParamPO 查询参数
+     * @return java.util.List<framework.modules.week.po.customer.WeeklyPalanListCustomerPO>
+     */
     public List<WeeklyPalanListCustomerPO> queryList(WeeklyPalanListParamPO weeklyPalanListParamPO) {
         LambdaQueryWrapper<WeeklyPalanPO> queryWrapper = Wrappers.lambdaQuery(WeeklyPalanPO.class)
                 .eq(KPStringUtil.isNotEmpty(weeklyPalanListParamPO.getMonthlyId()), WeeklyPalanPO::getMonthlyId, weeklyPalanListParamPO.getMonthlyId())
@@ -401,7 +389,7 @@ public class WeeklyPalanService extends ServiceImpl<WeeklyPalanMapper, WeeklyPal
 
         PageHelper.orderBy(new PageBO().getOrderBy(weeklyPalanListParamPO.getOrderBy(), WeeklyPalanPO.class));
         List<WeeklyPalanPO> weeklyPalanPOList = this.baseMapper.selectList(queryWrapper);
-        if (weeklyPalanPOList.size() == 0) return new ArrayList<>();
+        if (KPStringUtil.isEmpty(weeklyPalanPOList)) return new ArrayList<>();
 
         List<WeeklyPalanListCustomerPO> body = KPJsonUtil.toJavaObjectList(weeklyPalanPOList, WeeklyPalanListCustomerPO.class);
 

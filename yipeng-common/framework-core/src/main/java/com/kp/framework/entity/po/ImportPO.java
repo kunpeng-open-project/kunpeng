@@ -1,7 +1,6 @@
 package com.kp.framework.entity.po;
 
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import lombok.experimental.Accessors;
 
@@ -9,13 +8,13 @@ import java.util.UUID;
 
 @Data
 @Accessors(chain = true)
-@ApiModel(value="ImportPO对象", description="导入内容信息")
+@Schema(name = "ImportPO对象", description = "导入内容信息")
 public class ImportPO {
 
-    @ApiModelProperty(value = "唯一标识")
+    @Schema(description = "唯一标识")
     private String identification;
 
-    public ImportPO(){
+    public ImportPO() {
         this.identification = UUID.randomUUID().toString();
     }
 }

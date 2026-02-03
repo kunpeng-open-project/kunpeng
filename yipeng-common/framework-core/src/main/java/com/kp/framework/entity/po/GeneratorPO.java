@@ -2,38 +2,37 @@ package com.kp.framework.entity.po;
 
 
 import com.baomidou.mybatisplus.annotation.IdType;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
 import java.util.List;
 
 @Data
-@ApiModel(value="GeneratorPO", description="GeneratorPO")
+@Schema(name = "GeneratorPO", description = "代码生成器参数")
 public class GeneratorPO {
 
-    @ApiModelProperty(value = "作者", required = true, example = "lipeng")
+    @Schema(description = "作者", requiredMode = Schema.RequiredMode.REQUIRED, example = "lipeng")
     private String author;
 
-    @ApiModelProperty(value = "数据库", required = true, allowableValues = "yipeng_auth,yipeng_week_flow", allowEmptyValue = true)
+    @Schema(description = "数据库", requiredMode = Schema.RequiredMode.REQUIRED, allowableValues = {"yipeng_auth", "yipeng_week_flow"})
     private String databaseName;
 
-    @ApiModelProperty(value = "包名 默认 com.kp.framework.modules", example = "com.kp.framework.modules")
+    @Schema(description = "包名 默认 com.kp.framework.modules", example = "com.kp.framework.modules")
     private String backageName = "com.kp.framework.modules";
 
-    @ApiModelProperty(value = "模块名", required = true)
+    @Schema(description = "模块名", requiredMode = Schema.RequiredMode.REQUIRED)
     private String modulesName;
 
-    @ApiModelProperty(value = "数据库表名称", required = true, example = "[\"auth_user\", \"auth_menu\"]" )
+    @Schema(description = "数据库表名称", requiredMode = Schema.RequiredMode.REQUIRED, example = "表名称，多个表用英文逗号分隔")
     private List<String> tableName;
 
-    @ApiModelProperty(value = "主键策略", required = true, example = "ASSIGN_UUID")
+    @Schema(description = "主键策略", requiredMode = Schema.RequiredMode.REQUIRED, example = "ASSIGN_UUID", allowableValues = {"AUTO", "ASSIGN_UUID", "NONE", "INPUT", "ASSIGN_ID"})
     private IdType idType;
 
-    @ApiModelProperty(value = "表前缀")
+    @Schema(description = "表前缀")
     private List<String> tablePrefix;
 
-    @ApiModelProperty(value = "字前缀")
+    @Schema(description = "字前缀")
     private List<String> filesPrefix;
 
 }

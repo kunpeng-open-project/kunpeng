@@ -3,17 +3,16 @@ package com.kp.framework.utils.kptool;
 import cn.hutool.core.img.ImgUtil;
 import com.google.zxing.BarcodeFormat;
 import com.google.zxing.EncodeHintType;
-import com.google.zxing.WriterException;
 import com.google.zxing.client.j2se.MatrixToImageWriter;
 import com.google.zxing.common.BitMatrix;
 import com.google.zxing.oned.Code128Writer;
 import com.kp.framework.exception.KPServiceException;
+import jakarta.servlet.ServletOutputStream;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
 import javax.imageio.ImageIO;
-import javax.servlet.ServletOutputStream;
-import javax.servlet.http.HttpServletResponse;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
@@ -22,11 +21,10 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * @Author lipeng
- * @Description 条形码
- * @Date 2022/10/13
- * @return
- **/
+ * 条形码。
+ * @author lipeng
+ * 2022/10/13
+ */
 public final class KPBarCodeUtil {
 
     private BufferedImage bufferedImage; //条形码
@@ -41,66 +39,69 @@ public final class KPBarCodeUtil {
     private String font = "微软雅黑"; //字体
 
 
-    private KPBarCodeUtil(){}
-    public KPBarCodeUtil(String vaNumber, String words){
+    private KPBarCodeUtil() {
+    }
+
+    public KPBarCodeUtil(String vaNumber, String words) {
         this.vaNumber = vaNumber;
         this.words = words;
     }
-    public KPBarCodeUtil width(Integer width){
+
+    public KPBarCodeUtil width(Integer width) {
         this.width = width;
         return this;
     }
-    public KPBarCodeUtil height(Integer height){
+
+    public KPBarCodeUtil height(Integer height) {
         this.height = height;
         return this;
     }
-    public KPBarCodeUtil wordheight(Integer wordheight){
+
+    public KPBarCodeUtil wordheight(Integer wordheight) {
         this.wordheight = wordheight;
         return this;
     }
-    public KPBarCodeUtil backColor(Color backColor){
+
+    public KPBarCodeUtil backColor(Color backColor) {
         this.backColor = backColor;
         return this;
     }
-    public KPBarCodeUtil textColor(Color textColor){
+
+    public KPBarCodeUtil textColor(Color textColor) {
         this.textColor = textColor;
         return this;
     }
-    public KPBarCodeUtil imageType(String imageType){
+
+    public KPBarCodeUtil imageType(String imageType) {
         this.imageType = imageType;
         return this;
     }
-    public KPBarCodeUtil font(String font){
+
+    public KPBarCodeUtil font(String font) {
         this.font = font;
         return this;
     }
 
 
-    public BufferedImage getBufferedImage(){
+    public BufferedImage getBufferedImage() {
         return this.bufferedImage;
     }
 
 
-
     /**
-     * @Author lipeng
-     * @Description 生成条形码
-     * @Date 2022/10/13
-     * @param
-     * @return com.daoben.framework.util.KPBarCodeUtil
-     **/
-    public KPBarCodeUtil generate(){
+     * 生成条形码。
+     * @author lipeng
+     * 2022/10/13
+     * @return com.kp.framework.utils.kptool.KPBarCodeUtil
+     */
+    public KPBarCodeUtil generate() {
         Map<EncodeHintType, Object> hints = new HashMap<>();
         hints.put(EncodeHintType.CHARACTER_SET, "utf-8");
 
         Code128Writer writer = new Code128Writer();
         // 编码内容, 编码类型, 宽度, 高度, 设置参数
         BitMatrix bitMatrix = null;
-        try {
-            bitMatrix = writer.encode(this.vaNumber, BarcodeFormat.CODE_128, this.width, this.height, hints);
-        } catch (WriterException e) {
-            throw new KPServiceException("设置条形码参数异常" + e.getMessage());
-        }
+        bitMatrix = writer.encode(this.vaNumber, BarcodeFormat.CODE_128, this.width, this.height, hints);
         BufferedImage image = MatrixToImageWriter.toBufferedImage(bitMatrix);
 
 
@@ -121,9 +122,9 @@ public final class KPBarCodeUtil {
             //文字长度
             int strWidth = g2d.getFontMetrics().stringWidth(this.words);
             //总长度减去文字长度的一半  （居中显示）
-            int wordStartX=(this.width - strWidth) / 2;
+            int wordStartX = (this.width - strWidth) / 2;
             //height + (outImage.getHeight() - height) / 2 + 12
-            int wordStartY=this.height+20;
+            int wordStartY = this.height + 20;
 
             // 画文字
             g2d.drawString(this.words, wordStartX, wordStartY);
@@ -134,17 +135,15 @@ public final class KPBarCodeUtil {
         return this;
     }
 
-
     /**
-     * @Author lipeng
-     * @Description 生成并下载条形码
-     * @Date 2022/10/13
-     * @param downLoadFileNme
-     * @return void
-     **/
-    public void downLoad(String downLoadFileNme){
+     * 生成并下载条形码。
+     * @author lipeng
+     * 2022/10/13
+     * @param downLoadFileNme 文件名
+     */
+    public void downLoad(String downLoadFileNme) {
         this.generate();
-        HttpServletResponse response =((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getResponse();
+        HttpServletResponse response = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getResponse();
         KPIOUtil.setDownloadResponseHeader(downLoadFileNme + "." + this.imageType, response);
         try {
             ServletOutputStream os = response.getOutputStream();
@@ -152,16 +151,17 @@ public final class KPBarCodeUtil {
             os.flush();
             os.close();
         } catch (IOException e) {
-            throw new KPServiceException("生成条形码异常！"+ e.getMessage());
+            throw new KPServiceException("生成条形码异常！" + e.getMessage());
         }
     }
 
-
     /**
-     * 设置 Graphics2D 属性  （抗锯齿）
-     * @param g2d  Graphics2D提供对几何形状、坐标转换、颜色管理和文本布局更为复杂的控制
+     * 简设置 Graphics2D 属性  （抗锯齿）
+     * @author lipeng
+     * 2022/10/13
+     * @param g2d Graphics2D提供对几何形状、坐标转换、颜色管理和文本布局更为复杂的控制
      */
-    private static void setGraphics2D(Graphics2D g2d){
+    private static void setGraphics2D(Graphics2D g2d) {
         g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
         g2d.setRenderingHint(RenderingHints.KEY_STROKE_CONTROL, RenderingHints.VALUE_STROKE_DEFAULT);
         Stroke s = new BasicStroke(1, BasicStroke.CAP_ROUND, BasicStroke.JOIN_MITER);
@@ -172,14 +172,13 @@ public final class KPBarCodeUtil {
      * 设置背景为白色
      * @param g2d Graphics2D提供对几何形状、坐标转换、颜色管理和文本布局更为复杂的控制
      */
-    private void setColorWhite(Graphics2D g2d){
+    private void setColorWhite(Graphics2D g2d) {
         g2d.setColor(this.backColor);
         //填充整个屏幕
-        g2d.fillRect(0,0,600,600);
+        g2d.fillRect(0, 0, 600, 600);
         //设置笔刷
         g2d.setColor(this.backColor);
     }
-
 
 
     public static void main(String[] args) throws IOException {

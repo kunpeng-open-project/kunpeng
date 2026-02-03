@@ -5,8 +5,8 @@ import com.kp.framework.configruation.properties.KPFrameworkAsyncProperties;
 import com.kp.framework.configruation.properties.KPFrameworkTaskExecutorProperties;
 import com.kp.framework.configruation.properties.KPFrameworkTaskProperties;
 import com.kp.framework.utils.kptool.KPIconUtil;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import jakarta.annotation.PostConstruct;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -16,7 +16,6 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 import org.springframework.stereotype.Component;
 
-import javax.annotation.PostConstruct;
 import java.util.Arrays;
 import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorService;
@@ -26,13 +25,13 @@ import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
 /**
- * @Author 李鹏
- * @Description
- * @Date $ $
- * @return $
- **/
+ * 核心配置。
+ * @author lipeng
+ * 2020/1/20
+ */
 @Configuration
 @Component
+@Slf4j
 public class FrameworkApplication implements AsyncConfigurer {
 
     @Autowired
@@ -41,19 +40,18 @@ public class FrameworkApplication implements AsyncConfigurer {
     private KPFrameworkTaskProperties kpFrameworkTaskProperties;
     @Autowired
     private KPFrameworkAsyncProperties kpFrameworkAsyncProperties;
-    private Logger logger = LoggerFactory.getLogger(FrameworkApplication.class);
 
     @PostConstruct
     public void init() {
-        KPIconUtil.println(KPIconUtil.PURPLE, Arrays.asList("加载模块 [framework-core] 框架核心模块!", "版本      1.2.0-SNAPSHOT"));
-        logger.info("加载模块 [framework-core] 框架核心模块!");
+        KPIconUtil.println(KPIconUtil.PURPLE, Arrays.asList("加载模块 [framework-core] 框架核心模块!", "版本      1.3.0"));
+        log.info("加载模块 [framework-core] 框架核心模块!");
     }
 
-
     /**
-     * @Author lipeng
-     * @Description 定时器调度线程
-     **/
+     * 定时器调度线程。
+     * @author lipeng
+     * 2024/1/20
+     */
     @Bean
     public TaskScheduler taskScheduler() {
         ThreadPoolTaskScheduler scheduler = new ThreadPoolTaskScheduler();
@@ -64,29 +62,11 @@ public class FrameworkApplication implements AsyncConfigurer {
         return scheduler;
     }
 
-
     /**
-     * @Author lipeng
-     * @Description 线程池配置
-     **/
-//    @Bean(name = "threadPoolTaskExecutor")
-//    public ThreadPoolTaskExecutor threadPoolTaskExecutor() {
-//        ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
-//        // 设置最大线程数，当队列满时可创建的最大线程数量
-//        executor.setMaxPoolSize(kpFrameworkTaskExecutorProperties.getMaxPoolSize());
-//        // 设置核心线程数，线程池初始创建的线程数量
-//        executor.setCorePoolSize(kpFrameworkTaskExecutorProperties.getCorePoolSize());
-//        // 设置任务队列容量，存放待执行任务的队列最大长度
-//        executor.setQueueCapacity(kpFrameworkTaskExecutorProperties.getQueueCapacity());
-//        // 设置线程空闲时间，超过此时间的空闲线程将被销毁
-//        executor.setKeepAliveSeconds(kpFrameworkTaskExecutorProperties.getKeepAliveSeconds());
-//        // 设置线程名称前缀，便于日志追踪和问题排查
-//        executor.setThreadNamePrefix("kp-task-executor-timer");
-//        // 设置拒绝策略，当线程池和队列都满时的处理方式
-//        // CallerRunsPolicy表示由调用线程来执行该任务
-//        executor.setRejectedExecutionHandler(new ThreadPoolExecutor.CallerRunsPolicy());
-//        return executor;
-//    }
+     * 线程池配置。
+     * @author lipeng
+     * 2024/1/20
+     */
     @Bean(name = "kpExecutorService")
     public ExecutorService kpExecutorService() {
         // 1. 自定义 ThreadFactory：设置线程名前缀为 "kp-task-executor-timer"
@@ -106,12 +86,11 @@ public class FrameworkApplication implements AsyncConfigurer {
         );
     }
 
-
     /**
-     * @Author lipeng
-     * @Description @Async 线程池配置 实现 AsyncConfigurer
-     * @return java.util.concurrent.Executor
-     **/
+     * @Async 线程池配置 实现 AsyncConfigurer。
+     * @author lipeng
+     * 2024/1/20
+     */
     @Override
     public Executor getAsyncExecutor() {
         // 创建基于线程池的异步任务执行器，负责管理异步任务的执行
@@ -152,7 +131,6 @@ public class FrameworkApplication implements AsyncConfigurer {
         // 返回配置好的执行器实例，供Spring框架管理异步任务
         return executor;
     }
-
 
 //    @Override
 //    public Executor getAsyncExecutor() {

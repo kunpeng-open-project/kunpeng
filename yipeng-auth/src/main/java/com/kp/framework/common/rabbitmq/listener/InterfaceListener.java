@@ -27,30 +27,25 @@ import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
- * @Author lipeng
- * @Description 记录接口访问日志
- * @Date 2024/1/25
- * @return
- **/
+ * 记录接口访问日志。
+ * @author lipeng
+ * 2024/1/25
+ */
 @Component
 @Slf4j
 public class InterfaceListener {
 
-    public List<InterfaceLogMqCustomerPO> rows = new CopyOnWriteArrayList();
+    public List<InterfaceLogMqCustomerPO> rows = new CopyOnWriteArrayList<InterfaceLogMqCustomerPO>();
     @Autowired
     private InterfaceLogMapper interfaceLogMapper;
     @Autowired
     private MqProperties mqProperties;
 
-
     /**
-     * @Author lipeng
-     * @Description 正常消费
-     * @Date 2025/5/21
-     * @param messages
-     * @param channel
-     * @return void
-     **/
+     * 正常队列消费
+     * @author lipeng
+     * 2025/5/21
+     */
     @RabbitListener(queues = InterfaceRabbitMqConfig.NORMAL_QUEUE)
     public void interfaceQueues(List<Message> messages, Channel channel) {
         log.info(KPStringUtil.format("【mq开始消费接口记录】 消费条数{0}, 入库条数：{1} 目前已有条数：{2}", messages.size(), mqProperties.getInterfaceConsumeNum(), rows.size() + messages.size()));
@@ -80,15 +75,11 @@ public class InterfaceListener {
     }
 
 
-
     /**
-     * @Author lipeng
-     * @Description 死信队列 消费异常信息
-     * @Date 2025/5/21
-     * @param messages
-     * @param channel
-     * @return void
-     **/
+     * 死信队列消费异常信息。
+     * @author lipeng
+     * 2025/5/21
+     */
     @RabbitListener(queues = InterfaceRabbitMqConfig.DEAD_QUEUE)
     public void interfaceDeadQueues(List<Message> messages, Channel channel) {
         log.info(KPStringUtil.format("【mq开始消费死信队列中的接口记录】 消费条数{0}", messages.size()));
@@ -103,6 +94,7 @@ public class InterfaceListener {
                 try {
                     channel.basicAck(message.getMessageProperties().getDeliveryTag(), false);
                 } catch (IOException e) {
+                    log.error("【mq死信队列异常】 死信队列异常：{}", e.getMessage());
                 }
             }
         });
@@ -130,21 +122,22 @@ public class InterfaceListener {
             JSONObject result = KPJsonUtil.toJson(body.getResult());
             body.setStatus(result.getInteger("code"));
             body.setMessage(StringUtils.abbreviate(result.getString("message"), 990));
-        }catch (Exception ex){}
+        } catch (Exception ex) {
+            log.error("【mq解析结果失败】{}", ex.getMessage());
+        }
     }
 
     /**
-     * @Author lipeng
-     * @Description 移动到死信队列
-     * @Date 2024/2/1
-     * @param channel
-     * @return void
-     **/
+     * 移动到死信队列。
+     * @author lipeng
+     * 2024/2/1
+     */
     private void disposeFail(Channel channel) {
         rows.forEach(row -> {
             try {
                 channel.basicReject(row.getDeliveryTag(), false);
             } catch (IOException e) {
+                log.error("【mq移动到死信队列失败】{}", e.getMessage());
             }
         });
         rows.clear();

@@ -8,6 +8,8 @@ import com.kp.framework.common.util.KPJWTUtil;
 import com.kp.framework.common.util.ServiceUtil;
 import com.kp.framework.modules.role.po.AuthRolePO;
 import com.kp.framework.modules.user.po.AuthUserPO;
+import jakarta.annotation.Nonnull;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.Data;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.security.core.GrantedAuthority;
@@ -15,7 +17,6 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
-import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -31,20 +32,17 @@ import java.util.List;
 @Data
 public class LoginUserBO implements UserDetails {
 
-
-    private static final long serialVersionUID = 1L;
-
-
-
     //登录用户
     @JSONField(name = "authUserPO")
     private AuthUserPO user;
 
     //角色列表
-    private List<AuthRolePO> roles = new ArrayList<>();;
+    private List<AuthRolePO> roles = new ArrayList<>();
+    ;
 
     //权限列表
-    private List<String> roleKeys = new ArrayList<>();;
+    private List<String> roleKeys = new ArrayList<>();
+    ;
 
     //权限列表
     private List<String> permissions = new ArrayList<>();
@@ -67,24 +65,24 @@ public class LoginUserBO implements UserDetails {
     //唯一标识  如果是账号密码登录 就是用户id  如果是授权登录 是 项目code
     private String identification;
 
-    public LoginUserBO(AuthUserPO authUserPO){
+    public LoginUserBO(AuthUserPO authUserPO) {
         this.user = authUserPO;
     }
 
-    public LoginUserBO(){}
+    public LoginUserBO() {
+    }
 
-    public List<LoginUserDeptPO> getDeptAndSubDept(){
+    public List<LoginUserDeptPO> getDeptAndSubDept() {
         List<LoginUserDeptPO> combinedList = new ArrayList<>();
         combinedList.addAll(deptList);
         subDeptList.forEach(subDept -> {
-            if (!combinedList.stream().anyMatch(userDeptPO -> userDeptPO.getDeptId().equals(subDept.getDeptId()))){
+            if (!combinedList.stream().anyMatch(userDeptPO -> userDeptPO.getDeptId().equals(subDept.getDeptId()))) {
                 combinedList.add(subDept);
             }
         });
 
         return combinedList;
     }
-
 
 
     /**
@@ -152,12 +150,32 @@ public class LoginUserBO implements UserDetails {
      * @param
      * @return com.framework.security.modules.user.po.customer.LoginUserBO
      **/
-    public static LoginUserBO getLoginUser(){
+    public static LoginUserBO getLoginUser() {
         try {
             HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
             return getLoginUser(request);
-        }catch (Exception ex){
+        } catch (Exception ex) {
             return null;
+        }
+    }
+
+
+    /**
+     * 获取当前登录用户的token。
+     * 如果为空就直接返回前端提示内容
+     * @author lipeng
+     * 2026/1/29
+     * @return com.kp.framework.modules.user.po.customer.LoginUserBO
+     */
+    @Nonnull
+    public static LoginUserBO getLoginUserNotEmpty() {
+        try {
+            HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
+            LoginUserBO loginUserBO = getLoginUser(request);
+            if (loginUserBO == null) throw new RuntimeException("请登录！");
+            return loginUserBO;
+        } catch (Exception ex) {
+            throw new RuntimeException("请登录！");
         }
     }
 
@@ -168,7 +186,7 @@ public class LoginUserBO implements UserDetails {
      * @param request
      * @return com.framework.security.modules.user.po.customer.LoginUserBO
      **/
-    public static LoginUserBO getLoginUser(HttpServletRequest request){
+    public static LoginUserBO getLoginUser(HttpServletRequest request) {
 //        HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
         String token = request.getHeader(ServiceUtil.getBean(KPTokenProperties.class).getHeader());
         if (StringUtils.isEmpty(token)) return null;
@@ -176,7 +194,7 @@ public class LoginUserBO implements UserDetails {
             token = token.replace(ServiceUtil.getBean(KPTokenProperties.class).getHead(), "").trim();
 
 
-            LoginUserTypeBO loginUserTypeBO = CommonUtil.toJavaObject(KPJWTUtil.parseToken(token).asString(), LoginUserTypeBO.class);
+        LoginUserTypeBO loginUserTypeBO = CommonUtil.toJavaObject(KPJWTUtil.parseToken(token).asString(), LoginUserTypeBO.class);
 
         String body = CommonUtil.get(RedisSecurityConstant.REDIS_AUTHENTICATION_LOGINUSER_MESSAGE + loginUserTypeBO.getProjectCode() + ":" + loginUserTypeBO.getIdentification());
         if (StringUtils.isEmpty(body)) return null;
@@ -186,7 +204,6 @@ public class LoginUserBO implements UserDetails {
         loginUserBO.setProjectId(loginUserTypeBO.getProjectId());
         return loginUserBO;
     }
-
 
 
 }

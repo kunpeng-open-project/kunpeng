@@ -1,37 +1,36 @@
 package com.kp.framework.entity.po;
 
 
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
 import java.io.InputStream;
 import java.io.Serializable;
 
 @Data
-@ApiModel(value="ZipFilePO对象", description="文件信息")
+@Schema(name = "ZipFilePO对象", description = "压缩文件信息")
 public class ZipFilePO implements Serializable {
 
-    @ApiModelProperty(value = "文件名称")
+    @Schema(description = "文件名称")
     public String fileName;
 
-    @ApiModelProperty(value = "文件大小")
+    @Schema(description = "文件大小")
     private Long fileSize;
 
-    @ApiModelProperty(value = "文件类型")
+    @Schema(description = "文件类型")
     private String fileType;
 
-    @ApiModelProperty(value = "文件流")
+    @Schema(description = "文件流")
     private InputStream fileBody;
 
-    public ZipFilePO(String fileName, Long fileSize, String fileType, InputStream fileBody){
+    public ZipFilePO(String fileName, Long fileSize, String fileType, InputStream fileBody) {
         this.fileName = fileName;
         this.fileSize = fileSize;
         this.fileType = fileType;
         this.fileBody = fileBody;
     }
 
-    public ZipFilePO(String fileName, InputStream fileBody){
+    public ZipFilePO(String fileName, InputStream fileBody) {
         this.fileName = fileName;
         this.fileBody = fileBody;
     }

@@ -1,6 +1,5 @@
 package com.kp.framework.common.util;
 
-
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.algorithms.Algorithm;
@@ -12,13 +11,11 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
-/* *
- * @Author 李鹏
- * @Description JWT 相关操作
- * @Date 2020/5/19
- * @Param
- * @return
- **/
+/**
+ * JWT 相关操作。
+ * @author lipeng
+ * 2020/5/19
+ */
 public final class KPJWTUtil {
 
     public static final Integer DAY_10 = 864000; //10天
@@ -36,13 +33,13 @@ public final class KPJWTUtil {
     private KPJWTUtil(){}
 
     /**
-     * @Author lipeng
-     * @Description 生成Token
-     * @Date 2021/7/7
-     * @param val
+     * 生成Token。
+     * @author lipeng
+     * 2021/7/7
+     * @param val 值
      * @param expireTime 过期时间 单位秒
      * @return java.lang.String
-     **/
+     */
     public static String createToken(String val, Integer expireTime)  {
         try {
             Calendar nowTime = Calendar.getInstance();
@@ -66,14 +63,13 @@ public final class KPJWTUtil {
         }
     }
 
-
    /**
-    * @Author lipeng
-    * @Description 验证Token
-    * @Date 2021/7/7
-    * @param token
+    * 验证Token。
+    * @author lipeng
+    * 2021/7/7
+    * @param token 验证Token
     * @return boolean
-    **/
+    */
     public static boolean verifyToken(String token) {
         try {
             JWTVerifier verifier = JWT.require(Algorithm.HMAC256(SECRET)).build();
@@ -85,35 +81,14 @@ public final class KPJWTUtil {
     }
 
     /**
-     * @Author lipeng
-     * @Description  解析Token
-     * @Date 2021/7/7
-     * @param token
-     * @return java.lang.String
-     **/
-//    public static String parseToken(String token) {
-//        DecodedJWT decodedJWT = JWT.decode(token);
-//        return decodedJWT.getClaim(KEY).asString();
-//    }
-
+     * 解析Token。
+     * @author lipeng
+     * 2021/7/7
+     * @param token 验证Token
+     * @return com.auth0.jwt.interfaces.Claim
+     */
     public static Claim parseToken(String token) {
         DecodedJWT decodedJWT = JWT.decode(token);
         return decodedJWT.getClaim(KEY);
     }
-
-//    public static void main(String[] args) {
-//        try {
-//            String aa =  KPJWTUtil.createToken("111");
-//
-//            System.out.println(aa);
-//
-//
-//            System.out.println(KPJWTUtil.parseToken(aa));
-//            System.out.println(KPJWTUtil.verifyToken(aa));
-//
-//        }catch (Exception e){
-//            e.printStackTrace();
-//        }
-//
-//    }
 }

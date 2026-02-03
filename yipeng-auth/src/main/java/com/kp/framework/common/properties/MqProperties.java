@@ -5,13 +5,11 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.context.annotation.Configuration;
 
-
 /**
- * @Author lipeng
- * @Description
- * @Date 2025/5/21
- * @return
- **/
+ * mq日志记录消费配置。
+ * @author lipeng
+ * 2025/5/21
+ */
 @Data
 @ConfigurationProperties(prefix = "kp.mq")
 @Configuration
@@ -29,5 +27,4 @@ public class MqProperties {
 
     // http记录日志归档天数 多少天以前的归档
     private Integer httpArchiveDay = 30;
-
 }

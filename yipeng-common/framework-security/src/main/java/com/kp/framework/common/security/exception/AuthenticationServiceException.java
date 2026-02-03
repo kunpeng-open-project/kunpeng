@@ -1,14 +1,12 @@
 package com.kp.framework.common.security.exception;
 
-
 import lombok.Data;
 
 /**
- * @Author lipeng
- * @Description 业务异常
- * @Date 2021/7/8
- * @return
- **/
+ * 业务异常。
+ * @author lipeng
+ * 2021/7/8
+ */
 @Data
 public class AuthenticationServiceException extends RuntimeException {
 
@@ -24,5 +22,4 @@ public class AuthenticationServiceException extends RuntimeException {
         this.code = code;
         this.message = message;
     }
-
 }

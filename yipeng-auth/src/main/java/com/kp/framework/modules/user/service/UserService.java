@@ -12,7 +12,6 @@ import com.kp.framework.common.properties.KPUserProperties;
 import com.kp.framework.common.properties.RedisSecurityConstant;
 import com.kp.framework.constant.MinioConstant;
 import com.kp.framework.constant.ReturnFinishedMessageConstant;
-import com.kp.framework.controller.server.EhcacheService;
 import com.kp.framework.entity.bo.KPResult;
 import com.kp.framework.entity.bo.PageBO;
 import com.kp.framework.enums.DeleteFalgEnum;
@@ -41,10 +40,11 @@ import com.kp.framework.utils.kptool.KPDatabaseUtil;
 import com.kp.framework.utils.kptool.KPJsonUtil;
 import com.kp.framework.utils.kptool.KPMinioUtil;
 import com.kp.framework.utils.kptool.KPRedisUtil;
-import com.kp.framework.utils.kptool.KPServiceUtil;
 import com.kp.framework.utils.kptool.KPStringUtil;
 import com.kp.framework.utils.kptool.KPVerifyUtil;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -56,10 +56,10 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
- * @Author lipeng
- * @Description 用户信息表 服务实现类
- * @Date 2025-04-21
- **/
+ * 用户信息表 服务实现类。
+ * @author lipeng
+ * 2025-04-21
+ */
 @Service
 public class UserService extends ServiceImpl<UserMapper, UserPO> {
 
@@ -76,13 +76,14 @@ public class UserService extends ServiceImpl<UserMapper, UserPO> {
     private KPUserProperties kpUserProperties;
 
     /**
-     * @Author lipeng
-     * @Description 查询用户信息列表
-     * @Date 2025-04-21
-     * @param userListParamPO
-     * @return java.util.List<UserListCustomerPO>
-     **/
-    public List<UserListCustomerPO> queryPageList(UserListParamPO userListParamPO) {
+     * 查询用户信息列表。
+     * @author lipeng
+     * 2025-04-21
+     * @param userListParamPO 查询参数
+     * @return java.util.List<com.kp.framework.modules.user.po.customer.UserListCustomerPO>
+     */
+    @Cacheable(value = "userCache", keyGenerator = "pageKeyGenerator", unless = "T(com.kp.framework.utils.kptool.KPStringUtil).isEmpty(#result)")
+    public KPResult<UserListCustomerPO> queryPageList(UserListParamPO userListParamPO) {
         List<String> deptList = new ArrayList<>();
         if (KPStringUtil.isNotEmpty(userListParamPO.getDeptId()))
             deptList = deptCustomerMapper.queryDepeSubsetId(userListParamPO.getDeptId());
@@ -142,17 +143,17 @@ public class UserService extends ServiceImpl<UserMapper, UserPO> {
         row.forEach(userListCustomerPO -> {
             userListCustomerPO.setAvatar(KPMinioUtil.getUrl(userListCustomerPO.getAvatar(), 24));
         });
-        return row;
+        return KPResult.list(row);
     }
 
-
     /**
-     * @Author lipeng
-     * @Description 查询用户列表
-     * @Date 2025/5/14
-     * @param userListParamPO
-     * @return java.lang.Object
-     **/
+     * 查询用户列表。
+     * @author lipeng
+     * 2025/5/14
+     * @param userListParamPO 查询参数
+     * @return java.util.List<com.kp.framework.modules.user.po.customer.UserListCustomerPO>
+     */
+    @Cacheable(value = "userCache", keyGenerator = "pageKeyGenerator", unless = "T(com.kp.framework.utils.kptool.KPStringUtil).isEmpty(#result)")
     public List<UserListCustomerPO> queryList(UserListParamPO userListParamPO) {
         List<String> deptList = new ArrayList<>();
         if (KPStringUtil.isNotEmpty(userListParamPO.getDeptId()))
@@ -214,14 +215,14 @@ public class UserService extends ServiceImpl<UserMapper, UserPO> {
         return this.baseMapper.selectJoinList(UserListCustomerPO.class, wrapper);
     }
 
-
     /**
-     * @Author lipeng
-     * @Description 根据用户Id查询详情
-     * @Date 2025-04-21
-     * @param parameter
-     * @return UserDetailsCustomerPO
-     **/
+     * 根据用户Id查询详情。
+     * @author lipeng
+     * 2025-04-21
+     * @param parameter 查询参数
+     * @return com.kp.framework.modules.user.po.customer.UserDetailsCustomerPO
+     */
+    @Cacheable(value = "userCache", keyGenerator = "pageKeyGenerator", unless = "T(com.kp.framework.utils.kptool.KPStringUtil).isEmpty(#result)")
     public UserDetailsCustomerPO queryDetailsById(JSONObject parameter) {
         UserPO userPO = KPJsonUtil.toJavaObject(parameter, UserPO.class);
         KPVerifyUtil.notNull(userPO.getUserId(), "请输入userId");
@@ -312,18 +313,17 @@ public class UserService extends ServiceImpl<UserMapper, UserPO> {
             row.setDeptNames(deptNameList);
         }
 
-
+        row.setAvatarShow(KPMinioUtil.getUrl(row.getAvatar(), 24));
         return row;
     }
 
-
     /**
-     * @Author lipeng
-     * @Description 新增用户信息
-     * @Date 2025-04-21
-     * @param userEditParamPO
-     * @return void
-     **/
+     * 新增用户信息。
+     * @author lipeng
+     * 2025-04-21
+     * @param userEditParamPO 新增参数
+     */
+    @CacheEvict(value = "userCache", allEntries = true)
     public void saveUser(UserEditParamPO userEditParamPO) {
         UserPO userPO = KPJsonUtil.toJavaObjectNotEmpty(userEditParamPO, UserPO.class);
 
@@ -334,7 +334,7 @@ public class UserService extends ServiceImpl<UserMapper, UserPO> {
                 .or()
                 .eq(KPStringUtil.isNotEmpty(userPO.getIdCard()), UserPO::getIdCard, userPO.getIdCard()));
 
-        if (userPOList.size() > 0) {
+        if (KPStringUtil.isNotEmpty(userPOList)) {
             userPOList.forEach(userVerify -> {
                 if (KPStringUtil.isNotEmpty(userVerify.getJobNumber()) && userVerify.getJobNumber().equalsIgnoreCase(userPO.getJobNumber()))
                     throw new KPServiceException("工号已存在，请勿重复添加");
@@ -364,23 +364,22 @@ public class UserService extends ServiceImpl<UserMapper, UserPO> {
         userUtil.editRest(userEditParamPO, userPO.getUserId());
     }
 
-
     /**
-     * @Author lipeng
-     * @Description 修改用户信息
-     * @Date 2025-04-21
-     * @param userEditParamPO
-     * @return void
-     **/
+     * 修改用户信息。
+     * @author lipeng
+     * 2025-04-21
+     * @param userEditParamPO 修改参数
+     */
+    @CacheEvict(value = "userCache", allEntries = true)
     public void updateUser(UserEditParamPO userEditParamPO) {
         UserPO userPO = KPJsonUtil.toJavaObjectNotEmpty(userEditParamPO, UserPO.class);
         //禁止自己给自己分配管理员角色
 
         if (KPStringUtil.isNotEmpty(userEditParamPO.getRoleIds()) && userEditParamPO.getRoleIds().contains("2d0fb4174e9a106140a5793d2598ac00")) {
-            if (!Arrays.asList("admin", "admin1").contains(LoginUserBO.getLoginUser().getUser().getUserName())) {
+            if (!Arrays.asList("admin", "admin1").contains(LoginUserBO.getLoginUserNotEmpty().getUser().getUserName())) {
                 //查询用户角色
                 if (!userRoleMapper.selectList(Wrappers.lambdaQuery(UserRolePO.class).eq(UserRolePO::getUserId, userEditParamPO.getUserId()))
-                        .stream().map(UserRolePO::getRoleId).collect(Collectors.toList())
+                        .stream().map(UserRolePO::getRoleId).toList()
                         .contains("68c12620cc4ac471cb32e39829e210bd")) {
                     throw new KPServiceException("不允许非超管账号添加管理员角色");
                 }
@@ -396,7 +395,7 @@ public class UserService extends ServiceImpl<UserMapper, UserPO> {
                         .eq(KPStringUtil.isNotEmpty(userPO.getIdCard()), UserPO::getIdCard, userPO.getIdCard())
                 ));
 
-        if (userPOList.size() > 0) {
+        if (KPStringUtil.isNotEmpty(userPOList)) {
             userPOList.forEach(userVerify -> {
                 if (KPStringUtil.isNotEmpty(userVerify.getJobNumber()) && userVerify.getJobNumber().equalsIgnoreCase(userPO.getJobNumber()))
                     throw new KPServiceException("工号已存在，请勿重复添加");
@@ -425,31 +424,30 @@ public class UserService extends ServiceImpl<UserMapper, UserPO> {
         userUtil.editRest(userEditParamPO, userPO.getUserId());
     }
 
-
     /**
-     * @Author lipeng
-     * @Description 批量删除用户信息
-     * @Date 2025-04-21
-     * @param ids
-     * @return String
-     **/
+     * 批量删除用户信息。
+     * @author lipeng
+     * 2025-04-21
+     * @param ids 删除id集合
+     * @return java.lang.String
+     */
+    @CacheEvict(value = "userCache", allEntries = true)
     public String batchRemove(List<String> ids) {
         if (KPStringUtil.isEmpty(ids)) throw new KPServiceException("请选择要删除的内容！");
 
-        Integer row = this.baseMapper.deleteBatchIds(ids);
+        int row = this.baseMapper.deleteByIds(ids);
         if (row == 0) throw new KPServiceException(ReturnFinishedMessageConstant.ERROR);
 
         return KPStringUtil.format("删除成功{0}条数据", row);
     }
 
-
     /**
-     * @Author lipeng
-     * @Description 禁用或者取消禁用
-     * @Date 2025/4/29
-     * @param parameter
-     * @return void
-     **/
+     * 禁用或者取消禁用。
+     * @author lipeng
+     * 2026/1/16 2025/4/29
+     * @param parameter 参数
+     */
+    @CacheEvict(value = "userCache", allEntries = true)
     public void doForbidden(JSONObject parameter) {
         KPVerifyUtil.notNull(parameter.getString("userId"), "用户ID不能为空");
 
@@ -475,32 +473,31 @@ public class UserService extends ServiceImpl<UserMapper, UserPO> {
             throw new KPServiceException(ReturnFinishedMessageConstant.ERROR);
     }
 
-
     /**
-     * @Author lipeng
-     * @Description 批量注销
-     * @Date 2025/5/8
-     * @param ids
-     * @return com.kp.framework.entity.bo.KPResult
-     **/
-    public KPResult doCancel(List<String> ids) {
+     * 批量注销。
+     * @author lipeng
+     * 2025/5/8
+     * @param ids 删除id集合
+     * @return java.lang.String
+     */
+    @CacheEvict(value = "userCache", allEntries = true)
+    public String doCancel(List<String> ids) {
         if (KPStringUtil.isEmpty(ids)) throw new KPServiceException("请选择要注销的用户！");
 
-        Integer row = this.baseMapper.update(
+        int row = this.baseMapper.update(
                 new UserPO().setStatus(LoginUserStatusEnum.LOGOUT.code()),
                 Wrappers.lambdaQuery(UserPO.class).in(UserPO::getUserId, ids));
         if (row == 0) throw new KPServiceException(ReturnFinishedMessageConstant.ERROR);
-        return KPResult.success(KPStringUtil.format("注销成功{0}个用户", row));
+        return KPStringUtil.format("注销成功{0}个用户", row);
     }
 
-
     /**
-     * @Author lipeng
-     * @Description 管理员密码重置
-     * @Date 2025/5/8
-     * @param parameter
-     * @return void
-     **/
+     * 管理员密码重置。
+     * @author lipeng
+     * 2025/5/8
+     * @param parameter 密码参数
+     */
+    @CacheEvict(value = "userCache", allEntries = true)
     public void doReset(JSONObject parameter) {
         UserPO userPO = KPJsonUtil.toJavaObjectNotEmpty(parameter, UserPO.class);
         KPVerifyUtil.notNull(parameter.getString("userId"), "用户ID不能为空");
@@ -511,17 +508,15 @@ public class UserService extends ServiceImpl<UserMapper, UserPO> {
             throw new KPServiceException(ReturnFinishedMessageConstant.ERROR);
     }
 
-
     /**
-     * @Author lipeng
-     * @Description 管理员手动解锁
-     * @Date 2025/5/8
-     * @param parameter
-     * @return void
-     **/
+     * 管理员手动解锁。
+     * @author lipeng
+     * 2025/5/8
+     * @param parameter 解锁参数
+     */
+    @CacheEvict(value = "userCache", allEntries = true)
     public void doUnlock(JSONObject parameter) {
         KPVerifyUtil.notNull(parameter.getString("userId"), "用户ID不能为空");
-        KPServiceUtil.getBean(EhcacheService.class).clear(UserMapper.class);
 
         UserPO userPO = this.baseMapper.selectById(parameter.getString("userId"));
         if (userPO == null) throw new KPServiceException("用户不存在");
@@ -545,14 +540,13 @@ public class UserService extends ServiceImpl<UserMapper, UserPO> {
             throw new KPServiceException(ReturnFinishedMessageConstant.ERROR);
     }
 
-
     /**
-     * @Author lipeng
-     * @Description 修改密码
-     * @Date 2025/7/7
-     * @param parameter
-     * @return void
-     **/
+     * 修改密码。
+     * @author lipeng
+     * 2025/7/7
+     * @param parameter 修改密码参数
+     */
+    @CacheEvict(value = "userCache", allEntries = true)
     public void updatePassword(JSONObject parameter) {
         KPVerifyUtil.notNull(parameter.getString("userId"), "请输入用户id！");
         KPVerifyUtil.notNull(parameter.getString("oldPassword"), "请输入老密码！");
@@ -578,6 +572,13 @@ public class UserService extends ServiceImpl<UserMapper, UserPO> {
             throw new KPServiceException(ReturnFinishedMessageConstant.ERROR);
     }
 
+    /**
+     * 用户个人修改数据。
+     * @author lipeng
+     * 2025/7/10
+     * @param parameter 修改参数
+     */
+    @CacheEvict(value = "userCache", allEntries = true)
     public void updateMessage(JSONObject parameter) {
         UserPO userParameter = KPJsonUtil.toJavaObjectNotEmpty(parameter, UserPO.class);
         KPVerifyUtil.notNull(userParameter.getUserId(), "请输入用户id");
@@ -601,18 +602,14 @@ public class UserService extends ServiceImpl<UserMapper, UserPO> {
             throw new KPServiceException(ReturnFinishedMessageConstant.ERROR);
     }
 
-    public static void main(String[] args) {
-        System.out.println(new BCryptPasswordEncoder().encode("admin123"));
-    }
-
-
     /**
-     * @Author lipeng
-     * @Description 根据用户id集合查询用户列表
-     * @Date 2025/8/26
-     * @param userIds
+     * 根据用户id集合查询用户列表。
+     * @author lipeng
+     * 2025/8/26
+     * @param userIds 用户id集合
      * @return java.util.List<com.kp.framework.modules.user.po.UserPO>
-     **/
+     */
+    @Cacheable(value = "userCache", keyGenerator = "pageKeyGenerator", unless = "T(com.kp.framework.utils.kptool.KPStringUtil).isEmpty(#result)")
     public List<UserPO> queryUserIdList(List<String> userIds) {
         KPVerifyUtil.notNull(userIds, "用户id集合不能为空");
 

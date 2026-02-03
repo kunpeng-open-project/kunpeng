@@ -1,6 +1,5 @@
 package com.kp.framework.modules.dept.util;
 
-
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.kp.framework.entity.bo.DictionaryChildrenBO;
 import com.kp.framework.modules.dept.mapper.DeptMapper;
@@ -25,13 +24,13 @@ public class DeptUtil {
     private DeptMapper deptMapper;
 
     /**
-     * @Author lipeng
-     * @Description 部门搜索
-     * @Date 2024/12/6
-     * @param list
-     * @param deptListParamPO
-     * @return java.util.List<com.jfzh.rht.modules.dept.po.customer.DeptCustomerPO>
-     **/
+     * 部门搜索。
+     * @author lipeng
+     * 2024/12/6
+     * @param list 部门列表
+     * @param deptListParamPO 搜索参数
+     * @return java.util.List<com.kp.framework.modules.dept.po.customer.DeptCustomerPO>
+     */
     public static List<DeptCustomerPO> filterList(List<DeptCustomerPO> list, DeptListParamPO deptListParamPO) {
         return list.stream()
                 .filter(dept -> KPStringUtil.isEmpty(deptListParamPO.getDeptName()) || dept.getDeptName().contains(deptListParamPO.getDeptName()))
@@ -40,14 +39,13 @@ public class DeptUtil {
                 .collect(Collectors.toList());
     }
 
-
     /**
-     * @Author lipeng
-     * @Description 组装数据
-     * @Date 2025/4/8
-     * @param deptList
+     * 组装数据。
+     * @author lipeng
+     * 2025/4/8
+     * @param deptList 部门列表
      * @return java.util.List<com.kp.framework.entity.bo.DictionaryChildrenBO>
-     **/
+     */
     public static List<DictionaryChildrenBO> assembleDeptSelect(List<DeptCustomerPO> deptList) {
         List<DictionaryChildrenBO> body = new ArrayList<>();
         deptList.forEach(deptPO -> {
@@ -62,14 +60,12 @@ public class DeptUtil {
         return body;
     }
 
-
     /**
-     * @Author lipeng
-     * @Description 异步更新子菜单的信息
-     * @Date 2025/9/25
-     * @param deptId
-     * @return void
-     **/
+     * 异步更新子菜单的信息。
+     * @author lipeng
+     * 2025/9/25
+     * @param deptId 部门ID
+     */
     @Async
     @Transactional
     public void asyncUpdateChildrenDeptInfo(String deptId) {
@@ -90,7 +86,7 @@ public class DeptUtil {
     private void updateDescendantsDeptInfo(String parentDeptId, String parentAncestors, Integer parentHierarchy, String topDeptId) {
         // 查询直接子部门
         List<DeptPO> childrenDepts = deptMapper.selectList(Wrappers.lambdaQuery(DeptPO.class).eq(DeptPO::getParentId, parentDeptId));
-        if (childrenDepts.size() == 0) return;
+        if (KPStringUtil.isEmpty(childrenDepts)) return;
 
         childrenDepts.forEach(dept -> {
             // 计算新的ancestors：父级ancestors + 父级ID

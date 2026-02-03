@@ -6,6 +6,11 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.context.annotation.Configuration;
 
+/**
+ * minio配置。
+ * @author lipeng
+ * 2022/5/21
+ */
 @Data
 @ConfigurationProperties(prefix = "kp.minio")
 @Configuration

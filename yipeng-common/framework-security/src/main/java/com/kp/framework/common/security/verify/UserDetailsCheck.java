@@ -1,6 +1,5 @@
 package com.kp.framework.common.security.verify;
 
-
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.github.yulichang.wrapper.MPJLambdaWrapper;
 import com.kp.framework.common.enums.AuthCodeEnum;
@@ -54,13 +53,11 @@ import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
-
 /**
- * @Author lipeng
- * @Description 用户验证处理
- * @Date 2024/4/21
- * @return
- **/
+ * 用户验证处理。
+ * @author lipeng
+ * 2024/4/21
+ */
 @Service
 public class UserDetailsCheck implements UserDetailsService {
 
@@ -152,15 +149,14 @@ public class UserDetailsCheck implements UserDetailsService {
         return null;
     }
 
-
     /**
-     * @param loginUserTypeBO
-     * @param loginRecordPO
-     * @return com.framework.security.modules.user.po.customer.LoginUserBO
-     * @Author lipeng
-     * @Description 普通登录
-     * @Date 2024/4/22
-     **/
+     * 普通登录。
+     * @author lipeng
+     * 2024/4/22
+     * @param loginUserTypeBO 登录用户
+     * @param loginRecordPO 登录记录
+     * @return com.kp.framework.modules.user.po.customer.LoginUserBO
+     */
     private LoginUserBO common(LoginUserTypeBO loginUserTypeBO, AuthLoginRecordPO loginRecordPO) throws UsernameNotFoundException {
         LambdaQueryWrapper<AuthUserPO> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.eq(AuthUserPO::getUserName, loginUserTypeBO.getIdentification());
@@ -315,14 +311,13 @@ public class UserDetailsCheck implements UserDetailsService {
         return loginUserBO;
     }
 
-
     /**
-     * @Author lipeng
-     * @Description 授权登录
-     * @Date 2024/7/10
-     * @param loginUserTypeBO
-     * @return com.framework.security.modules.user.po.customer.LoginUserBO
-     **/
+     * 授权登录。
+     * @author lipeng
+     * 2024/7/10
+     * @param loginUserTypeBO 登录用户
+     * @return com.kp.framework.modules.user.po.customer.LoginUserBO
+     */
     private LoginUserBO authorization(LoginUserTypeBO loginUserTypeBO) {
         LambdaQueryWrapper<AuthProjectPO> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.eq(AuthProjectPO::getAppId, loginUserTypeBO.getIdentification());
@@ -380,14 +375,13 @@ public class UserDetailsCheck implements UserDetailsService {
         return loginUserBO;
     }
 
-
     /**
-     * @Author lipeng
-     * @Description 登录失败
-     * @Date 2024/6/26
-     * @param userId
+     * 登录失败。
+     * @author lipeng
+     * 2024/6/26
+     * @param userId 用户ID
      * @return java.lang.String
-     **/
+     */
     private String loginError(String userId) {
         AuthUserPO authUserPO = authUserMapper.selectById(userId);
         if (authUserPO == null) return "用户不存在";
@@ -410,15 +404,13 @@ public class UserDetailsCheck implements UserDetailsService {
         return CommonUtil.format("密码错误,您还有{0}次机会", kpUserProperties.getErrorNumber() - errorNumber);
     }
 
-
     /**
-     * @Author lipeng
-     * @Description 记录登录日志
-     * @Date 2024/6/26
-     * @param loginRecordPO
-     * @param loginResult
-     * @return void
-     **/
+     * 记录登录日志。
+     * @author lipeng
+     * 2024/6/26
+     * @param loginRecordPO 登录日志
+     * @param loginResult 登录结果
+     */
     private void saveLoginRecord(AuthLoginRecordPO loginRecordPO, String loginResult) {
         loginRecordPO.setLoginResult(loginResult);
         authLoginRecordMapper.insert(loginRecordPO);

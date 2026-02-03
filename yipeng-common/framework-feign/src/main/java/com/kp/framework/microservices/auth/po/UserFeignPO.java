@@ -5,105 +5,106 @@ import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.kp.framework.entity.bo.ParentBO;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 /**
- * @Author lipeng
- * @Description 用户信息表
- * @Date 2025-04-21
-**/
+ * 用户信息表。
+ * @author lipeng
+ * 2025-04-21
+ */
 @Data
+@EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
-@ApiModel(value = "UserFeignPO", description = "用户信息表")
-public class UserFeignPO extends ParentBO {
+@Schema(name = "UserFeignPO", description = "用户信息表")
+public class UserFeignPO extends ParentBO<UserFeignPO> {
 
-    @ApiModelProperty("用户Id")
+    @Schema(description = "用户Id")
     @TableId(value = "user_id", type = IdType.ASSIGN_UUID)
     private String userId;
 
-    @ApiModelProperty("用户账号")
+    @Schema(description = "用户账号")
     @TableField("user_name")
     private String userName;
 
-    @ApiModelProperty("密码")
+    @Schema(description = "密码")
     @TableField("password")
     private String password;
 
-    @ApiModelProperty("工号")
+    @Schema(description = "工号")
     @TableField("job_number")
     private String jobNumber;
 
-    @ApiModelProperty("真实姓名")
+    @Schema(description = "真实姓名")
     @TableField("real_name")
     private String realName;
 
-    @ApiModelProperty("用户昵称")
+    @Schema(description = "用户昵称")
     @TableField("nick_name")
     private String nickName;
 
-    @ApiModelProperty("用户邮箱")
+    @Schema(description = "用户邮箱")
     @TableField("email")
     private String email;
 
-    @ApiModelProperty("手机号码")
+    @Schema(description = "手机号码")
     @TableField("phone_number")
     private String phoneNumber;
 
-    @ApiModelProperty("用户性别 1男 0女 2未知")
+    @Schema(description = "用户性别 1男 0女 2未知")
     @TableField("sex")
     private Integer sex;
 
-    @ApiModelProperty("头像地址")
+    @Schema(description = "头像地址")
     @TableField("avatar")
     private String avatar;
 
-    @ApiModelProperty("帐号状态 1正常 2禁用 3 锁定 4注销")
+    @Schema(description = "帐号状态 1正常 2禁用 3 锁定 4注销")
     @TableField("status")
     private Integer status;
 
-    @ApiModelProperty("用户状态 1实习 2 转正 3 离职")
+    @Schema(description = "用户状态 1实习 2 转正 3 离职")
     @TableField("user_status")
     private Integer userStatus;
 
-    @ApiModelProperty("身份证")
+    @Schema(description = "身份证")
     @TableField("id_card")
     private String idCard;
 
-    @ApiModelProperty("入职时间")
+    @Schema(description = "入职时间")
     @TableField("entry_date")
     private LocalDate entryDate;
 
-    @ApiModelProperty("转正时间")
+    @Schema(description = "转正时间")
     @TableField("official_date")
     private LocalDate officialDate;
 
-    @ApiModelProperty("离职时间")
+    @Schema(description = "离职时间")
     @TableField(value = "dimission_date", updateStrategy = FieldStrategy.IGNORED)
     private LocalDate dimissionDate;
 
-    @ApiModelProperty("数据来源")
+    @Schema(description = "数据来源")
     @TableField("source")
     private String source;
 
-    @ApiModelProperty("最后登陆IP")
+    @Schema(description = "最后登陆IP")
     @TableField("login_ip")
     private String loginIp;
 
-    @ApiModelProperty("最后登陆时间")
+    @Schema(description = "最后登陆时间")
     @TableField("login_date")
     private LocalDateTime loginDate;
 
-    @ApiModelProperty("锁定时间")
+    @Schema(description = "锁定时间")
     @TableField("lock_date")
     private LocalDateTime lockDate;
 
-    @ApiModelProperty("备注")
+    @Schema(description = "备注")
     @TableField("remark")
     private String remark;
 }

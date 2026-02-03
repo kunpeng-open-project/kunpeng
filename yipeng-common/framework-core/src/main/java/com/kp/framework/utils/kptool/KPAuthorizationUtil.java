@@ -18,26 +18,23 @@ public class KPAuthorizationUtil {
     private static SecureRandom random = new SecureRandom();
 
 
-
     /**
-     * @Author lipeng
-     * @Description 获取授权appId
-     * @Date 2025/11/4
-     * @param
+     * 获取授权appId。
+     * @author lipeng
+     * 2025/11/4
      * @return java.lang.String
-     **/
+     */
     public static String getAppId() {
         return KPUuidUtil.getSimpleUUID();
     }
 
-
     /**
-     * @Author lipeng
-     * @Description 获取授权appSecret
-     * @Date 2025/11/4
-     * @param length
+     * 获取授权appSecret。
+     * @author lipeng
+     * 2025/11/4
+     * @param length 随机字符串长度
      * @return java.lang.String
-     **/
+     */
     public static String getAppSecret(int length) {
         if (length < 1) throw new IllegalArgumentException();
 

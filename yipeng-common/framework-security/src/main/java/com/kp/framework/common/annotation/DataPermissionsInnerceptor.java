@@ -32,11 +32,10 @@ import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
 /**
- * @Author lipeng
- * @Description 数据权限拦截器
- * @Date 2024/9/20
- * @return
- **/
+ * 数据权限拦截器。
+ * @author lipeng
+ * 2024/9/20
+ */
 @Slf4j
 @Component
 public class DataPermissionsInnerceptor implements InnerInterceptor {
@@ -46,7 +45,7 @@ public class DataPermissionsInnerceptor implements InnerInterceptor {
     public void beforeQuery(Executor executor, MappedStatement ms, Object parameter, RowBounds rowBounds, ResultHandler resultHandler, BoundSql boundSql) throws SQLException {
         if (Arrays.asList(
                 "com.framework.security.modules.role.mapper.AuthRolePermissionMapper.selectList"
-        ).contains(ms.getId())){
+        ).contains(ms.getId())) {
             InnerInterceptor.super.beforeQuery(executor, ms, parameter, rowBounds, resultHandler, boundSql);
             return;
         }
@@ -59,7 +58,7 @@ public class DataPermissionsInnerceptor implements InnerInterceptor {
                 //查询表名
                 String tableName = getTableName(boundSql.getSql()).trim();
                 //排除不用执行权限的表
-                if (StringUtils.isNotEmpty(kpDataPermissions.excludeTableName())){
+                if (StringUtils.isNotEmpty(kpDataPermissions.excludeTableName())) {
                     if (Arrays.asList(kpDataPermissions.excludeTableName().split(".")).contains(tableName)) {
                         InnerInterceptor.super.beforeQuery(executor, ms, parameter, rowBounds, resultHandler, boundSql);
                         return;
@@ -69,10 +68,10 @@ public class DataPermissionsInnerceptor implements InnerInterceptor {
                 AtomicReference<String> condition = new AtomicReference<>(null);
                 // 填充sql查询条件
                 LoginUserBO loginUserBO = LoginUserBO.getLoginUser();
-                if (loginUserBO.getLoginType().equals(LoginUserTypeEnum.COMMON.code())){
+                if (loginUserBO.getLoginType().equals(LoginUserTypeEnum.COMMON.code())) {
                     //正常登录
                     splitWhereByCommon(kpDataPermissions, condition, loginUserBO);
-                }else{
+                } else {
                     //授权登录 目前授权登录没有数据权限
 //                    splitWhereByAuthorization(modifiedSql, loginUserBO);
                 }
@@ -83,7 +82,7 @@ public class DataPermissionsInnerceptor implements InnerInterceptor {
                 PluginUtils.MPBoundSql mpBs = PluginUtils.mpBoundSql(boundSql);
                 mpBs.sql(modifiedSql);
             }
-        }catch (Exception ex){
+        } catch (Exception ex) {
 //            log.error("[数据权限设置异常] {}", ex.getMessage());
 //            log.info("[数据权限设置异常] 如果是在线程里面， 请在开启线程前 调用 KPRequsetUtil.setRequest");
         }
@@ -94,19 +93,16 @@ public class DataPermissionsInnerceptor implements InnerInterceptor {
         throw new RuntimeException("授权登录暂不支持数据权限！");
     }
 
-
-
     /**
-     * @Author lipeng
-     * @Description 普通登录拼接查询条件
-     * @Date 2024/9/25
+     * 普通登录拼接查询条件。
+     * @author lipeng
+     * 2024/9/25
      * @param kpDataPermissions 注解
      * @param condition 条件
      * @param loginUserBO 登录用户
-     * @return void
-     **/
+     */
     private void splitWhereByCommon(KPDataPermissions kpDataPermissions, AtomicReference<String> condition, LoginUserBO loginUserBO) {
-        if (loginUserBO.getRoles() ==null || loginUserBO.getRoles().size() == 0)
+        if (loginUserBO.getRoles() == null || loginUserBO.getRoles().size() == 0)
             return;
 
         StringBuffer sb = new StringBuffer();
@@ -118,39 +114,38 @@ public class DataPermissionsInnerceptor implements InnerInterceptor {
                 .in(AuthRolePermissionPO::getRoleId, loginUserBO.getRoles().stream().map(AuthRolePO::getRoleId).collect(Collectors.toList()))
                 .orderByDesc(AuthRolePermissionPO::getPermissionType);
         List<AuthRolePermissionPO> authRolePermissionPOList = authRolePermissionMapper.selectList(wrapper);
-        if (authRolePermissionPOList == null || authRolePermissionPOList.size() ==0)
+        if (authRolePermissionPOList == null || authRolePermissionPOList.size() == 0)
             return;
 
         List<Integer> permissionTypes = authRolePermissionPOList.stream().map(AuthRolePermissionPO::getPermissionType).collect(Collectors.toList());
         if (permissionTypes.contains(PermissionTypeEnum.ALL.code()))
             return;
 
-        if (permissionTypes.contains(PermissionTypeEnum.ONESELF_DEPARTMENT_UNDER.code())){
+        if (permissionTypes.contains(PermissionTypeEnum.ONESELF_DEPARTMENT_UNDER.code())) {
             condition.set(CommonUtil.format("{0} in ({1})", kpDataPermissions.deptFileName(), loginUserBO.getDeptAndSubDept().stream().map(LoginUserDeptPO::getDeptId).map(id -> "'" + id + "'").collect(Collectors.joining(","))));
             return;
         }
 
-        if (permissionTypes.contains(PermissionTypeEnum.ONESELF_DEPARTMENT.code())){
+        if (permissionTypes.contains(PermissionTypeEnum.ONESELF_DEPARTMENT.code())) {
             condition.set(CommonUtil.format("{0} in ({1})", kpDataPermissions.deptFileName(), loginUserBO.getDeptList().stream().map(LoginUserDeptPO::getDeptId).map(id -> "'" + id + "'").collect(Collectors.joining(","))));
             return;
         }
 
-        if (permissionTypes.contains(PermissionTypeEnum.ONESELF.code())){
+        if (permissionTypes.contains(PermissionTypeEnum.ONESELF.code())) {
             condition.set(CommonUtil.format("{0} = '{1}'", kpDataPermissions.userFileName(), loginUserBO.getIdentification()));
             return;
         }
 
 
-
-        if (permissionTypes.contains(PermissionTypeEnum.CUSTOM_USER.code())){
-            sb.append(CommonUtil.format("{0} in ({1})", kpDataPermissions.userFileName(),  authRolePermissionPOList.stream().filter(authRolePermissionPO -> (authRolePermissionPO.getPermissionType().equals(PermissionTypeEnum.CUSTOM_USER.code()) && StringUtils.isNotEmpty(authRolePermissionPO.getUserId()))).map(AuthRolePermissionPO::getUserId).map(id -> "'" + id + "'").collect(Collectors.joining(","))));
+        if (permissionTypes.contains(PermissionTypeEnum.CUSTOM_USER.code())) {
+            sb.append(CommonUtil.format("{0} in ({1})", kpDataPermissions.userFileName(), authRolePermissionPOList.stream().filter(authRolePermissionPO -> (authRolePermissionPO.getPermissionType().equals(PermissionTypeEnum.CUSTOM_USER.code()) && StringUtils.isNotEmpty(authRolePermissionPO.getUserId()))).map(AuthRolePermissionPO::getUserId).map(id -> "'" + id + "'").collect(Collectors.joining(","))));
         }
 
-        if (permissionTypes.contains(PermissionTypeEnum.CUSTOM.code())){
+        if (permissionTypes.contains(PermissionTypeEnum.CUSTOM.code())) {
             if (StringUtils.isNotEmpty(sb.toString()))
                 sb.append(" OR ");
 
-            sb.append(CommonUtil.format("{0} in ({1})", kpDataPermissions.deptFileName(),  authRolePermissionPOList.stream().filter(authRolePermissionPO -> (authRolePermissionPO.getPermissionType().equals(PermissionTypeEnum.CUSTOM.code()) && StringUtils.isNotEmpty(authRolePermissionPO.getDeptId()))) .map(AuthRolePermissionPO::getDeptId).map(id -> "'" + id + "'").collect(Collectors.joining(","))));
+            sb.append(CommonUtil.format("{0} in ({1})", kpDataPermissions.deptFileName(), authRolePermissionPOList.stream().filter(authRolePermissionPO -> (authRolePermissionPO.getPermissionType().equals(PermissionTypeEnum.CUSTOM.code()) && StringUtils.isNotEmpty(authRolePermissionPO.getDeptId()))).map(AuthRolePermissionPO::getDeptId).map(id -> "'" + id + "'").collect(Collectors.joining(","))));
         }
 
 
@@ -159,16 +154,14 @@ public class DataPermissionsInnerceptor implements InnerInterceptor {
         condition.set(CommonUtil.format("( {0} )", sb.toString()));
     }
 
-
-
     /**
-     * @Author lipeng
-     * @Description 添加搜索条件
-     * @Date 2024/9/25
+     * 添加搜索条件。
+     * @author lipeng
+     * 2024/9/25
      * @param originalSql 原生sql
      * @param condition 条件
      * @return java.lang.String
-     **/
+     */
     private String addSearchConditions(String originalSql, String condition) {
         if (StringUtils.isEmpty(condition)) return originalSql;
 
@@ -192,15 +185,14 @@ public class DataPermissionsInnerceptor implements InnerInterceptor {
         return CommonUtil.format(sql.toString(), condition);
     }
 
-
     /**
-     * @Author lipeng
-     * @Description 获取表名
-     * @Date 2024/9/25
-     * @param originalSql
+     * 获取表名。
+     * @author lipeng
+     * 2024/9/25
+     * @param originalSql 原生sql
      * @return java.lang.String
-     **/
-    private String getTableName(String originalSql){
+     */
+    private String getTableName(String originalSql) {
         int fromIndex = originalSql.toLowerCase().lastIndexOf("from");
         return originalSql.substring(fromIndex + 4).trim().split(" ")[0];
     }

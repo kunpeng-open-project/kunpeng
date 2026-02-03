@@ -1,17 +1,18 @@
 package com.kp.framework.exception;
 
+import lombok.Getter;
+
 /**
- * @Author lipeng
- * @Description HTTP请求异常
- * @Date 2020/9/7 13:38
- * @Param
- * @return
- **/
-public class KPHttpDistributeException extends RuntimeException  {
+ * HTTP请求异常。
+ * @author lipeng
+ * 2020/9/7
+ */
+@Getter
+public class KPHttpDistributeException extends RuntimeException {
 
-    private String message;
+    private final String message;
 
-    public KPHttpDistributeException(String message){
+    public KPHttpDistributeException(String message) {
         super(message);
         this.message = message;
     }

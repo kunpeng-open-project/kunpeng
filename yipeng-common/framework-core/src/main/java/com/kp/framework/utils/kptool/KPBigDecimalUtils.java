@@ -4,11 +4,10 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 
 /**
- * @Author lipeng
- * @Description BigDecimal
- * @Date 2021/2/19
- * @return
- **/
+ * BigDecimal。
+ * @author lipeng
+ * 2021/2/19
+ */
 public final class KPBigDecimalUtils {
 
     private BigDecimal bigDecimal = null;
@@ -19,89 +18,87 @@ public final class KPBigDecimalUtils {
     public static final int ROUND_HALF_UP = BigDecimal.ROUND_HALF_UP;//四舍五入
 
 
-
     public KPBigDecimalUtils(BigDecimal value) {
         this.bigDecimal = value;
     }
+
     public KPBigDecimalUtils(String value) {
         this.bigDecimal = new BigDecimal(value.trim());
     }
+
     public KPBigDecimalUtils(int value) {
         this.bigDecimal = BigDecimal.valueOf(value);
     }
+
     public KPBigDecimalUtils(long value) {
         this.bigDecimal = BigDecimal.valueOf(value);
     }
+
     public KPBigDecimalUtils(double value) {
         this.bigDecimal = BigDecimal.valueOf(value);
     }
 
-
     /**
-     * @Author lipeng
-     * @Description 加
-     * @Date 2022/6/7
-     * @param value
-     * @return com.daoben.framework.util.KPBigDecimalUtils
-     **/
+     * 加。
+     * @author lipeng
+     * 2022/6/7
+     * @param value  值
+     * @return com.kp.framework.utils.kptool.KPBigDecimalUtils
+     */
     public KPBigDecimalUtils add(BigDecimal value) {
         this.bigDecimal = this.bigDecimal.add(value);
         return this;
     }
 
     /**
-     * @Author lipeng
-     * @Description 加
-     * @Date 2022/6/7 15:51
-     * @param value
-     * @return com.daoben.framework.util.KPBigDecimalUtils
-     **/
+     * 加。
+     * @author lipeng
+     * 2022/6/7
+     * @param value  值
+     * @return com.kp.framework.utils.kptool.KPBigDecimalUtils
+     */
     public KPBigDecimalUtils add(Object value) {
         this.bigDecimal = this.bigDecimal.add(new BigDecimal(value.toString()));
         return this;
     }
 
     /**
-     * @Author lipeng
-     * @Description 提供精确的加法运算(默认四舍五入，根据scale保留小数位数)
-     * @Date 2022/6/7 16:03
-     * @param value
+     * 提供精确的加法运算(默认四舍五入 ， 根据scale保留小数位数)。
+     * @author lipeng
+     * 2022/6/7
+     * @param value 值
      * @param scale 保留小数位数
-     * @return com.daoben.framework.util.KPBigDecimalUtils
-     **/
+     * @return com.kp.framework.utils.kptool.KPBigDecimalUtils
+     */
     @Deprecated
     public KPBigDecimalUtils add(BigDecimal value, int scale) {
         this.bigDecimal = this.bigDecimal.add(value).setScale(scale, KPBigDecimalUtils.ROUND_HALF_UP);
         return this;
     }
 
-
     /**
-     * @Author lipeng
-     * @Description 提供精确的加法运算(默认四舍五入，根据scale保留小数位数)
-     * @Date 2022/6/7 16:04
-     * @param value
+     * 提供精确的加法运算(默认四舍五入 ， 根据scale保留小数位数)。
+     * @author lipeng
+     * 2022/6/7
+     * @param value 值
      * @param scale 保留小数位数
-     * @return com.daoben.framework.util.KPBigDecimalUtils
-     **/
+     * @return com.kp.framework.utils.kptool.KPBigDecimalUtils
+     */
     @Deprecated
     public KPBigDecimalUtils add(Object value, int scale) {
         this.bigDecimal = this.bigDecimal.add(new BigDecimal(value.toString())).setScale(scale, KPBigDecimalUtils.ROUND_HALF_UP);
         return this;
     }
 
-
-
-
     /**
-     * @Author lipeng
-     * @Description 提供精确的加法运算
-     * @Date 2022/6/7 16:15
-     * @param value
+     * 提供精确的加法运算。
+     * @author lipeng
+     * 2022/6/7
+     * @param value 值
      * @param scale 保留小数位数
      * @param roundingMode 取整类型
-     * @return com.daoben.framework.util.KPBigDecimalUtils
-     **/
+     * @return com.kp.framework.utils.kptool.KPBigDecimalUtils
+     */
     @Deprecated
     public KPBigDecimalUtils add(BigDecimal value, int scale, RoundingMode roundingMode) {
         this.bigDecimal = this.bigDecimal.add(value).setScale(scale, roundingMode);
@@ -109,175 +106,163 @@ public final class KPBigDecimalUtils {
     }
 
     /**
-     * @Author lipeng
-     * @Description 提供精确的加法运算
-     * @Date 2022/6/7 16:15
-     * @param value
+     * 提供精确的加法运算。
+     * @author lipeng
+     * 2022/6/7
+     * @param value 值
      * @param scale 保留小数位数
      * @param roundingMode 取整类型
-     * @return com.daoben.framework.util.KPBigDecimalUtils
-     **/
+     * @return com.kp.framework.utils.kptool.KPBigDecimalUtils
+     */
     @Deprecated
     public KPBigDecimalUtils add(Object value, int scale, RoundingMode roundingMode) {
         this.bigDecimal = this.bigDecimal.add(new BigDecimal(value.toString())).setScale(scale, roundingMode);
         return this;
     }
 
-
     /**
-     * @Author lipeng
-     * @Description  减法
-     * @Date 2022/6/7 16:18
-     * @param value
-     * @return com.daoben.framework.util.KPBigDecimalUtils
-     **/
+     * 减法。
+     * @author lipeng
+     * 2022/6/7
+     * @param value 值
+     * @return com.kp.framework.utils.kptool.KPBigDecimalUtils
+     */
     public KPBigDecimalUtils sub(BigDecimal value) {
         this.bigDecimal = this.bigDecimal.subtract(value);
         return this;
     }
 
-
     /**
-     * @Author lipeng
-     * @Description  减法
-     * @Date 2022/6/7 16:18
-     * @param value
-     * @return com.daoben.framework.util.KPBigDecimalUtils
-     **/
+     * 减法。
+     * @author lipeng
+     * 2022/6/7
+     * @param value 值
+     * @return com.kp.framework.utils.kptool.KPBigDecimalUtils
+     */
     public KPBigDecimalUtils sub(Object value) {
         this.bigDecimal = this.bigDecimal.subtract(new BigDecimal(value.toString()));
         return this;
     }
 
-
     /**
-     * @Author lipeng
-     * @Description 提供精确的减法运算(默认四舍五入，根据scale保留小数位数)
-     * @Date 2022/6/7 16:27
-     * @param value
+     * 提供精确的减法运算(默认四舍五入 ， 根据scale保留小数位数)。
+     * @author lipeng
+     * 2022/6/7
+     * @param value 值
      * @param scale 保留小数位数
-     * @return com.daoben.framework.util.KPBigDecimalUtils
-     **/
+     * @return com.kp.framework.utils.kptool.KPBigDecimalUtils
+     */
     @Deprecated
     public KPBigDecimalUtils sub(BigDecimal value, int scale) {
         this.bigDecimal = this.bigDecimal.subtract(value).setScale(scale, KPBigDecimalUtils.ROUND_HALF_UP);
         return this;
     }
 
-
     /**
-     * @Author lipeng
-     * @Description 提供精确的减法运算(默认四舍五入，根据scale保留小数位数)
-     * @Date 2022/6/7 16:27
-     * @param value
+     * 提供精确的减法运算(默认四舍五入 ， 根据scale保留小数位数)。
+     * @author lipeng
+     * 2022/6/7
+     * @param value 值
      * @param scale 保留小数位数
-     * @return com.daoben.framework.util.KPBigDecimalUtils
-     **/
+     * @return com.kp.framework.utils.kptool.KPBigDecimalUtils
+     */
     @Deprecated
     public KPBigDecimalUtils sub(Object value, int scale) {
         this.bigDecimal = this.bigDecimal.subtract(new BigDecimal(value.toString())).setScale(scale, KPBigDecimalUtils.ROUND_HALF_UP);
         return this;
     }
 
-
     /**
-     * @Author lipeng
-     * @Description 提供精确的减法运算
-     * @Date 2022/6/7 16:15
-     * @param value
+     * 提供精确的减法运算。
+     * @author lipeng
+     * 2022/6/7
+     * @param value 值
      * @param scale 保留小数位数
      * @param roundingMode 取整类型
-     * @return com.daoben.framework.util.KPBigDecimalUtils
-     **/
+     * @return com.kp.framework.utils.kptool.KPBigDecimalUtils
+     */
     @Deprecated
     public KPBigDecimalUtils sub(BigDecimal value, int scale, RoundingMode roundingMode) {
         this.bigDecimal = this.bigDecimal.subtract(value).setScale(scale, roundingMode);
         return this;
     }
 
-
     /**
-     * @Author lipeng
-     * @Description 提供精确的减法运算
-     * @Date 2022/6/7 16:15
-     * @param value
+     * 提供精确的减法运算。
+     * @author lipeng
+     * 2022/6/7
+     * @param value 值
      * @param scale 保留小数位数
      * @param roundingMode 取整类型
-     * @return com.daoben.framework.util.KPBigDecimalUtils
-     **/
+     * @return com.kp.framework.utils.kptool.KPBigDecimalUtils
+     */
     @Deprecated
     public KPBigDecimalUtils sub(Object value, int scale, RoundingMode roundingMode) {
         this.bigDecimal = this.bigDecimal.subtract(new BigDecimal(value.toString())).setScale(scale, roundingMode);
         return this;
     }
 
-
-
     /**
-     * @Author lipeng
-     * @Description 乘法
-     * @Date 2022/6/7 16:57
-     * @param value
-     * @return com.daoben.framework.util.KPBigDecimalUtils
-     **/
+     * 乘法。
+     * @author lipeng
+     * 2022/6/7
+     * @param value 值
+     * @return com.kp.framework.utils.kptool.KPBigDecimalUtils
+     */
     public KPBigDecimalUtils multiply(BigDecimal value) {
         this.bigDecimal = this.bigDecimal.multiply(value);
         return this;
     }
 
-
     /**
-     * @Author lipeng
-     * @Description 乘法
-     * @Date 2022/6/7 16:57
-     * @param value
-     * @return com.daoben.framework.util.KPBigDecimalUtils
-     **/
+     * 乘法。
+     * @author lipeng
+     * 2022/6/7
+     * @param value 值
+     * @return com.kp.framework.utils.kptool.KPBigDecimalUtils
+     */
     public KPBigDecimalUtils multiply(Object value) {
         this.bigDecimal = this.bigDecimal.multiply(new BigDecimal(value.toString()));
         return this;
     }
 
-
     /**
-     * @Author lipeng
-     * @Description 提供精确的乘法运算(默认四舍五入，根据scale保留小数位数)
-     * @Date 2022/6/7 16:27
-     * @param value
+     * 提供精确的乘法运算(默认四舍五入 ， 根据scale保留小数位数)。
+     * @author lipeng
+     * 2022/6/7
+     * @param value 值
      * @param scale 保留小数位数
-     * @return com.daoben.framework.util.KPBigDecimalUtils
-     **/
+     * @return com.kp.framework.utils.kptool.KPBigDecimalUtils
+     */
     @Deprecated
     public KPBigDecimalUtils multiply(BigDecimal value, int scale) {
         this.bigDecimal = this.bigDecimal.multiply(value).setScale(scale, KPBigDecimalUtils.ROUND_HALF_UP);
         return this;
     }
 
-
     /**
-     * @Author lipeng
-     * @Description 提供精确的乘法运算(默认四舍五入，根据scale保留小数位数)
-     * @Date 2022/6/7 16:27
-     * @param value
+     * 提供精确的乘法运算(默认四舍五入 ， 根据scale保留小数位数)。
+     * @author lipeng
+     * 2022/6/7
+     * @param value 值
      * @param scale 保留小数位数
-     * @return com.daoben.framework.util.KPBigDecimalUtils
-     **/
+     * @return com.kp.framework.utils.kptool.KPBigDecimalUtils
+     */
     @Deprecated
     public KPBigDecimalUtils multiply(Object value, int scale) {
         this.bigDecimal = this.bigDecimal.multiply(new BigDecimal(value.toString())).setScale(scale, KPBigDecimalUtils.ROUND_HALF_UP);
         return this;
     }
 
-
     /**
-     * @Author lipeng
-     * @Description 提供精确的乘法运算
-     * @Date 2022/6/7 16:15
-     * @param value
+     * 提供精确的乘法运算。
+     * @author lipeng
+     * 2022/6/7
+     * @param value 值
      * @param scale 保留小数位数
      * @param roundingMode 取整类型
-     * @return com.daoben.framework.util.KPBigDecimalUtils
-     **/
+     * @return com.kp.framework.utils.kptool.KPBigDecimalUtils
+     */
     @Deprecated
     public KPBigDecimalUtils multiply(BigDecimal value, int scale, RoundingMode roundingMode) {
         this.bigDecimal = this.bigDecimal.multiply(value).setScale(scale, roundingMode);
@@ -285,112 +270,106 @@ public final class KPBigDecimalUtils {
     }
 
     /**
-     * @Author lipeng
-     * @Description 提供精确的乘法运算
-     * @Date 2022/6/7 16:15
-     * @param value
+     * 提供精确的乘法运算。
+     * @author lipeng
+     * 2022/6/7
+     * @param value 值
      * @param scale 保留小数位数
      * @param roundingMode 取整类型
-     * @return com.daoben.framework.util.KPBigDecimalUtils
-     **/
+     * @return com.kp.framework.utils.kptool.KPBigDecimalUtils
+     */
     @Deprecated
     public KPBigDecimalUtils multiply(Object value, int scale, RoundingMode roundingMode) {
         this.bigDecimal = this.bigDecimal.multiply(new BigDecimal(value.toString())).setScale(scale, roundingMode);
         return this;
     }
 
-
     /**
-     * @Author lipeng
-     * @Description 提供精确的除法运算(默认四舍五入，根据scale保留小数位数)
-     * @Date 2022/6/7 16:27
-     * @param value
+     * 提供精确的除法运算(默认四舍五入 ， 根据scale保留小数位数)。
+     * @author lipeng
+     * 2022/6/7
+     * @param value 值
      * @param scale 保留小数位数
-     * @return com.daoben.framework.util.KPBigDecimalUtils
-     **/
+     * @return com.kp.framework.utils.kptool.KPBigDecimalUtils
+     */
     public KPBigDecimalUtils divide(Object value, int scale) {
         this.bigDecimal = this.bigDecimal.divide(new BigDecimal(value.toString()), scale, KPBigDecimalUtils.ROUND_HALF_UP);
         return this;
     }
 
-
     /**
-     * @Author lipeng
-     * @Description 提供精确的除法运算(默认四舍五入，根据scale保留小数位数)
-     * @Date 2022/6/7 16:27
-     * @param value
+     * 提供精确的除法运算(默认四舍五入 ， 根据scale保留小数位数)。
+     * @author lipeng
+     * 2026/1/21
+     * @param value 值
      * @param scale 保留小数位数
-     * @return com.daoben.framework.util.KPBigDecimalUtils
-     **/
+     * @return com.kp.framework.utils.kptool.KPBigDecimalUtils
+     */
     public KPBigDecimalUtils divide(BigDecimal value, int scale) {
         this.bigDecimal = this.bigDecimal.divide(value, scale, KPBigDecimalUtils.ROUND_HALF_UP);
         return this;
     }
 
-
     /**
-     * @Author lipeng
-     * @Description 提供精确的除法运算
-     * @Date 2022/6/7 16:15
-     * @param value
+     * 提供精确的除法运算。
+     * @author lipeng
+     * 2026/1/21
+     * @param value 值
      * @param scale 保留小数位数
      * @param roundingMode 取整类型
-     * @return com.daoben.framework.util.KPBigDecimalUtils
-     **/
+     * @return com.kp.framework.utils.kptool.KPBigDecimalUtils
+     */
     public KPBigDecimalUtils divide(BigDecimal value, int scale, RoundingMode roundingMode) {
         this.bigDecimal = this.bigDecimal.divide(value, scale, roundingMode);
         return this;
     }
 
-
     /**
-     * @Author lipeng
-     * @Description 提供精确的除法运算
-     * @Date 2022/6/7 16:15
-     * @param value
+     * 提供精确的除法运算。
+     * @author lipeng
+     * 2026/1/21
+     * @param value 值
      * @param scale 保留小数位数
      * @param roundingMode 取整类型
-     * @return com.daoben.framework.util.KPBigDecimalUtils
-     **/
+     * @return com.kp.framework.utils.kptool.KPBigDecimalUtils
+     */
     public KPBigDecimalUtils divide(Object value, int scale, RoundingMode roundingMode) {
         this.bigDecimal = this.bigDecimal.divide(new BigDecimal(value.toString()), scale, roundingMode);
         return this;
     }
 
-
     /**
-     * @Author lipeng
-     * @Description 取余
-     * @Date 2022/6/7 17:29
-     * @param value
-     * @return com.daoben.framework.util.KPBigDecimalUtils
-     **/
+     * 取余。
+     * @author lipeng
+     * 2022/6/7
+     * @param value 值
+     * @return com.kp.framework.utils.kptool.KPBigDecimalUtils
+     */
     public KPBigDecimalUtils balance(BigDecimal value) {
         this.bigDecimal = this.bigDecimal.remainder(value);
         return this;
     }
 
     /**
-     * @Author lipeng
-     * @Description 取余
-     * @Date 2022/6/7 17:29
-     * @param value
-     * @return com.daoben.framework.util.KPBigDecimalUtils
-     **/
+     * 取余。
+     * @author lipeng
+     * 2022/6/7
+     * @param value 值
+     * @return com.kp.framework.utils.kptool.KPBigDecimalUtils
+     */
     public KPBigDecimalUtils balance(Object value) {
         this.bigDecimal = this.bigDecimal.remainder(new BigDecimal(value.toString()));
         return this;
     }
 
-
     /**
-     * @Author lipeng
-     * @Description 比较BigDecimal,相等返回0,num>num1返回1,num<num1返回-1
-     * @Date 2022/6/7 17:37
-     * @param val1
-     * @param val2
+     * 比较BigDecimal, 相等返回0, num>num1返回1,num<num1返回-1。
+     * @author lipeng
+     * 2022/6/7
+     * @param val1 值
+     * @param val2 值
      * @return int
-     **/
+     */
     public static int compareTo(BigDecimal val1, BigDecimal val2) {
         return val1.compareTo(val2);
     }
@@ -400,14 +379,6 @@ public final class KPBigDecimalUtils {
         return this.bigDecimal;
     }
 
-    /**
-     * @Author lipeng
-     * @Description
-     * @Date 2022/6/7 18:00
-     * @param scale 保留位数
-     * @param roundingMode 取整类型
-     * @return java.math.BigDecimal
-     **/
     public BigDecimal build(int scale, RoundingMode roundingMode) {
         return this.bigDecimal.setScale(scale, roundingMode);
     }
@@ -473,14 +444,9 @@ public final class KPBigDecimalUtils {
     }
 
 
-
-
 //    public static void main(String[] args) {
 //        System.out.println(new KPBigDecimalUtils(2).add(3).multiply(6.1).sub(12.51212).build(2, KPBigDecimalUtils.ROUND_HALF_UP));
 //    }
-
-
-
 
 
 //    //建立货币格式化引用

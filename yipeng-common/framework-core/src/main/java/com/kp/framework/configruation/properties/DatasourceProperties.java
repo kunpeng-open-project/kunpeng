@@ -6,6 +6,13 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.context.annotation.Configuration;
 
+
+
+/**
+ * 读取数据库配置信息。
+ * @author lipeng
+ * 2024/1/4
+ */
 @Data
 @ConfigurationProperties(prefix = "spring.datasource")
 @Configuration

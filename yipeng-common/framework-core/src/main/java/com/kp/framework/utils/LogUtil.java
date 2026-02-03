@@ -6,12 +6,12 @@ import com.kp.framework.utils.kptool.KPIPUtil;
 import com.kp.framework.utils.kptool.KPJSONFactoryUtil;
 import com.kp.framework.utils.kptool.KPRequsetUtil;
 import com.kp.framework.utils.kptool.KPStringUtil;
-import io.swagger.annotations.ApiOperation;
+import io.swagger.v3.oas.annotations.Operation;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.method.HandlerMethod;
 
-import javax.servlet.http.HttpServletRequest;
 import java.util.Date;
 
 
@@ -21,17 +21,16 @@ public class LogUtil {
     @Autowired
     private KPFrameworkConfig kpFrameworkConfig;
 
-
     /**
-     * @param req
-     * @param parameter   入参
-     * @param result      出差
+     * 内部接口用时。
+     * @author lipeng
+     * 2024/2/5
+     * @param req 请求
+     * @param parameter 入参
+     * @param result 出参
      * @param disposeDate 接口用时
      * @return java.lang.String
-     * @Author lipeng
-     * @Description 内部接口用时
-     * @Date 2024/2/5
-     **/
+     */
     public String interfaceRecordLog(HttpServletRequest req, String parameter, String result, Long disposeDate) {
         return new KPJSONFactoryUtil()
                 .put("url", req.getRequestURL().toString())
@@ -49,19 +48,18 @@ public class LogUtil {
                 .buildString();
     }
 
-
     /**
-     * @param url
-     * @param method
-     * @param req
-     * @param parameter   入参
-     * @param result      出差
+     * 调用第三方接口用时。
+     * @author lipeng
+     * 2024/2/5
+     * @param url  url
+     * @param method  方法
+     * @param req 请求
+     * @param parameter 入参
+     * @param result 出参
      * @param disposeDate 接口用时
      * @return java.lang.String
-     * @Author lipeng
-     * @Description 调用第三方接口用时
-     * @Date 2024/2/5
-     **/
+     */
     public String interfaceRecordLog(String url, String method, HttpServletRequest req, String parameter, String result, Long disposeDate) {
         if (KPStringUtil.isEmpty(req)) {
             return new KPJSONFactoryUtil()
@@ -99,10 +97,9 @@ public class LogUtil {
         HandlerMethod handlerMethod = KPRequsetUtil.queryHandlerMethod(req);
         String name = "";
         if (handlerMethod != null) {
-            ApiOperation apiOperation = handlerMethod.getMethodAnnotation(ApiOperation.class);
-            name = apiOperation.value();
+            Operation operation = handlerMethod.getMethodAnnotation(Operation.class);
+            if (operation != null) name = operation.summary();
         }
         return name;
     }
-
 }

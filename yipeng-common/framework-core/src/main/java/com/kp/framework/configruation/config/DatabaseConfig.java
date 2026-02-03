@@ -16,7 +16,7 @@ public class DatabaseConfig extends DynamicDataSourceProperties {
     @Override
     public void setDatasource(Map<String, DataSourceProperty> datasource) {
         Iterator iterator = datasource.keySet().iterator();
-        while (iterator.hasNext()){
+        while (iterator.hasNext()) {
             String key = (String) iterator.next();
             DataSourceProperty dataSourceProperty = datasource.get(key);
             dataSourceProperty.setPassword(dataSourceProperty.getPassword());

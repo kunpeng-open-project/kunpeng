@@ -7,6 +7,7 @@ import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.kp.framework.common.cache.ProjectCache;
 import com.kp.framework.common.enums.LoginUserTypeEnum;
 import com.kp.framework.common.properties.RedisSecurityConstant;
+import com.kp.framework.exception.KPServiceException;
 import com.kp.framework.modules.logRecord.mapper.InterfaceLogMapper;
 import com.kp.framework.modules.logRecord.po.InterfaceLogPO;
 import com.kp.framework.modules.project.po.ProjectPO;
@@ -24,6 +25,7 @@ import com.kp.framework.utils.kptool.KPRedisUtil;
 import com.kp.framework.utils.kptool.KPStringUtil;
 import com.kp.framework.utils.kptool.KPVerifyUtil;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -35,10 +37,10 @@ import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 /**
- * @Author lipeng
- * @Description 用户信息demo服务实现类
- * @Date 2024-08-01
- **/
+ * 用户信息demo服务实现类。
+ * @author lipeng
+ * 2024-08-01
+ */
 @Service
 public class WelcomeService {
 
@@ -48,14 +50,14 @@ public class WelcomeService {
     @Autowired
     private InterfaceLogMapper interfaceLogMapper;
 
-
     /**
-     * @param projectCodes
-     * @return java.util.List<com.jfzh.rht.modules.welcome.po.customer.LoginNumberCustomerPO>
-     * @Author lipeng
-     * @Description 查询首页用户登录数
-     * @Date 2024/8/6
-     **/
+     * 查询首页用户登录数。
+     * @author lipeng
+     * 2024/8/6
+     * @param projectCodes 项目编码
+     * @return java.util.List<com.kp.framework.modules.welcome.po.customer.LoginNumberCustomerPO>
+     */
+    @Cacheable(value = "welcomeCache", keyGenerator = "pageKeyGenerator", unless = "T(com.kp.framework.utils.kptool.KPStringUtil).isEmpty(#result)")
     public List<LoginNumberCustomerPO> queryLoginNumber(List<String> projectCodes) {
         KPVerifyUtil.notNull(projectCodes, "请输入项目编码");
         List<ProjectPO> projectPOList = new ArrayList<>();
@@ -90,16 +92,15 @@ public class WelcomeService {
         });
         return loginNumberCustomerPOS;
     }
-//
-//
 
     /**
-     * @param parameter
-     * @return java.util.List<com.jfzh.rht.modules.welcome.po.customer.LoginRecordCustomerPO>
-     * @Author lipeng
-     * @Description 查询首页登录记录
-     * @Date 2024/8/6
-     **/
+     * 查询首页登录记录。
+     * @author lipeng
+     * 2024/8/6
+     * @param parameter 查询参数
+     * @return java.util.List<com.kp.framework.modules.welcome.po.customer.LoginRecordCustomerPO>
+     */
+    @Cacheable(value = "welcomeCache", keyGenerator = "pageKeyGenerator", unless = "T(com.kp.framework.utils.kptool.KPStringUtil).isEmpty(#result)")
     public List<LoginRecordCustomerPO> queryLoginRecord(JSONObject parameter) {
         ProjectPO projectPO = KPJsonUtil.toJavaObject(parameter, ProjectPO.class);
         LambdaQueryWrapper<LoginRecordPO> queryWrapper = Wrappers.lambdaQuery();
@@ -110,7 +111,9 @@ public class WelcomeService {
         List<LoginRecordCustomerPO> loginRecordCustomerPOS = new ArrayList<>();
 
         List<LoginRecordPO> loginRecordPOList = loginRecordMapper.selectList(queryWrapper);
-        List<ProjectPO> projectPOList = ProjectCache.getProjectsByProjectIds(loginRecordPOList.stream().map(LoginRecordPO::getProjectId).collect(Collectors.toList()));
+
+        List<ProjectPO> projectPOList = ProjectCache.getProjectsByProjectIds(loginRecordPOList.stream().map(LoginRecordPO::getProjectId).toList());
+        if (KPStringUtil.isEmpty(projectPOList)) throw new KPServiceException("未查询到有效项目！");
         Map<String, ProjectPO> map = projectPOList.stream().collect(Collectors.toMap(ProjectPO::getProjectId, e -> e));
 
         loginRecordPOList.forEach(loginRecordPO -> {
@@ -132,15 +135,14 @@ public class WelcomeService {
         return loginRecordCustomerPOS;
     }
 
-//
-
     /**
-     * @param parameter
-     * @return java.util.List<com.jfzh.rht.modules.welcome.po.customer.LoginRecordStatisticsCustomerPO>
-     * @Author lipeng
-     * @Description 查询首页用户登录次数统计
-     * @Date 2024/8/6
-     **/
+     * 查询首页用户登录次数统计。
+     * @author lipeng
+     * 2024/8/6
+     * @param parameter 查询参数
+     * @return java.util.List<com.kp.framework.modules.welcome.po.customer.LoginRecordStatisticsCustomerPO>
+     */
+    @Cacheable(value = "welcomeCache", keyGenerator = "pageKeyGenerator", unless = "T(com.kp.framework.utils.kptool.KPStringUtil).isEmpty(#result)")
     public List<LoginRecordStatisticsCustomerPO> queryLoginRecordStatistics(JSONObject parameter) {
         ProjectPO projectPO = KPJsonUtil.toJavaObject(parameter, ProjectPO.class);
 
@@ -172,14 +174,14 @@ public class WelcomeService {
         return row;
     }
 
-
     /**
-     * @Author lipeng
-     * @Description 查询首页接口调用次数统计
-     * @Date 2024/8/7
-     * @param parameter
-     * @return java.util.List<com.jfzh.rht.modules.welcome.po.customer.InterfaceCallStatisticsCustomerPO>
-     **/
+     * 查询首页接口调用次数统计。
+     * @author lipeng
+     * 2024/8/7
+     * @param parameter 查询参数
+     * @return java.util.List<com.kp.framework.modules.welcome.po.customer.InterfaceCallStatisticsCustomerPO>
+     */
+    @Cacheable(value = "welcomeCache", keyGenerator = "pageKeyGenerator", unless = "T(com.kp.framework.utils.kptool.KPStringUtil).isEmpty(#result)")
     public List<InterfaceCallStatisticsCustomerPO> queryInterfaceCallStatistics(JSONObject parameter) {
         InterfaceLogPO interfaceLogPO = KPJsonUtil.toJavaObject(parameter, InterfaceLogPO.class);
 

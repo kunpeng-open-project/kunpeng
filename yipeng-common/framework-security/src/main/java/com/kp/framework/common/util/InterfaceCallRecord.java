@@ -2,7 +2,8 @@ package com.kp.framework.common.util;
 
 import com.alibaba.fastjson2.JSONArray;
 import com.alibaba.fastjson2.JSONObject;
-import io.swagger.annotations.ApiOperation;
+import io.swagger.v3.oas.annotations.Operation;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.rabbit.connection.CorrelationData;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
@@ -10,7 +11,6 @@ import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.web.method.HandlerMethod;
 
-import javax.servlet.http.HttpServletRequest;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
@@ -25,7 +25,6 @@ import java.util.UUID;
 public class InterfaceCallRecord {
 
     private final static RabbitTemplate rabbitTemplate = ServiceUtil.getBean("rabbitTemplate", RabbitTemplate.class);
-    ;
     private final static String NORMAL_EXCHANGE = "interface_exchange";//正常交换机
     private final static String NORMAL_ROUTING_KEY = "interface_routingkey";//正常路由
 
@@ -38,7 +37,7 @@ public class InterfaceCallRecord {
         try {
 //            parameter = getJSONParam();
 //            if (parameter == null || parameter.size() == 0)
-                parameter = getJSONParam(req);
+            parameter = getJSONParam(req);
             if (parameter == null || parameter.size() == 0)
                 parameter = getParams(req);
             log.info("请求参数： {}", parameter);
@@ -69,13 +68,13 @@ public class InterfaceCallRecord {
         HandlerMethod handlerMethod = CommonUtil.queryHandlerMethod(req);
         String name = "";
         if (handlerMethod != null) {
-            ApiOperation apiOperation = handlerMethod.getMethodAnnotation(ApiOperation.class);
-            name = apiOperation.value();
+            Operation operation = handlerMethod.getMethodAnnotation(Operation.class);
+            if (operation != null) name = operation.summary();
         }
         return name;
     }
 
-    private static final JSONObject getJSONParam(HttpServletRequest request) {
+    private static JSONObject getJSONParam(HttpServletRequest request) {
         JSONObject jsonParam = null;
         BufferedReader streamReader = null;
         try {
@@ -100,14 +99,13 @@ public class InterfaceCallRecord {
         return jsonParam;
     }
 
-
     /**
-     * @Author lipeng
-     * @Description 把get请求参数转为json
-     * @Date 2021/11/8
-     * @return com.alibaba.fastjson.JSONObject
-     **/
-    private static final JSONObject getJSONParam() throws UnsupportedEncodingException {
+     * 把get请求参数转为json。
+     * @author lipeng
+     * 2021/11/8
+     * @return com.alibaba.fastjson2.JSONObject
+     */
+    private static JSONObject getJSONParam() throws UnsupportedEncodingException {
         HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
         JSONObject row = new JSONObject();
         if (request.getQueryString() == null || request.getQueryString() == "" || request.getQueryString().length() == 0)
@@ -142,12 +140,11 @@ public class InterfaceCallRecord {
     }
 
     /**
-     * @Author lipeng
-     * @Description 把get请求参数转为json
-     * @Date 2024/11/8
-     * @param request
-     * @return com.alibaba.fastjson.JSONObject
-     **/
+     * 把get请求参数转为json。
+     * @author lipeng
+     * 2024/11/8
+     * @return com.alibaba.fastjson2.JSONObject
+     */
     private static JSONObject getParams(HttpServletRequest request) {
         JSONObject map = new JSONObject();
         Map<String, String[]> reqMap = request.getParameterMap();

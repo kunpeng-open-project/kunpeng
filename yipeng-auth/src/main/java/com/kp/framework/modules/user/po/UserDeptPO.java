@@ -5,39 +5,40 @@ import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.kp.framework.entity.bo.ParentBO;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
 
 /**
- * @Author lipeng
- * @Description 用户部门关联表
- * @Date 2025-04-08
-**/
+ * 用户部门关联表。
+ * @author lipeng
+ * 2025-04-08
+ */
 @Data
+@EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
 @TableName("auth_user_dept")
-@ApiModel(value = "UserDeptPO对象", description = "用户部门关联表")
-public class UserDeptPO extends ParentBO {
+@Schema(name = "UserDeptPO", description = "用户部门关联表")
+public class UserDeptPO extends ParentBO<UserDeptPO> {
 
-    @ApiModelProperty("用户部门Id")
+    @Schema(description = "用户部门Id")
     @TableId(value = "aud_id", type = IdType.ASSIGN_UUID)
     private String audId;
 
-    @ApiModelProperty("用户Id")
+    @Schema(description = "用户Id")
     @TableField("user_id")
     private String userId;
 
-    @ApiModelProperty("部门Id")
+    @Schema(description = "部门Id")
     @TableField("dept_id")
     private String deptId;
 
-    @ApiModelProperty("是否负责人 0否 1是")
+    @Schema(description = "是否负责人 0否 1是")
     @TableField("principal")
     private Integer principal;
 
-    @ApiModelProperty("备注")
+    @Schema(description = "备注")
     @TableField("remark")
     private String remark;
 }

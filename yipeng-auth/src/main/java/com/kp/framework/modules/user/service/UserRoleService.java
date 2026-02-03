@@ -12,33 +12,31 @@ import com.kp.framework.utils.kptool.KPCollectionUtil;
 import com.kp.framework.utils.kptool.KPStringUtil;
 import com.kp.framework.utils.kptool.KPVerifyUtil;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-
 /**
- * @Author lipeng
- * @Description 用户角色
- * @Date 2025/5/15
- * @return
- **/
+ * 用户角色。
+ * @author lipeng
+ * 2025/5/15
+ */
 @Service
 public class UserRoleService extends ServiceImpl<UserRoleMapper, UserRolePO> {
 
     @Autowired
     private RoleMapper roleMapper;
 
-
     /**
-     * @Author lipeng
-     * @Description 设置用户
-     * @Date 2025/5/15
-     * @param parameter
-     * @return void
-     **/
+     * 设置用户。
+     * @author lipeng
+     * 2025/5/15
+     * @param parameter 角色id
+     */
+    @CacheEvict(value = {"userCache", "menuCache"}, allEntries = true)
     public void userRoleService(JSONObject parameter) {
         KPVerifyUtil.notNull(parameter.getString("roleId"), "请输入角色id！");
 //        KPVerifyUtil.notNull(parameter.getJSONArray("userIds"), "请选择用户！");
@@ -53,7 +51,7 @@ public class UserRoleService extends ServiceImpl<UserRoleMapper, UserRolePO> {
                         .eq(UserRolePO::getRoleId, rolePO.getRoleId()))
                 .stream().map(UserRolePO::getAurId).collect(Collectors.toList());
 
-        if (KPStringUtil.isNotEmpty(aurIds)) this.baseMapper.deleteAllByIds(aurIds);
+        if (KPStringUtil.isNotEmpty(aurIds)) this.baseMapper.kpDeleteAllByIds(aurIds);
 
         parameter.getJSONArray("userIds").forEach(userId -> {
             userRoleList.add(new UserRolePO()
@@ -61,7 +59,7 @@ public class UserRoleService extends ServiceImpl<UserRoleMapper, UserRolePO> {
                     .setRoleId(rolePO.getRoleId()));
         });
 
-        if (userRoleList.size() > 0)
+        if (KPStringUtil.isNotEmpty(userRoleList))
             KPCollectionUtil.insertBatch(this.baseMapper, userRoleList, 100);
     }
 }

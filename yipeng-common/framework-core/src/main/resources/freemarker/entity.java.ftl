@@ -11,23 +11,24 @@ import ${pkg};
 <#if springdoc>
 import io.swagger.v3.oas.annotations.media.Schema;
 <#elseif swagger>
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 </#if>
 <#if entityLombokModel>
 import lombok.Data;
+import lombok.EqualsAndHashCode;
     <#if chainModel>
 import lombok.experimental.Accessors;
     </#if>
 </#if>
 
 /**
- * @Author ${author}
- * @Description ${table.comment!}
- * @Date ${date}
-**/
+ * ${table.comment!}
+ * @author ${author}
+ * ${date}
+ */
 <#if entityLombokModel>
 @Data
+@EqualsAndHashCode(callSuper = false)
     <#if chainModel>
 @Accessors(chain = true)
     </#if>
@@ -38,10 +39,11 @@ import lombok.experimental.Accessors;
 <#if springdoc>
 @Schema(name = "${entity}", description = "${table.comment!}")
 <#elseif swagger>
-@ApiModel(value = "${entity}对象", description = "${table.comment!}")
+@Schema(name = "${entity}", description = "${table.comment!}")
 </#if>
 <#if superEntityClass??>
-public class ${entity} extends ${superEntityClass}<#if activeRecord><${entity}></#if> {
+<#--public class ${entity} extends ${superEntityClass}<#if activeRecord><${entity}></#if> {-->
+public class ${entity} extends ${superEntityClass}<${entity}> {
 <#elseif activeRecord>
 public class ${entity} extends Model<${entity}> {
 <#elseif entitySerialVersionUID>
@@ -59,7 +61,7 @@ public class ${entity} {
         <#if springdoc>
     @Schema(description = "${field.comment}")
         <#elseif swagger>
-    @ApiModelProperty("${field.comment}")
+    @Schema(description = "${field.comment}")
         <#else>
     /**
      * ${field.comment}

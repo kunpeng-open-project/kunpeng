@@ -1,6 +1,5 @@
 package com.kp.framework.microservices.auth.fallback;
 
-
 import com.alibaba.fastjson2.JSONObject;
 import com.kp.framework.entity.bo.KPResult;
 import com.kp.framework.microservices.auth.interfaces.IPost;

@@ -2,7 +2,7 @@ package com.kp.framework.annotation.impl.verify;
 
 import com.alibaba.fastjson2.JSONArray;
 import com.alibaba.fastjson2.JSONObject;
-import com.kp.framework.annotation.KPApiJsonlParamMode;
+import com.kp.framework.annotation.KPApiJsonParamMode;
 import com.kp.framework.annotation.verify.KPLength;
 import com.kp.framework.annotation.verify.KPMaxLength;
 import com.kp.framework.annotation.verify.KPNotNull;
@@ -12,15 +12,14 @@ import com.kp.framework.utils.kptool.KPJsonUtil;
 import com.kp.framework.utils.kptool.KPReflectUtil;
 import com.kp.framework.utils.kptool.KPRequsetUtil;
 import com.kp.framework.utils.kptool.KPStringUtil;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.MethodParameter;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 import org.springframework.web.method.HandlerMethod;
-import sun.reflect.generics.reflectiveObjects.ParameterizedTypeImpl;
 
-import javax.servlet.http.HttpServletRequest;
 import java.lang.reflect.Field;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
@@ -60,16 +59,16 @@ public class KPVerifyBuilder {
             return true;
         }
 
-        KPApiJsonlParamMode kpApiJsonlParamMode = handlerMethod.getMethodAnnotation(KPApiJsonlParamMode.class);
+        KPApiJsonParamMode kpApiJsonParamMode = handlerMethod.getMethodAnnotation(KPApiJsonParamMode.class);
         //屏蔽的字段
         List<String> excludeList = new ArrayList();
         //包含的字段
         List<String> globalList = new ArrayList();
-        if (kpApiJsonlParamMode != null) {
-            if (KPStringUtil.isNotEmpty(kpApiJsonlParamMode.includes())) {
-                globalList = Arrays.asList(kpApiJsonlParamMode.includes().split(kpApiJsonlParamMode.separator()));
-            } else if (KPStringUtil.isNotEmpty(kpApiJsonlParamMode.ignores())) {
-                excludeList = Arrays.asList(kpApiJsonlParamMode.ignores().split(kpApiJsonlParamMode.separator()));
+        if (kpApiJsonParamMode != null) {
+            if (KPStringUtil.isNotEmpty(kpApiJsonParamMode.includes())) {
+                globalList = Arrays.asList(kpApiJsonParamMode.includes().split(kpApiJsonParamMode.separator()));
+            } else if (KPStringUtil.isNotEmpty(kpApiJsonParamMode.ignores())) {
+                excludeList = Arrays.asList(kpApiJsonParamMode.ignores().split(kpApiJsonParamMode.separator()));
             }
         }
 
@@ -118,21 +117,30 @@ public class KPVerifyBuilder {
                     } catch (NullPointerException ex) {
                         throw new KPServiceException(field.getName() + "为空校验异常");
                     }
-
                 }
 
                 //在校验子类
                 Type genericFieldType = field.getGenericType();
-                if (genericFieldType instanceof ParameterizedType && !((ParameterizedTypeImpl) genericFieldType).getActualTypeArguments()[0].getTypeName().contains("java")) {
+//                if (genericFieldType instanceof ParameterizedType && !((ParameterizedTypeImpl) genericFieldType).getActualTypeArguments()[0].getTypeName().contains("java")) {
+                if (genericFieldType instanceof ParameterizedType) {
                     // 将其转换为ParameterizedType以访问实际的类型参数
                     ParameterizedType parameterizedType = (ParameterizedType) genericFieldType;
                     // 获取第一个类型参数（对于List，它就是元素类型）
                     Type actualTypeArgument = parameterizedType.getActualTypeArguments()[0];
-                    JSONArray jsonArray = json.getJSONArray(field.getName());
-                    if (jsonArray == null) continue;
-                    for (int i = 0; i < jsonArray.size(); i++) {
-                        if (!this.verifyDispose(((Class) actualTypeArgument).getDeclaredFields(), jsonArray.getJSONObject(i)))
-                            return false;
+// 只有当泛型参数是 Class 且是自定义类（非 java.* / javax.* / 基本类型）时，才递归校验
+                    if (actualTypeArgument instanceof Class<?>) {
+                        Class<?> elementType = (Class<?>) actualTypeArgument;
+
+                        // 排除基本类型
+                        boolean isCustomObject = !elementType.isPrimitive() && !elementType.getName().startsWith("java.") && !elementType.getName().startsWith("javax.") && elementType != String.class && !Number.class.isAssignableFrom(elementType) && elementType != Boolean.class && elementType != Character.class;
+                        if (isCustomObject) {
+                            JSONArray jsonArray = json.getJSONArray(field.getName());
+                            if (jsonArray == null) continue;
+                            for (int i = 0; i < jsonArray.size(); i++) {
+                                if (!this.verifyDispose(((Class) actualTypeArgument).getDeclaredFields(), jsonArray.getJSONObject(i)))
+                                    return false;
+                            }
+                        }
                     }
                 }
             } else {

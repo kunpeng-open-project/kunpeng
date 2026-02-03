@@ -31,11 +31,10 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 
 /**
- * @Author lipeng
- * @Description 登录服务层
- * @Date 2025/3/7
- * @return
- **/
+ * 登录服务层。
+ * @author lipeng
+ * 2025/3/7
+ */
 @Service
 public class LoginService {
 
@@ -48,14 +47,13 @@ public class LoginService {
 //    @Autowired
 //    private UserDetailsCheck userDetailsCheck;
 
-
     /**
-     * @Author lipeng
-     * @Description 普通登录
-     * @Date 2025/3/7
-     * @param parameter
+     * 普通登录。
+     * @author lipeng
+     * 2025/3/7
+     * @param parameter 登录参数
      * @return com.kp.framework.modules.user.po.customer.UserLoginCustomerPO
-     **/
+     */
     public UserLoginCustomerPO login(JSONObject parameter) {
         UserPO user = KPJsonUtil.toJavaObject(parameter, UserPO.class);
         KPVerifyUtil.notNull(user.getUserName(), "请输入用户名！");
@@ -95,14 +93,13 @@ public class LoginService {
         return loginCustomerPO;
     }
 
-
     /**
-     * @Author lipeng
-     * @Description 免密登录
-     * @Date 2025/6/4
-     * @param parameter
+     * 免密登录。
+     * @author lipeng
+     * 2025/6/4
+     * @param parameter 登录参数
      * @return com.kp.framework.modules.user.po.customer.UserLoginCustomerPO
-     **/
+     */
     public UserLoginCustomerPO exemptLogin(JSONObject parameter) {
         KPVerifyUtil.notNull(parameter.getString("projectId"), "请输入项目id！");
         KPVerifyUtil.twoChoiceOne(parameter.getString("jobNumber"), "工号", parameter.getString("userName"), "账号", false);
@@ -152,14 +149,13 @@ public class LoginService {
         return loginCustomerPO;
     }
 
-
     /**
-     * @Author lipeng
-     * @Description 授权登录
-     * @Date 2025/6/9
-     * @param parameter
+     * 授权登录。
+     * @author lipeng
+     * 2025/6/9
+     * @param parameter 登录参数
      * @return com.kp.framework.modules.user.po.customer.AuthorizationCustomerPO
-     **/
+     */
     public AuthorizationCustomerPO authorization(JSONObject parameter) {
         ProjectPO projectParameter = KPJsonUtil.toJavaObject(parameter, ProjectPO.class);
         KPVerifyUtil.notNull(projectParameter.getAppId(), "请输入appId！");
@@ -199,14 +195,13 @@ public class LoginService {
                 .setPermissions(loginUserBO.getPermissions());
     }
 
-
     /**
-     * @Author lipeng
-     * @Description 单点登录
-     * @Date 2025/10/4
-     * @param parameter
+     * 单点登录。
+     * @author lipeng
+     * 2025/10/4
+     * @param parameter 登录参数
      * @return com.kp.framework.modules.user.po.customer.UserLoginCustomerPO
-     **/
+     */
     public UserLoginCustomerPO ssoLogin(JSONObject parameter) {
         KPVerifyUtil.notNull(parameter.getString("accessToken"), "请输入token！");
         KPVerifyUtil.notNull(parameter.getString("projectCode"), "请输入项目编号！");

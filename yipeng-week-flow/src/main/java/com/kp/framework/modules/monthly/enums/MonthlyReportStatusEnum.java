@@ -5,11 +5,10 @@ import com.kp.framework.exception.KPServiceException;
 import java.util.Collection;
 
 /**
- * @Author lipeng
- * @Description 月计划状态
- * @Date 2025/8/30
- * @return
- **/
+ * 月计划状态。
+ * @author lipeng
+ * 2025/8/30
+ */
 public enum MonthlyReportStatusEnum {
     DRAFT(1, "草稿"),
     SUBMIT_FOR_REVIEW(2, "提交审核"),
@@ -20,9 +19,8 @@ public enum MonthlyReportStatusEnum {
     OVERDUE(7, "逾期");
 
 
-    private String message;
-
-    private Integer code;
+    private final String message;
+    private final Integer code;
 
     MonthlyReportStatusEnum(Integer code, String message) {
         this.code = code;
@@ -37,8 +35,8 @@ public enum MonthlyReportStatusEnum {
         return this.code;
     }
 
-    public static MonthlyReportStatusEnum getCode(Integer code){
-        for(MonthlyReportStatusEnum value : values()){
+    public static MonthlyReportStatusEnum getCode(Integer code) {
+        for (MonthlyReportStatusEnum value : values()) {
             if (value.code.equals(code)) {
                 return value;
             }
@@ -57,7 +55,7 @@ public enum MonthlyReportStatusEnum {
      */
     public static void validateAllowedByEnum(Integer currentCode, Collection<MonthlyReportStatusEnum> forbiddenEnums, String errorMsg) {
         MonthlyReportStatusEnum current = getCode(currentCode);
-        if (current == null)  throw new IllegalArgumentException("无效的月度计划状态码: " + currentCode);
+        if (current == null) throw new IllegalArgumentException("无效的月度计划状态码: " + currentCode);
 
         if (forbiddenEnums != null && !forbiddenEnums.isEmpty() && forbiddenEnums.contains(current))
             throw new KPServiceException(current.message + errorMsg);

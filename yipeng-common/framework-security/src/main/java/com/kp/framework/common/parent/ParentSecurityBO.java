@@ -4,21 +4,21 @@ import com.baomidou.mybatisplus.annotation.FieldFill;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableLogic;
 import com.baomidou.mybatisplus.extension.activerecord.Model;
-import lombok.Data;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 
 
-@Data
-public class ParentSecurityBO<T extends ParentSecurityBO> extends Model implements Serializable {
+@Getter
+@Setter
+@NoArgsConstructor
+public class ParentSecurityBO<T extends ParentSecurityBO<?>> extends Model<T> implements Serializable {
 
-    public static long getSerialVersionUID() {
-        return serialVersionUID;
-    }
-
-    public ParentSecurityBO(){}
-
+    @Serial
     private static final long serialVersionUID = 1L;
 
     @TableField(value = "create_date", fill = FieldFill.INSERT)

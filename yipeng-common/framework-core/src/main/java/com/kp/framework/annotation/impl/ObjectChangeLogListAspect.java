@@ -14,13 +14,11 @@ import org.springframework.stereotype.Component;
 import java.util.HashMap;
 import java.util.Map;
 
-
 /**
- * @Author lipeng
- * @Description 多注解处理数据改变信息
- * @Date 2024/3/5 10:31
- * @return
- **/
+ * 多注解处理数据改变信息。
+ * @author lipeng
+ * 2024/3/5
+ */
 @Aspect
 @Component
 @Slf4j

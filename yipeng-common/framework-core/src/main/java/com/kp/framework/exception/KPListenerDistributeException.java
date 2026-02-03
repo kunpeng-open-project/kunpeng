@@ -1,17 +1,18 @@
 package com.kp.framework.exception;
 
+import lombok.Getter;
+
 /**
- * @Author lipeng
- * @Description linener分发异常
- * @Date 2020/9/7 13:38
- * @Param
- * @return
- **/
-public class KPListenerDistributeException extends RuntimeException  {
+ * linener分发异常。
+ * @author lipeng
+ * 2020/9/7
+ */
+@Getter
+public class KPListenerDistributeException extends RuntimeException {
 
-    private String message;
+    private final String message;
 
-    public KPListenerDistributeException(String message){
+    public KPListenerDistributeException(String message) {
         super(message);
         this.message = message;
     }

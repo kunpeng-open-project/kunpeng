@@ -8,6 +8,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+
+/**
+ * minio配置器。
+ * @author lipeng
+ * 2025/4/20
+ */
 @Data
 @Configuration
 public class MinioConfig {
@@ -16,9 +22,7 @@ public class MinioConfig {
     private KPMinioProperties minioProperties;
 
     @Bean("minioClient")
-    public MinioClient getMinioClient()  {
-//        MinioClient minioClient = new MinioClient(endpoint, accessKey, secretKey);
-//        return minioClient;
+    public MinioClient getMinioClient() {
         //用户不使用minio时保证启动不报错
         if (KPStringUtil.isEmpty(minioProperties.getUrl())) return null;
         return MinioClient.builder()

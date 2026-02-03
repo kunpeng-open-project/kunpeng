@@ -27,19 +27,18 @@ import java.util.stream.Collectors;
 @Component
 public class MenuUtil {
 
-
     @Autowired
     private MenuMapper menuMapper;
 
 
     /**
-     * @Author lipeng
-     * @Description 菜单搜索
-     * @Date 2025/4/11
-     * @param list 返回值
-     * @param menuListParamPO 入参
+     * 菜单搜索。
+     * @author lipeng
+     * 2025/4/11
+     * @param list 菜单列表
+     * @param menuListParamPO 菜单搜索参数
      * @return java.util.List<com.kp.framework.modules.menu.po.customer.MenuCustomerPO>
-     **/
+     */
     public static List<MenuCustomerPO> filterList(List<MenuCustomerPO> list, MenuListParamPO menuListParamPO) {
         return list.stream()
                 .filter(menu -> KPStringUtil.isEmpty(menuListParamPO.getMenuName()) || menu.getMenuName().contains(menuListParamPO.getMenuName()))
@@ -50,20 +49,18 @@ public class MenuUtil {
                 .collect(Collectors.toList());
     }
 
-
     /**
-     * @Author lipeng
-     * @Description 菜单入参动态校验
-     * @Date 2025/4/11
+     * 菜单入参动态校验。
+     * @author lipeng
+     * 2025/4/11
      * @param menuEditParamPO 入参
      * @param projectMenuList 传入的项目的列表
-     * @return void
-     **/
+     */
     public static void verify(MenuEditParamPO menuEditParamPO, List<MenuPO> projectMenuList) {
         // 校验菜单名称是否重复
-        Map<String, MenuPO> menuNameMap = projectMenuList.stream().filter(menu-> KPStringUtil.isNotEmpty(menu.getMenuName())).collect(Collectors.toMap(MenuPO::getMenuName, Function.identity()));
-        Map<String, MenuPO> routePathMap = projectMenuList.stream().filter(menu-> KPStringUtil.isNotEmpty(menu.getRoutePath())).collect(Collectors.toMap(MenuPO::getRoutePath, Function.identity()));
-        Map<String, MenuPO> routeNameMap = projectMenuList.stream().filter(menu-> KPStringUtil.isNotEmpty(menu.getRouteName())).collect(Collectors.toMap(MenuPO::getRouteName, Function.identity()));
+        Map<String, MenuPO> menuNameMap = projectMenuList.stream().filter(menu -> KPStringUtil.isNotEmpty(menu.getMenuName())).collect(Collectors.toMap(MenuPO::getMenuName, Function.identity()));
+        Map<String, MenuPO> routePathMap = projectMenuList.stream().filter(menu -> KPStringUtil.isNotEmpty(menu.getRoutePath())).collect(Collectors.toMap(MenuPO::getRoutePath, Function.identity()));
+        Map<String, MenuPO> routeNameMap = projectMenuList.stream().filter(menu -> KPStringUtil.isNotEmpty(menu.getRouteName())).collect(Collectors.toMap(MenuPO::getRouteName, Function.identity()));
 
         switch (MenuTypeEnum.getCodeValue(menuEditParamPO.getMenuType())) {
             case CATALOGUE: //目录
@@ -114,14 +111,13 @@ public class MenuUtil {
         }
     }
 
-
     /**
-     * @Author lipeng
-     * @Description 组装菜单下拉框
-     * @Date 2025/4/18
-     * @param menuList
+     * 组装菜单下拉框。
+     * @author lipeng
+     * 2025/4/18
+     * @param menuList 菜单列表
      * @return java.util.List<com.kp.framework.entity.bo.DictionaryChildrenBO>
-     **/
+     */
     public static List<DictionaryChildrenBO> assembleMenuSelect(List<MenuCustomerPO> menuList) {
         List<DictionaryChildrenBO> body = new ArrayList<>();
         menuList.forEach(menuPO -> {
@@ -136,14 +132,13 @@ public class MenuUtil {
         return body;
     }
 
-
     /**
-     * @Author lipeng
-     * @Description 递归过滤菜单树，仅保留接口类型节点及其父级结构
-     * @Date 2025/5/16
+     * 递归过滤菜单树，仅保留接口类型节点及其父级结构。
+     * @author lipeng
+     * 2025/5/16
      * @param menu 当前处理的菜单节点
-     * @return boolean
-     **/
+     * @return com.kp.framework.modules.menu.po.customer.MenuCustomerPO
+     */
     public static MenuCustomerPO filterInterfaceTree(MenuCustomerPO menu) {
         if (menu == null) return null;
 
@@ -164,16 +159,13 @@ public class MenuUtil {
                 ? menu : null;
     }
 
-
-
     /**
-     * @Author lipeng
-     * @Description 异步更新子菜单的ancestors
-     * @Date 2025/9/25
+     * 异步更新子菜单的ancestors。
+     * @author lipeng
+     * 2025/9/25
      * @param movedMenuId 被移动的菜单ID
      * @param projectId 项目ID
-     * @return void
-     **/
+     */
     @Async
     @Transactional
     public void asyncUpdateChildrenAncestors(String movedMenuId, String projectId) {
@@ -187,7 +179,6 @@ public class MenuUtil {
         updateDescendantsAncestors(movedMenuId, movedMenu.getAncestors(), projectId);
     }
 
-
     /**
      * 递归更新子孙菜单的ancestors
      */
@@ -196,7 +187,7 @@ public class MenuUtil {
         List<MenuPO> childrenMenus = menuMapper.selectList(Wrappers.lambdaQuery(MenuPO.class)
                 .eq(MenuPO::getParentId, parentMenuId)
                 .eq(MenuPO::getProjectId, projectId));
-        if (childrenMenus.size() ==0) return;
+        if (KPStringUtil.isEmpty(childrenMenus)) return;
         childrenMenus.forEach(menuPO -> {
             // 计算新的ancestors：父级ancestors + 父级ID
             String newChildAncestors = parentAncestors + "," + parentMenuId;

@@ -1,37 +1,42 @@
 package com.kp.framework.entity.po.system;
 
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+
+/**
+ * 硬盘统计信息。
+ * @author lipeng
+ * 2025/10/17
+ */
 @Data
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-@ApiModel(value="SysFilePO", description="SysFilePO")
+@Schema(name = "SysFilePO", description = "磁盘信息")
 public class SysFilePO {
 
-    @ApiModelProperty(value = "盘符路径")
+    @Schema(description = "盘符路径")
     private String dirName;
 
-    @ApiModelProperty(value = "盘符类型")
+    @Schema(description = "盘符类型")
     private String sysTypeName;
 
-    @ApiModelProperty(value = "文件类型")
+    @Schema(description = "文件类型")
     private String typeName;
 
-    @ApiModelProperty(value = "总大小")
+    @Schema(description = "总大小")
     private String total;
 
-    @ApiModelProperty(value = "剩余大小")
+    @Schema(description = "剩余大小")
     private String free;
 
-    @ApiModelProperty(value = "已经使用量")
+    @Schema(description = "已经使用量")
     private String used;
 
-    @ApiModelProperty(value = "资源的使用率")
+    @Schema(description = "资源的使用率")
     private String usage;
 }

@@ -1,6 +1,10 @@
 package com.kp.framework.common.enums;
 
-
+/**
+ * 系统权限相关状态。
+ * @author lipeng
+ * 2021/4/19
+ */
 public enum AuthCodeEnum {
 
     SUCCESS(200, "操作成功"),
@@ -20,15 +24,14 @@ public enum AuthCodeEnum {
     API_AUTHORIZATION(700, "该授权模式只能访问api对外接口，内部接口禁止访问"); //只能访问api和 open 接口
 
 
-
     AuthCodeEnum(int code, String message) {
         this.code = code;
         this.message = message;
     }
 
-    private String message;
+    private final String message;
 
-    private Integer code;
+    private final Integer code;
 
     public String message() {
         return this.message;

@@ -14,11 +14,13 @@ import com.kp.framework.annotation.verify.KPNotNull;
 <#if springdoc>
 import io.swagger.v3.oas.annotations.media.Schema;
 <#elseif swagger>
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 </#if>
+import java.io.Serial;
+import java.io.Serializable;
 <#if entityLombokModel>
 import lombok.Data;
+import lombok.EqualsAndHashCode;
     <#if chainModel>
 import lombok.experimental.Accessors;
     </#if>
@@ -27,26 +29,26 @@ import lombok.experimental.Accessors;
 <#assign commentMessage = table.comment?replace("表", "")>
 
 /**
- * @Author ${author}
- * @Description ${commentMessage!}编辑入参
- * @Date ${date}
-**/
+ * ${commentMessage!}编辑入参
+ * @author ${author}
+ * ${date}
+ */
 <#if entityLombokModel>
 @Data
+@EqualsAndHashCode(callSuper = false)
     <#if chainModel>
 @Accessors(chain = true)
     </#if>
 </#if>
 <#if springdoc>
-@Schema(name = "${entity}", description = "${table.comment!}")
+@Schema(name = "${EntityParam}", description = "${table.comment!}")
 <#elseif swagger>
-@ApiModel(value = "${EntityParam}EditParamPO对象", description = "${commentMessage!}编辑入参")
+@Schema(name = "${EntityParam}EditParamPO", description = "${table.comment!}编辑入参")
 </#if>
-public class ${EntityParam}EditParamPO {
-<#if entitySerialVersionUID>
+public class ${EntityParam}EditParamPO implements Serializable {
 
+    @Serial
     private static final long serialVersionUID = 1L;
-</#if>
 <#-- ----------  BEGIN 字段循环遍历  ---------->
 <#list table.fields as field>
     <#if field.keyFlag>
@@ -69,7 +71,7 @@ public class ${EntityParam}EditParamPO {
             <#elseif field.propertyType == "int">
                 <#assign exampleTitle = 0>
             </#if>
-    @ApiModelProperty(value = "${field.comment}", example = "${exampleTitle}", required = true)
+    @Schema(description = "${field.comment}", example = "${exampleTitle}", requiredMode = Schema.RequiredMode.REQUIRED)
         <#else>
             /**
             * ${field.comment}

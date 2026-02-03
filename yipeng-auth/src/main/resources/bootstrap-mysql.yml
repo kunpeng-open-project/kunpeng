@@ -1,0 +1,37 @@
+spring:
+  cloud:
+    nacos:
+      username: nacos
+      password: nacos123LP@#
+      discovery:
+#        ip: 47.94.202.72
+#        port: 10067
+        server-addr: http://nas.kunpengtool.cn
+        namespace: 6e57bb5f-703c-400c-b178-69aed29a9b00
+      config:
+        server-addr: http://nas.kunpengtool.cn
+        namespace: 6e57bb5f-703c-400c-b178-69aed29a9b00
+        group: DEFAULT_GROUP
+        file-extension: yaml
+        prefix: authentication
+        extension-configs:
+          - data-id: yipeng.core.yaml
+            group: DEFAULT_GROUP
+            refresh: true
+
+logging:
+  level:
+    feign.client: DEBUG
+    com.kp.framework.modules: DEBUG
+#    org.springframework.security: DEBUG
+#    # ============ 新增：打印缓存核心日志 ============
+#    org.springframework.cache: DEBUG
+#    org.springframework.data.redis: TRACE
+#    com.github.benmanes.caffeine: DEBUG
+#    # Lettuce 连接池日志
+#    io.lettuce.core: DEBUG
+#    # Spring Redis 连接池日志
+#    org.springframework.data.redis.connection.lettuce: DEBUG
+
+log:
+  path: ./logs/auth   # 相对路径：文件夹不存在自动创建

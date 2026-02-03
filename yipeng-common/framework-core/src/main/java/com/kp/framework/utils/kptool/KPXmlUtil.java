@@ -15,26 +15,23 @@ import java.io.IOException;
 import java.io.StringReader;
 import java.io.StringWriter;
 
-
 /**
- * @Author lipeng
- * @Description XML操作
- * @Date 2021/10/14 14:13
- * @return
- **/
+ * XML操作。
+ * @author lipeng
+ * 2021/10/14
+ */
 @UtilityClass
 public final class KPXmlUtil {
 
-
     /**
-     * @Author lipeng
-     * @Description xml转json
-     * @Date 2021/10/14 14:13
-     * @param xml
+     * xml转json。
+     * @author lipeng
+     * 2021/10/14
+     * @param xml  xml
      * @return java.lang.String
-     **/
-    public static String xml2json(String xml){
-        xml = xml.replaceAll("\"\"","\"null\"").replaceAll("xml:space=\"preserve\"","");
+     */
+    public static String xml2json(String xml) {
+        xml = xml.replaceAll("\"\"", "\"null\"").replaceAll("xml:space=\"preserve\"", "");
         StringReader input = new StringReader(xml);
         StringWriter output = new StringWriter();
         JsonXMLConfig config = new JsonXMLConfigBuilder()
@@ -51,7 +48,7 @@ public final class KPXmlUtil {
             writer.add(reader);
             reader.close();
             writer.close();
-        } catch( Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         } finally {
             try {
@@ -62,19 +59,17 @@ public final class KPXmlUtil {
             }
         }
 
-        return output.toString().replaceAll("@","#");
+        return output.toString().replaceAll("@", "#");
     }
 
-
-
     /**
-     * @Author lipeng
-     * @Description json转xml
-     * @Date 2021/10/14 14:14
-     * @param json
+     * json转xml。
+     * @author lipeng
+     * 2021/10/14
+     * @param json  json
      * @return java.lang.String
-     **/
-    public static String json2xml(String json){
+     */
+    public static String json2xml(String json) {
         StringReader input = new StringReader(json);
         StringWriter output = new StringWriter();
         JsonXMLConfig config = new JsonXMLConfigBuilder().multiplePI(false).repairingNamespaces(false).build();
@@ -85,7 +80,7 @@ public final class KPXmlUtil {
             writer.add(reader);
             reader.close();
             writer.close();
-        } catch( Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         } finally {
             try {
@@ -95,10 +90,9 @@ public final class KPXmlUtil {
                 e.printStackTrace();
             }
         }
-        if(output.toString().length()>=38){//remove &lt;?xml version=&#34;1.0&#34; encoding=&#34;UTF-8&#34;?&gt;
+        if (output.toString().length() >= 38) {//remove &lt;?xml version=&#34;1.0&#34; encoding=&#34;UTF-8&#34;?&gt;
             return output.toString().substring(39);
         }
         return output.toString();
     }
-
 }

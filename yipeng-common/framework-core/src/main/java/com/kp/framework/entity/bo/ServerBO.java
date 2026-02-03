@@ -12,7 +12,8 @@ import com.kp.framework.utils.kptool.KPDateUtil;
 import com.kp.framework.utils.kptool.KPIPUtil;
 import com.kp.framework.utils.kptool.KPServiceUtil;
 import com.kp.framework.utils.kptool.KPThreadUtil;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.annotation.Resource;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -28,7 +29,6 @@ import oshi.software.os.OSFileStore;
 import oshi.software.os.OperatingSystem;
 import oshi.util.Util;
 
-import javax.annotation.Resource;
 import java.lang.management.ManagementFactory;
 import java.math.RoundingMode;
 import java.util.Date;
@@ -43,43 +43,42 @@ import java.util.concurrent.TimeUnit;
 
 
 /**
- * @Author lipeng
- * @Description 服务器内容
- * @Date 2024/9/2 15:54
- * @return
- **/
+ * 服务器内容。
+ * @author lipeng
+ * 2024/9/2
+ */
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@Schema(name = "ServerBO", description = "服务器监控信息")
 public class ServerBO {
     private static final int OSHI_WAIT_SECOND = 1000;
 
-    @ApiModelProperty(value = "CPU相关信息")
+    @Schema(description = "CPU相关信息")
     private CpuPO cpu = new CpuPO();
 
-    @ApiModelProperty(value = "內存相关信息")
+    @Schema(description = "內存相关信息")
     private MemPO mem = new MemPO();
 
-    @ApiModelProperty(value = "JVM相关信息")
+    @Schema(description = "JVM相关信息")
     private JvmPO jvm = new JvmPO();
 
-    @ApiModelProperty(value = "服务器相关信息")
+    @Schema(description = "服务器相关信息")
     private SysPO sys = new SysPO();
 
     // 新增：总磁盘吞吐（不分盘符，单个对象）
-    @ApiModelProperty(value = "总磁盘吞吐信息（不分盘符）")
+    @Schema(description = "总磁盘吞吐信息（不分盘符）")
     private DiskIoPO diskIo = new DiskIoPO();
     // 新增：总网络速率（不分接口，单个对象）
-    @ApiModelProperty(value = "总网络速率信息（汇总所有有效接口）")
+    @Schema(description = "总网络速率信息（汇总所有有效接口）")
     private NetIoPO netIo = new NetIoPO();
 
-    @ApiModelProperty(value = "磁盘相关信息")
+    @Schema(description = "磁盘相关信息")
     private List<SysFilePO> sysFiles = new LinkedList<>();
 
     @Resource(name = "kpExecutorService")
     private ExecutorService kpExecutorService;
-
 
 
     public void setValueTo() {
@@ -112,7 +111,6 @@ public class ServerBO {
         setJvmInfo();
         // 磁盘信息
         setSysFiles(systemInfo.getOperatingSystem());
-
 
 
         // 等待并行任务完成（最多等待1秒，与采样间隔一致）
@@ -207,10 +205,10 @@ public class ServerBO {
     private void setJvmInfo() {
         Properties props = System.getProperties();
 
-        jvm.setTotal(new KPBigDecimalUtils(Runtime.getRuntime().totalMemory()).divide(1024*1024, 2, RoundingMode.HALF_UP).buildString("M"));
-        jvm.setMax(new KPBigDecimalUtils(Runtime.getRuntime().maxMemory()).divide(1024*1024, 2, RoundingMode.HALF_UP).buildString("M"));
-        jvm.setFree(new KPBigDecimalUtils(Runtime.getRuntime().freeMemory()).divide(1024*1024, 2, RoundingMode.HALF_UP).buildString("M"));
-        jvm.setUsed(new KPBigDecimalUtils(Runtime.getRuntime().totalMemory()-Runtime.getRuntime().freeMemory()).divide(1024*1024, 2, RoundingMode.HALF_UP).buildString("M"));
+        jvm.setTotal(new KPBigDecimalUtils(Runtime.getRuntime().totalMemory()).divide(1024 * 1024, 2, RoundingMode.HALF_UP).buildString("M"));
+        jvm.setMax(new KPBigDecimalUtils(Runtime.getRuntime().maxMemory()).divide(1024 * 1024, 2, RoundingMode.HALF_UP).buildString("M"));
+        jvm.setFree(new KPBigDecimalUtils(Runtime.getRuntime().freeMemory()).divide(1024 * 1024, 2, RoundingMode.HALF_UP).buildString("M"));
+        jvm.setUsed(new KPBigDecimalUtils(Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()).divide(1024 * 1024, 2, RoundingMode.HALF_UP).buildString("M"));
         jvm.setUsedRate(new KPBigDecimalUtils(100).sub(new KPBigDecimalUtils(Runtime.getRuntime().freeMemory()).divide(Runtime.getRuntime().totalMemory(), 2, RoundingMode.HALF_UP).multiply(100).build()).buildString("%"));
         jvm.setJavaName(ManagementFactory.getRuntimeMXBean().getVmName());
         jvm.setJavaStartTime(KPDateUtil.format(KPDateUtil.getServerStartDate(), KPDateUtil.DATE_TIME_PATTERN));
@@ -237,7 +235,7 @@ public class ServerBO {
             sysFile.setTotal(convertFileSize(total));
             sysFile.setFree(convertFileSize(free));
             sysFile.setUsed(convertFileSize(used));
-            sysFile.setUsage(new KPBigDecimalUtils(used).divide(total, 4).multiply(100).buildString("%") );
+            sysFile.setUsage(new KPBigDecimalUtils(used).divide(total, 4).multiply(100).buildString("%"));
 //            sysFile.setUsage(Arith.mul(Arith.div(used, total, 4), 100));
             sysFiles.add(sysFile);
         }
@@ -308,6 +306,7 @@ public class ServerBO {
 
 
     // ---------------------- 新增：总网络速率采集（不分接口） ----------------------
+
     /**
      * 设置总网络速率（汇总所有有效接口，计算每秒总上下行速率）
      */

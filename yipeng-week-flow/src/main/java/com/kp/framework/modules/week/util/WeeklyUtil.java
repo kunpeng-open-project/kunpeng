@@ -6,6 +6,7 @@ import com.kp.framework.modules.monthly.po.MonthlyReportPO;
 import com.kp.framework.modules.week.enums.WeeklyPalanStatusEnum;
 import com.kp.framework.modules.week.mapper.WeeklyPalanMapper;
 import com.kp.framework.modules.week.po.WeeklyPalanPO;
+import com.kp.framework.utils.kptool.KPStringUtil;
 import com.kp.framework.utils.kptool.KPThreadUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
@@ -24,12 +25,11 @@ public class WeeklyUtil {
     private WeeklyPalanMapper weeklyPalanMapper;
 
     /**
-     * @Author lipeng
-     * @Description 计算月计划进度
-     * @Date 2025/9/28
-     * @param monthlyId
-     * @return void
-     **/
+     * 计算月计划进度。
+     * @author lipeng
+     * 2025/9/28
+     * @param monthlyId 月计划ID
+     */
     @Async
     @Transactional
     public void calculateMonthlyPlanprogress(String monthlyId) {
@@ -45,7 +45,7 @@ public class WeeklyUtil {
                 .eq(WeeklyPalanPO::getMonthlyId, monthlyId)
                 .ne(WeeklyPalanPO::getTaskStatus, WeeklyPalanStatusEnum.DISCARD.code()));
 
-        if (weeklyPalanList.size() == 0) {
+        if (KPStringUtil.isEmpty(weeklyPalanList)) {
             monthlyReportMapper.updateById(new MonthlyReportPO()
                     .setMonthlyId(monthlyId)
                     .setProgress(0));

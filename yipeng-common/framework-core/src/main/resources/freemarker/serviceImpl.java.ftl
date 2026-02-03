@@ -24,19 +24,22 @@ import ${package.Entity}.${entity};
 import ${package.Entity}.param.${EntityParam}EditParamPO;
 import ${package.Entity}.param.${EntityParam}ListParamPO;
 import com.kp.framework.constant.ReturnFinishedMessageConstant;
+import com.kp.framework.entity.bo.KPResult;
 import com.kp.framework.exception.KPServiceException;
 import com.kp.framework.utils.kptool.KPJsonUtil;
 import com.kp.framework.utils.kptool.KPStringUtil;
 import com.kp.framework.utils.kptool.KPVerifyUtil;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 /**
- * @Author ${author}
- * @Description ${table.comment!} 服务实现类
- * @Date ${date}
-**/
+ * ${table.comment!}服务实现类
+ * @author ${author}
+ * ${date}
+ */
 @Service
 <#if kotlin>
 open class ${table.serviceImplName} : ${superServiceImplClass}<${table.mapperName}, ${entity}>()<#if table.serviceInterface>, ${table.serviceName}</#if> {
@@ -47,13 +50,14 @@ public class ${table.serviceImplName} extends ${superServiceImplClass}<${table.m
 
 
     /**
-     * @Author ${author}
-     * @Description 查询${commentMessage}列表
-     * @Date ${date}
-     * @param ${entityParam}ListParamPO
-     * @return java.util.List<${entity}>
-    **/
-    public List<${entity}> queryPageList(${EntityParam}ListParamPO ${entityParam}ListParamPO){
+     * 查询${commentMessage}列表
+     * @author ${author}
+     * ${date}
+     * @param ${entityParam}ListParamPO 查询参数
+     * @return KPResult<${entity}>
+     */
+    //@Cacheable(value = "${entityParam}Cache", keyGenerator = "pageKeyGenerator", unless = "T(com.kp.framework.utils.kptool.KPStringUtil).isEmpty(#result)")
+    public KPResult<${entity}> queryPageList(${EntityParam}ListParamPO ${entityParam}ListParamPO){
         //搜索条件
         LambdaQueryWrapper<${entity}> queryWrapper = Wrappers.lambdaQuery(${entity}.class)
     <#assign isStop = false>
@@ -70,17 +74,18 @@ public class ${table.serviceImplName} extends ${superServiceImplClass}<${table.m
     <#if isStop==false>;</#if>
         //分页和排序
         PageHelper.startPage(${entityParam}ListParamPO.getPageNum(), ${entityParam}ListParamPO.getPageSize(), ${entityParam}ListParamPO.getOrderBy(${entity}.class));
-        return this.baseMapper.selectList(queryWrapper);
+        return KPResult.list(this.baseMapper.selectList(queryWrapper));
     }
 
 
     /**
-     * @Author ${author}
-     * @Description 根据${keyComment}查询详情
-     * @Date ${date}
-     * @param parameter
+     * 根据${keyComment}查询详情
+     * @author ${author}
+     * ${date}
+     * @param parameter 查询参数
      * @return ${entity}
-    **/
+    */
+    //@Cacheable(value = "${entityParam}Cache", keyGenerator = "pageKeyGenerator", unless = "T(com.kp.framework.utils.kptool.KPStringUtil).isEmpty(#result)")
     public ${entity} queryDetailsById(JSONObject parameter){
         ${entity} ${entityLowerCase} = KPJsonUtil.toJavaObject(parameter, ${entity}.class);
         KPVerifyUtil.notNull(${entityLowerCase}.${keyNameByGet}, "请输入${keyName}");
@@ -89,12 +94,12 @@ public class ${table.serviceImplName} extends ${superServiceImplClass}<${table.m
 
 
     /**
-     * @Author ${author}
-     * @Description 新增${commentMessage}
-     * @Date ${date}
-     * @param ${entityParam}EditParamPO
-     * @return void
-    **/
+     * 新增${commentMessage}
+     * @author ${author}
+     * ${date}
+     * @param ${entityParam}EditParamPO 新增参数
+     */
+    //@CacheEvict(value = "${entityParam}Cache", allEntries = true)
     public void save${EntityParam}(${EntityParam}EditParamPO ${entityParam}EditParamPO){
         ${entity} ${entityLowerCase} = KPJsonUtil.toJavaObjectNotEmpty(${entityParam}EditParamPO, ${entity}.class);
 
@@ -104,12 +109,12 @@ public class ${table.serviceImplName} extends ${superServiceImplClass}<${table.m
 
 
     /**
-     * @Author ${author}
-     * @Description 修改${commentMessage}
-     * @Date ${date}
-     * @param ${entityParam}EditParamPO
-     * @return void
-    **/
+     * 修改${commentMessage}
+     * @author ${author}
+     * ${date}
+     * @param ${entityParam}EditParamPO 修改参数
+     */
+    //@CacheEvict(value = "${entityParam}Cache", allEntries = true)
     public void update${EntityParam}(${EntityParam}EditParamPO ${entityParam}EditParamPO){
         ${entity} ${entityLowerCase} = KPJsonUtil.toJavaObjectNotEmpty(${entityParam}EditParamPO, ${entity}.class);
 
@@ -119,16 +124,17 @@ public class ${table.serviceImplName} extends ${superServiceImplClass}<${table.m
 
 
     /**
-     * @Author ${author}
-     * @Description 批量删除${commentMessage}
-     * @Date ${date}
-     * @param ids
-     * @return String
-    **/
+     * 批量删除${commentMessage}
+     * @author ${author}
+     * ${date}
+     * @param ids 删除的主键集合
+     * @return java.lang.String
+     */
+    //@CacheEvict(value = "${entityParam}Cache", allEntries = true)
     public String batchRemove(List<String> ids){
         if(KPStringUtil.isEmpty(ids)) throw new KPServiceException("请选择要删除的内容！");
 
-        Integer row = this.baseMapper.deleteBatchIds(ids);
+        int row = this.baseMapper.deleteByIds(ids);
         if(row == 0) throw new KPServiceException(ReturnFinishedMessageConstant.ERROR);
 
         return KPStringUtil.format("删除成功{0}条数据", row);

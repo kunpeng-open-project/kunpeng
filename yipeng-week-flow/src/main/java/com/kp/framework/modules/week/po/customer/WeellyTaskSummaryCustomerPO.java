@@ -1,35 +1,37 @@
 package com.kp.framework.modules.week.po.customer;
 
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import lombok.experimental.Accessors;
 
+import java.io.Serial;
+import java.io.Serializable;
 
 /**
- * @Author lipeng
- * @Description 查询周计划统计任务数
- * @Date 2025/9/26
- * @return
- **/
+ * 查询周计划统计任务数。
+ * @author lipeng
+ * 2025/9/26
+ */
 @Data
 @Accessors(chain = true)
-@ApiModel(value = "WeellyTaskSummaryCustomerPO", description = "WeellyTaskSummaryCustomerPO")
-public class WeellyTaskSummaryCustomerPO {
+@Schema(name = "WeellyTaskSummaryCustomerPO")
+public class WeellyTaskSummaryCustomerPO implements Serializable {
 
+    @Serial
+    private static final long serialVersionUID = 1L;
 
-    @ApiModelProperty("总任务数")
+    @Schema(description = "总任务数")
     private Integer totalTaskCount;
 
-    @ApiModelProperty("未开始任务数")
+    @Schema(description = "未开始任务数")
     private Integer notStartedCount;
 
-    @ApiModelProperty("进行中任务数")
+    @Schema(description = "进行中任务数")
     private Integer inProgressCount;
 
-    @ApiModelProperty("已完成任务数")
+    @Schema(description = "已完成任务数")
     private Integer completedCount;
 
-    @ApiModelProperty("废弃任务数")
+    @Schema(description = "废弃任务数")
     private Integer abandonedCount;
 }

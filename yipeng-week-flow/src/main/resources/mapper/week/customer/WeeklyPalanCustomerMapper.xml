@@ -2,9 +2,6 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.kp.framework.modules.week.mapper.customer.WeeklyPalanCustomerMapper">
 
-    <!-- 开启二级缓存 -->
-    <cache type="org.mybatis.caches.ehcache.LoggingEhcache"/>
-
     <select id="queryWeeklyPalanCustomer" resultType="com.kp.framework.modules.week.po.customer.WeeklyPalanCustomerCustomerPO">
         SELECT task_week                                                     AS taskWeek,
                COUNT(1)                                                      AS totalTaskCount,

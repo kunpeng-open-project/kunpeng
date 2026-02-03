@@ -8,9 +8,9 @@ import java.time.temporal.ChronoUnit;
 import java.time.temporal.TemporalAdjusters;
 
 /**
- * @Author lipeng
- * @Description LocalDate 工具类（处理日期，不含时间），其方法名与 KPDateUtil 保持一致，以便于项目迁移。
- * @Date 2025/8/5
+ * LocalDate 工具类（处理日期，不含时间），其方法名与 KPDateUtil 保持一致，以便于项目迁移。
+ * @author lipeng
+ * 2025/8/5
  */
 @UtilityClass
 public class KPLocalDateUtil {
@@ -346,6 +346,7 @@ public class KPLocalDateUtil {
     public static LocalDate getFirstDayOfMonth(LocalDate date) {
         return getMinDayOfMonth(date);
     }
+
     @Deprecated
     public static String toString(LocalDate localDate, String format) {
         return format(localDate, format);

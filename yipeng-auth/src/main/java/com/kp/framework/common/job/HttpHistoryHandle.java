@@ -12,24 +12,22 @@ import com.kp.framework.modules.logRecord.po.HttpLogPO;
 import com.kp.framework.utils.kptool.KPCollectionUtil;
 import com.kp.framework.utils.kptool.KPLocalDateTimeUtil;
 import com.xxl.job.core.handler.annotation.XxlJob;
+import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import javax.annotation.Resource;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.stream.Collectors;
 
-
 /**
- * @Author lipeng
- * @Description http日志记录归档
- * @Date 2025/9/2
- * @return
- **/
+ * http日志记录归档。
+ * @author lipeng
+ * 2025/9/2
+ */
 @Slf4j
 @Component
 public class HttpHistoryHandle {
@@ -77,7 +75,7 @@ public class HttpHistoryHandle {
                     //处理历史数据
                     KPCollectionUtil.insertBatch(httpLogHistoryMapper, list, HttpLogHistoryPO.class, 100);
                     //删除主表
-                    httpLogMapper.deleteAllByIds(list.stream().map(HttpLogPO::getUuid).collect(Collectors.toList()));
+                    httpLogMapper.kpDeleteAllByIds(list.stream().map(HttpLogPO::getUuid).collect(Collectors.toList()));
                     log.info("【http归档】线程[{}]：当前页数据归档完成，总处理量：{}", Thread.currentThread().getName(), list.size());
                 }
             });
@@ -85,5 +83,4 @@ public class HttpHistoryHandle {
 
         log.info("【http归档】日志归档任务：所有待处理数据已提交至线程池，主线程结束（异步线程将继续执行）");
     }
-
 }

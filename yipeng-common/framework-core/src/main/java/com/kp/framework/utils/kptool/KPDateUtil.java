@@ -12,9 +12,9 @@ import java.util.Calendar;
 import java.util.Date;
 
 /**
- * @Author 李鹏
- * @Description 传统 Date 时间操作工具类
- * @Date 2020/5/31
+ * 传统 Date 时间操作工具类。
+ * @author lipeng
+ * 2020/5/31
  */
 @UtilityClass
 public class KPDateUtil {
@@ -539,20 +539,24 @@ public class KPDateUtil {
     public static String dateFormat(Date date, String pattern) {
         return format(date, pattern);
     }
+
     @Deprecated
     public static String dateFormat(String date, String pattern) {
         return format(date, pattern);
     }
+
     @Deprecated
     public static String dateFormat(String date, String inputPattern, String outputPattern) {
         return format(date, inputPattern, outputPattern);
     }
+
     @Deprecated
     public static String getDatePoor(Date endDate, Date nowDate) {
         return getDuration(endDate, nowDate);
     }
+
     @Deprecated
     public static Date dateAdd(Date date, int days, boolean includeTime) {
-      return addDays(date, days, includeTime);
+        return addDays(date, days, includeTime);
     }
 }

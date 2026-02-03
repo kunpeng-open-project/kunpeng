@@ -1,22 +1,22 @@
 package com.kp.framework.modules.role.po.customer;
 
 import com.kp.framework.modules.role.po.RolePO;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
 
 import java.util.List;
 
 @Data
+@EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
-@ApiModel(value = "RoleDetailsCustomerPO", description = "RoleDetailsCustomerPO")
+@Schema(name = "RoleDetailsCustomerPO", description = "RoleDetailsCustomerPO")
 public class RoleDetailsCustomerPO extends RolePO {
-    private static final long serialVersionUID = 1L;
 
-    @ApiModelProperty(value = "所属项目Id集合")
+    @Schema(description = "所属项目Id集合")
     private List<String> projectIds;
 
-    @ApiModelProperty(value = "项目名称集合")
+    @Schema(description = "项目名称集合")
     private List<String> projectNameList;
 }

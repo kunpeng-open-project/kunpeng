@@ -8,6 +8,7 @@ import com.github.pagehelper.PageHelper;
 import com.github.yulichang.wrapper.MPJLambdaWrapper;
 import com.kp.framework.constant.ReturnFinishedMessageConstant;
 import com.kp.framework.entity.bo.DictionaryBO;
+import com.kp.framework.entity.bo.KPResult;
 import com.kp.framework.enums.DeleteFalgEnum;
 import com.kp.framework.enums.YesNoEnum;
 import com.kp.framework.exception.KPServiceException;
@@ -32,10 +33,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * @Author lipeng
- * @Description 角色信息表 服务实现类
- * @Date 2025-03-31
- **/
+ * 角色信息表 服务实现类。
+ * @author lipeng
+ * 2025-03-31
+ */
 @Service
 public class RoleService extends ServiceImpl<RoleMapper, RolePO> {
 
@@ -45,13 +46,13 @@ public class RoleService extends ServiceImpl<RoleMapper, RolePO> {
     private UserRoleMapper userRoleMapper;
 
     /**
-     * @Author lipeng
-     * @Description 查询角色信息列表
-     * @Date 2025-03-31
-     * @param roleListParamPO
-     * @return java.util.List<RolePO>
-     **/
-    public List<RoleListCustomerPO> queryPageList(RoleListParamPO roleListParamPO) {
+     * 查询角色信息列表。
+     * @author lipeng
+     * 2025-03-31
+     * @param roleListParamPO 查询参数
+     * @return com.kp.framework.entity.bo.KPResult<com.kp.framework.modules.role.po.customer.RoleListCustomerPO>
+     */
+    public KPResult<RoleListCustomerPO> queryPageList(RoleListParamPO roleListParamPO) {
         MPJLambdaWrapper<RolePO> wrapper = new MPJLambdaWrapper<RolePO>("role")
                 .selectAll(RolePO.class, "role")
                 .select(KPDatabaseUtil.groupConcat("project.project_name", false, "projectName"))
@@ -74,17 +75,16 @@ public class RoleService extends ServiceImpl<RoleMapper, RolePO> {
 
         Page page = PageHelper.startPage(roleListParamPO.getPageNum(), roleListParamPO.getPageSize(), roleListParamPO.getOrderBy(RolePO.class));
         page.setCountColumn("distinct role_id");
-        return this.baseMapper.selectJoinList(RoleListCustomerPO.class, wrapper);
+        return KPResult.list(this.baseMapper.selectJoinList(RoleListCustomerPO.class, wrapper));
     }
 
-
     /**
-     * @Author lipeng
-     * @Description 根据角色Id查询详情
-     * @Date 2025-03-31
-     * @param parameter
-     * @return RolePO
-     **/
+     * 根据角色Id查询详情。
+     * @author lipeng
+     * 2025-03-31
+     * @param parameter 查询参数
+     * @return com.kp.framework.modules.role.po.customer.RoleDetailsCustomerPO
+     */
     public RoleDetailsCustomerPO queryDetailsById(JSONObject parameter) {
         RolePO rolePO = KPJsonUtil.toJavaObject(parameter, RolePO.class);
         KPVerifyUtil.notNull(rolePO.getRoleId(), "请输入roleId");
@@ -110,20 +110,18 @@ public class RoleService extends ServiceImpl<RoleMapper, RolePO> {
         return this.baseMapper.selectJoinOne(RoleDetailsCustomerPO.class, wrapper);
     }
 
-
     /**
-     * @Author lipeng
-     * @Description 新增角色信息
-     * @Date 2025-03-31
-     * @param roleEditParamPO
-     * @return void
-     **/
+     * 新增角色信息。
+     * @author lipeng
+     * 2025-03-31
+     * @param roleEditParamPO 新增参数
+     */
     public void saveRole(RoleEditParamPO roleEditParamPO) {
         RolePO rolePO = KPJsonUtil.toJavaObjectNotEmpty(roleEditParamPO, RolePO.class);
 
         List<RolePO> list = this.baseMapper.selectList(Wrappers.lambdaQuery(RolePO.class)
                 .eq(RolePO::getRoleName, roleEditParamPO.getRoleName()));
-        if (list.size() > 0) throw new KPServiceException("角色名称已存在，请勿重复添加");
+        if (KPStringUtil.isNotEmpty(list)) throw new KPServiceException("角色名称已存在，请勿重复添加");
 
         if (this.baseMapper.insert(rolePO) == 0)
             throw new KPServiceException(ReturnFinishedMessageConstant.ERROR);
@@ -134,14 +132,12 @@ public class RoleService extends ServiceImpl<RoleMapper, RolePO> {
         roleProjectReplevanceService.saveOrUpdate(roleEditParamPO.getProjectIds(), rolePO);
     }
 
-
     /**
-     * @Author lipeng
-     * @Description 修改角色信息
-     * @Date 2025-03-31
-     * @param roleEditParamPO
-     * @return void
-     **/
+     * 修改角色信息。
+     * @author lipeng
+     * 2025-03-31
+     * @param roleEditParamPO 修改参数
+     */
     public void updateRole(RoleEditParamPO roleEditParamPO) {
         RolePO rolePO = KPJsonUtil.toJavaObjectNotEmpty(roleEditParamPO, RolePO.class);
 
@@ -149,7 +145,7 @@ public class RoleService extends ServiceImpl<RoleMapper, RolePO> {
                 .ne(RolePO::getRoleId, rolePO.getRoleId())
                 .eq(RolePO::getRoleName, roleEditParamPO.getRoleName()));
 
-        if (list.size() > 0) throw new KPServiceException("角色名称已存在，请勿重复添加");
+        if (KPStringUtil.isNotEmpty(list)) throw new KPServiceException("角色名称已存在，请勿重复添加");
 
         if (this.baseMapper.updateById(rolePO) == 0)
             throw new KPServiceException(ReturnFinishedMessageConstant.ERROR);
@@ -158,34 +154,31 @@ public class RoleService extends ServiceImpl<RoleMapper, RolePO> {
         roleProjectReplevanceService.saveOrUpdate(roleEditParamPO.getProjectIds(), rolePO);
     }
 
-
     /**
-     * @Author lipeng
-     * @Description 批量删除角色信息
-     * @Date 2025-03-31
-     * @param ids
-     * @return String
-     **/
+     * 批量删除角色信息。
+     * @author lipeng
+     * 2025-03-31
+     * @param ids 角色Id列表
+     * @return java.lang.String
+     */
     public String batchRemove(List<String> ids) {
         if (KPStringUtil.isEmpty(ids)) throw new KPServiceException("请选择要删除的内容！");
 
         //查询角色下是否有用户
         List<UserRolePO> userRoleList = userRoleMapper.selectList(Wrappers.lambdaQuery(UserRolePO.class).in(UserRolePO::getRoleId, ids));
-        if (userRoleList.size() != 0) throw new KPServiceException(KPStringUtil.format("{0} 下存在用户, 不允许删除",  this.baseMapper.selectById(userRoleList.get(0).getRoleId()).getRoleName()));
+        if (KPStringUtil.isNotEmpty(userRoleList)) throw new KPServiceException(KPStringUtil.format("{0} 下存在用户, 不允许删除", this.baseMapper.selectById(userRoleList.get(0).getRoleId()).getRoleName()));
 
-        Integer row = this.baseMapper.deleteBatchIds(ids);
+        int row = this.baseMapper.deleteByIds(ids);
         if (row == 0) throw new KPServiceException(ReturnFinishedMessageConstant.ERROR);
         return KPStringUtil.format("删除成功{0}条数据", row);
     }
 
-
     /**
-     * @Author lipeng
-     * @Description 修改角色状态
-     * @Date 2025/3/31
-     * @param parameter
-     * @return void
-     **/
+     * 修改角色状态。
+     * @author lipeng
+     * 2025/3/31
+     * @param parameter 修改参数
+     */
     public void updateStatus(JSONObject parameter) {
         KPVerifyUtil.notNull(parameter.getString("roleId"), "请输入角色id！");
 
@@ -198,15 +191,12 @@ public class RoleService extends ServiceImpl<RoleMapper, RolePO> {
             throw new KPServiceException(ReturnFinishedMessageConstant.ERROR);
     }
 
-
-
     /**
-     * @Author lipeng
-     * @Description 查询角色下拉框
-     * @Date 2025/4/30
-     * @param
+     * 查询角色下拉框。
+     * @author lipeng
+     * 2025/4/30
      * @return java.util.List<com.kp.framework.entity.bo.DictionaryBO>
-     **/
+     */
     public List<DictionaryBO> querySelect() {
         List<RolePO> roleList = this.baseMapper.selectList(Wrappers.lambdaQuery(RolePO.class)
                 .eq(RolePO::getStatus, YesNoEnum.YES.code()));

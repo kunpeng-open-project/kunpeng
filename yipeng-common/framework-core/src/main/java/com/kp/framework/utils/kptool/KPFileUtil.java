@@ -24,14 +24,9 @@ import java.util.Map;
 import java.util.Objects;
 
 /**
- * 文件处理工具类，提供文件创建、删除、转换、下载等常用操作。
- *
- * <p>注意事项：
- * <ul>
- *     <li>所有方法均为静态方法，无需实例化此类。</li>
- *     <li>方法会抛出明确的异常，调用者应根据需要捕获并处理。</li>
- *     <li>涉及文件操作的方法，确保调用者拥有相应的文件系统权限。</li>
- * </ul>
+ * 文件处理工具类，提供文件创建、删除、转换、下载等常用操作。。
+ * @author lipeng
+ * 2020/1/21
  */
 @Slf4j
 @UtilityClass
@@ -49,8 +44,6 @@ public final class KPFileUtil {
     /** 默认读取超时时间 (10秒) */
     private static final int DEFAULT_READ_TIMEOUT = 10000;
 
-
-    // --- 文件夹操作 ---
 
     /**
      * 创建文件夹，如果父目录不存在则一并创建。
@@ -73,7 +66,6 @@ public final class KPFileUtil {
         return true;
     }
 
-    // --- 文件判断与删除 ---
 
     /**
      * 判断指定路径是否为一个文件。
@@ -142,8 +134,6 @@ public final class KPFileUtil {
             }
         }
     }
-
-    // --- Base64 与文件/字节数组转换 ---
 
     /**
      * 将 Base64 字符串解码并保存为文件。
@@ -223,7 +213,6 @@ public final class KPFileUtil {
         log.info("字节数组写入文件成功: {}", filePath);
     }
 
-    // --- 网络文件操作 ---
 
     /**
      * 从 URL 读取字节流
@@ -290,8 +279,6 @@ public final class KPFileUtil {
         }
     }
 
-    // --- 图片处理 ---
-
     /**
      * 在二维码图片中间添加 Logo
      */
@@ -346,8 +333,6 @@ public final class KPFileUtil {
         return resizedImage;
     }
 
-    // --- 文件命名 ---
-
     /**
      * 处理重复文件名
      */
@@ -374,8 +359,6 @@ public final class KPFileUtil {
             return newName;
         }
     }
-
-    // --- 目录遍历 ---
 
     /**
      * 查找目录下的所有文件（递归）

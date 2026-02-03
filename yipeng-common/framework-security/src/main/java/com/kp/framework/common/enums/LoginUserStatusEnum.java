@@ -1,20 +1,20 @@
 package com.kp.framework.common.enums;
 
 /**
- * @Author lipeng
- * @Description 登录用户类型
- * @Date 2024/4/19
- * @return
- **/
-public enum LoginUserStatusEnum{
+ * 登录用户类型。
+ * @author lipeng
+ * 2024/4/19
+ */
+public enum LoginUserStatusEnum {
 
     NORMAL(1, "正常"),
     FORBIDDEN(2, "禁用"),
     LOCK(3, "锁定"),
-    LOGOUT(4, "注销");
-    private String message;
+    LOGOUT(4, "注销"),
+    UNKNOWN(0, "未知");
 
-    private Integer code;
+    private final String message;
+    private final Integer code;
 
     LoginUserStatusEnum(Integer code, String message) {
         this.code = code;
@@ -29,13 +29,13 @@ public enum LoginUserStatusEnum{
         return this.code;
     }
 
-    public static LoginUserStatusEnum getCode(Integer code){
-        for(LoginUserStatusEnum value : values()){
+    public static LoginUserStatusEnum getCode(Integer code) {
+        for (LoginUserStatusEnum value : values()) {
             if (value.code.equals(code)) {
                 return value;
             }
         }
-        return null;
+        return UNKNOWN;
     }
 
 }

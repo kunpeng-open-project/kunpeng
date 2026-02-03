@@ -5,8 +5,9 @@ import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.kp.framework.common.parent.ParentSecurityBO;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 /**
  * <p>
@@ -17,28 +18,27 @@ import lombok.Data;
  * @since 2024-06-04
  */
 @Data
+@EqualsAndHashCode(callSuper = true)
 @TableName("auth_user_dept")
 public class AuthUserDeptPO extends ParentSecurityBO<AuthUserDeptPO> {
 
-    private static final long serialVersionUID = 1L;
-
-    @ApiModelProperty("用户部门Id")
+    @Schema(description = "用户部门Id")
     @TableId(value = "aud_id", type = IdType.ASSIGN_UUID)
     private String audId;
 
-    @ApiModelProperty("用户Id")
+    @Schema(description = "用户Id")
     @TableField("user_id")
     private String userId;
 
-    @ApiModelProperty("部门Id")
+    @Schema(description = "部门Id")
     @TableField("dept_id")
     private String deptId;
 
-    @ApiModelProperty("是否负责人 0否 1是")
+    @Schema(description = "是否负责人 0否 1是")
     @TableField("principal")
     private Integer principal;
 
-    @ApiModelProperty("备注")
+    @Schema(description = "备注")
     @TableField("remark")
     private String remark;
 }

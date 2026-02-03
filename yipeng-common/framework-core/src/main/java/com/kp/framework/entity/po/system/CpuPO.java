@@ -1,39 +1,42 @@
 package com.kp.framework.entity.po.system;
 
-
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+/**
+ * cpu 统计信息。
+ * @author lipeng
+ * 2025/10/17
+ */
 @Data
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-@ApiModel(value="Cpu", description="Cpu")
+@Schema(name = "Cpu", description = "cpu信息")
 public class CpuPO {
 
-    @ApiModelProperty(value = "核心数")
+    @Schema(description = "核心数")
     private String cpuNum;
 
-//    @ApiModelProperty(value = "CPU总的使用")
+//    @Schema(description = "CPU总的使用")
 //    private double total;
 
-    @ApiModelProperty(value = "CPU总使用率")
+    @Schema(description = "CPU总使用率")
     private String all;
 
-    @ApiModelProperty(value = "CPU系统使用率")
+    @Schema(description = "CPU系统使用率")
     private String sys;
 
-    @ApiModelProperty(value = "CPU用户使用率")
+    @Schema(description = "CPU用户使用率")
     private String used;
 
-    @ApiModelProperty(value = "CPU当前等待率")
+    @Schema(description = "CPU当前等待率")
     private String wait;
 
-    @ApiModelProperty(value = "CPU当前空闲率")
+    @Schema(description = "CPU当前空闲率")
     private String free;
 
 //    public double getTotal() {

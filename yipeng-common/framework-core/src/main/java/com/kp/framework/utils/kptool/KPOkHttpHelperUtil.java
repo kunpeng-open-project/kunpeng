@@ -36,15 +36,13 @@ import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 /**
- * @Author lipeng
- * @Description http请求工具类
- * @Date 2020/9/24 14:12
- * @Param
- * @return
- **/
+ * http请求工具类。
+ * @author lipeng
+ * 2020/9/24
+ */
 public final class KPOkHttpHelperUtil {
     private static final Logger log = LoggerFactory.getLogger(KPOkHttpHelperUtil.class);
-//    private static final MediaType XML_TYPE = MediaType.parse("application/xml;charset=utf-8");
+    //    private static final MediaType XML_TYPE = MediaType.parse("application/xml;charset=utf-8");
     private static final MediaType XML_TYPE = MediaType.parse("text/xml;charset=utf-8");
     private static final MediaType JSON_TYPE = MediaType.parse("application/json;charset=utf-8");
     private static final MediaType FORM_DATA = MediaType.parse("multipart/form-data;charset=utf-8");
@@ -53,15 +51,17 @@ public final class KPOkHttpHelperUtil {
     //是否打印日志
     private static Boolean pringLog = true;
 
-    private static final OkHttpClient getInstance() {
+    private static OkHttpClient getInstance() {
         return OkHttpClientHolder.defaultClient;
     }
+
     //设置不打印日志
     public KPOkHttpHelperUtil(Boolean isPringLog) {
         pringLog = isPringLog;
     }
 
-    private KPOkHttpHelperUtil() {}
+    private KPOkHttpHelperUtil() {
+    }
 
     private static class OkHttpClientHolder {
         private static final OkHttpClient defaultClient;
@@ -82,8 +82,6 @@ public final class KPOkHttpHelperUtil {
                     .build();
         }
     }
-
-
 
 
     /**
@@ -150,18 +148,6 @@ public final class KPOkHttpHelperUtil {
     }
 
 
-
-
-
-
-
-
-
-
-
-
-
-
     public static String get(String url) throws KPServiceException {
         return getTool(url, new HashMap<>());
     }
@@ -207,7 +193,8 @@ public final class KPOkHttpHelperUtil {
         return KPJsonUtil.toJson(postTool(url, JSON_TYPE, json, headerMap));
     }
 
-    public static ResponseBody postJsonAll(String url, String json, HashMap headMap) throws KPServiceException {;
+    public static ResponseBody postJsonAll(String url, String json, HashMap headMap) throws KPServiceException {
+        ;
         try {
             Instant start = Instant.now();
             Response response = postToolAll(url, JSON_TYPE, json, headMap);
@@ -216,12 +203,12 @@ public final class KPOkHttpHelperUtil {
             }
             String responseStr = response.body().string();
             long disposeDate = Duration.between(start, Instant.now()).toMillis();
-            if (pringLog){
+            if (pringLog) {
                 log.info("请求域名: {} ", url);
-                if (headMap != null  && headMap.size() != 0)
+                if (headMap != null && headMap.size() != 0)
                     log.info("请求Header: {} ", KPJsonUtil.toJsonString(headMap));
-                log.info("请求参数: {} ", json.startsWith("<?xml")?"\n" + json : json);
-                log.info("返回内容: {} ", responseStr.startsWith("<?xml")?"\n" + responseStr : responseStr);
+                log.info("请求参数: {} ", json.startsWith("<?xml") ? "\n" + json : json);
+                log.info("返回内容: {} ", responseStr.startsWith("<?xml") ? "\n" + responseStr : responseStr);
                 log.info("接口用时: {} ", KPLocalDateTimeUtil.formatDuration(disposeDate));
                 log.info("");
             }
@@ -252,13 +239,6 @@ public final class KPOkHttpHelperUtil {
     }
 
 
-
-
-
-
-
-
-
     private static String getTool(String url, Map<String, String> headMap) throws KPServiceException {
         Instant start = Instant.now();
 
@@ -280,7 +260,7 @@ public final class KPOkHttpHelperUtil {
 
             long disposeDate = Duration.between(start, Instant.now()).toMillis();
 
-            if (pringLog){
+            if (pringLog) {
                 log.info("请求域名: {} ", url);
                 log.info("返回内容: {} ", responseStr);
                 log.info("接口用时: {} ", KPLocalDateTimeUtil.formatDuration(disposeDate));
@@ -304,12 +284,12 @@ public final class KPOkHttpHelperUtil {
             }
             String responseStr = response.body().string();
             long disposeDate = Duration.between(start, Instant.now()).toMillis();
-            if (pringLog){
+            if (pringLog) {
                 log.info("请求域名: {} ", url);
-                if (headMap != null  && headMap.size() != 0)
+                if (headMap != null && headMap.size() != 0)
                     log.info("请求Header: {} ", KPJsonUtil.toJsonString(headMap));
-                log.info("请求参数: {} ", parameter.startsWith("<?xml")?"\n" + parameter : parameter);
-                log.info("返回内容: {} ", responseStr.startsWith("<?xml")?"\n" + responseStr : responseStr);
+                log.info("请求参数: {} ", parameter.startsWith("<?xml") ? "\n" + parameter : parameter);
+                log.info("返回内容: {} ", responseStr.startsWith("<?xml") ? "\n" + responseStr : responseStr);
                 log.info("接口用时: {} ", KPLocalDateTimeUtil.formatDuration(disposeDate));
                 log.info("");
             }
@@ -321,7 +301,6 @@ public final class KPOkHttpHelperUtil {
             throw new KPServiceException(var5.getMessage());
         }
     }
-
 
 
     private static Response postToolAll(String url, MediaType mediaType, String parameter, Map<String, String> headMap) throws KPServiceException {
@@ -336,9 +315,9 @@ public final class KPOkHttpHelperUtil {
 
             //组装参数
             RequestBody requestBody = null;
-            if (mediaType.toString().equals(XML_TYPE.toString())){
+            if (mediaType.toString().equals(XML_TYPE.toString())) {
                 requestBody = RequestBody.create(XML_TYPE, parameter);
-            } else if (mediaType.toString().equals(JSON_TYPE.toString())){
+            } else if (mediaType.toString().equals(JSON_TYPE.toString())) {
                 requestBody = RequestBody.create(JSON_TYPE, parameter);
             } else if (mediaType.toString().equals(APPLICATION.toString())) {
                 requestBody = RequestBody.create(APPLICATION, parameter);
@@ -351,7 +330,6 @@ public final class KPOkHttpHelperUtil {
             throw new KPServiceException(var5.getMessage());
         }
     }
-
 
 
 //    @Deprecated
@@ -379,13 +357,14 @@ public final class KPOkHttpHelperUtil {
 //            };
 //
 //            long disposeDate = Duration.between(start, Instant.now()).toMillis();
-////            if (pringLog){
-////                log.info("请求域名: {}", url);
-////                log.info("请求参数: {}", json);
-////                log.info("返回结果: {}", response.body().string());
-////                log.info("接口用时: {} ", KPLocalDateTimeUtil.formatDuration(disposeDate));
-////                log.info("");
-////            }
+
+    ////            if (pringLog){
+    ////                log.info("请求域名: {}", url);
+    ////                log.info("请求参数: {}", json);
+    ////                log.info("返回结果: {}", response.body().string());
+    ////                log.info("接口用时: {} ", KPLocalDateTimeUtil.formatDuration(disposeDate));
+    ////                log.info("");
+    ////            }
 //            notPringLog(response);
 //            record(url, "post", json, null, disposeDate);
 //            return response;
@@ -394,16 +373,7 @@ public final class KPOkHttpHelperUtil {
 //            throw new KPServiceException(var5.getMessage());
 //        }
 //    }
-
-
-
-
-
-
-
-
-
-    private static void notPringLog(Response response){
+    private static void notPringLog(Response response) {
         pringLog = true;
         response.close();
     }
@@ -417,7 +387,8 @@ public final class KPOkHttpHelperUtil {
             LogUtil logUtil = KPServiceUtil.getBean(LogUtil.class);
             String body = logUtil.interfaceRecordLog(url, method, KPRequsetUtil.getRequest(), parameters, result, disposeDate);
             KPRabbitMqUtil.sendDeadMessage(HttpRabbitMqConfig.NORMAL_EXCHANGE, HttpRabbitMqConfig.NORMAL_ROUTING_KEY, body);
-        }catch (Exception e){}
+        } catch (Exception e) {
+        }
     }
 
 

@@ -1,22 +1,21 @@
 package com.kp.framework.configruation.config;
 
-import javax.servlet.ServletOutputStream;
-import javax.servlet.WriteListener;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpServletResponseWrapper;
+import jakarta.servlet.ServletOutputStream;
+import jakarta.servlet.WriteListener;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpServletResponseWrapper;
+
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
 
-
 /**
- * @Author lipeng
- * @Description
- * @Date 2023/11/20 14:31
- * @return
- **/
+ * 自定义Response
+ * @author lipeng
+ * 2023/11/20
+ */
 public class MyResponseWrapper extends HttpServletResponseWrapper {
     private ByteArrayOutputStream bytes = new ByteArrayOutputStream();
     private HttpServletResponse response;
@@ -30,11 +29,11 @@ public class MyResponseWrapper extends HttpServletResponseWrapper {
     @Override
     public ServletOutputStream getOutputStream() throws IOException {
         // 将数据写到 byte 中
-        if (response.getContentType() == null ) return super.getOutputStream();
+        if (response.getContentType() == null) return super.getOutputStream();
 
-        if (response.getContentType().contains("application/json") || response.getContentType().contains("text/plain")){
+        if (response.getContentType().contains("application/json") || response.getContentType().contains("text/plain")) {
             return new MyServletOutputStream(bytes);
-        }else{
+        } else {
             return super.getOutputStream();
         }
     }
@@ -54,8 +53,6 @@ public class MyResponseWrapper extends HttpServletResponseWrapper {
 
     /**
      * 获取缓存在 PrintWriter 中的响应数据
-     *
-     * @return
      */
     public byte[] getBytes() {
         if (null != pwrite) {
@@ -92,7 +89,6 @@ public class MyResponseWrapper extends HttpServletResponseWrapper {
 
         @Override
         public void setWriteListener(WriteListener listener) {
-
         }
     }
 }

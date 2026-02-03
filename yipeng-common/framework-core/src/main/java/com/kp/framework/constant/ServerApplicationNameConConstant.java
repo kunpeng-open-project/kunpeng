@@ -1,5 +1,9 @@
 package com.kp.framework.constant;
 
+/**
+ * 微服务名。
+ * @author lipeng
+ */
 public class ServerApplicationNameConConstant {
     public static final String AUTH_APPLICATION_NAME = "authentication";
     public static final String AUTH_NAME = "鉴权系统";

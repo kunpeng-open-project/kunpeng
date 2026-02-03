@@ -9,24 +9,17 @@ import org.springframework.security.web.firewall.HttpFirewall;
 import org.springframework.security.web.firewall.StrictHttpFirewall;
 import org.springframework.stereotype.Component;
 
-/**
- * @Author 李鹏
- * @Description
- * @Date $ $
- * @return $
- **/
 @Configuration
 @Component
 @Slf4j
 public class SecurityCoreConfig {
 
     /**
-     * @Author lipeng
-     * @Description 解决spring security firewall 防火墙导致 // 链接不支持
-     * @Date 2023/12/5
-     * @param
+     * 解决spring security firewall 防火墙导致 // 链接不支持。
+     * @author lipeng
+     * 2023/12/5
      * @return org.springframework.security.web.firewall.HttpFirewall
-     **/
+     */
     @Bean
     public HttpFirewall allowDoubleSlashHttpFirewall() {
         StrictHttpFirewall firewall = new StrictHttpFirewall();

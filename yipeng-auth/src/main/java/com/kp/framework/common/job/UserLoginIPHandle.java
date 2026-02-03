@@ -15,13 +15,11 @@ import org.springframework.stereotype.Component;
 
 import java.util.List;
 
-
 /**
- * @Author lipeng
- * @Description 获取ip的所在地
- * @Date 2025/7/2
- * @return
- **/
+ * 获取ip的所在地。
+ * @author lipeng
+ * 2025/7/2
+ */
 @Slf4j
 @Component
 public class UserLoginIPHandle {
@@ -38,9 +36,9 @@ public class UserLoginIPHandle {
                 .last("limit 100")
         );
 
-        log.info("[需要查询的ip数量]  " + loginRecordPOList.size());
+        log.info("[需要查询的ip数量] {}", loginRecordPOList.size());
 
-        if (loginRecordPOList.size() == 0) return;
+        if (KPStringUtil.isEmpty(loginRecordPOList)) return;
 
         log.info("[开始执行查询的ip数量定时器]");
 
@@ -64,6 +62,5 @@ public class UserLoginIPHandle {
             );
             KPThreadUtil.sleep(2000);
         }
-
     }
 }

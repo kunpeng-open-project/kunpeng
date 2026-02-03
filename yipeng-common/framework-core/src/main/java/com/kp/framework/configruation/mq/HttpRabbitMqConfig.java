@@ -4,25 +4,23 @@ import org.springframework.amqp.core.Binding;
 import org.springframework.amqp.core.BindingBuilder;
 import org.springframework.amqp.core.DirectExchange;
 import org.springframework.amqp.core.Queue;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Component;
 
 import java.util.HashMap;
 import java.util.Map;
 
-
-
 /**
- * @Author lipeng
- * @Description http 请求记录
- * @Date 2024/1/29 10:11
- * @return
- **/
+ * http 请求记录。
+ * @author lipeng
+ * 2024/1/29
+ */
 @Component
 public class HttpRabbitMqConfig {
 
     /**
-     * @Description 正常队列
+     * 正常队列
      **/
     public final static String NORMAL_EXCHANGE = "http_call_exchange";//正常交换机
     public final static String NORMAL_QUEUE = "http_call_queue";  //正常队列
@@ -30,7 +28,7 @@ public class HttpRabbitMqConfig {
 
 
     /**
-     * @Description 死信队列
+     * 死信队列
      **/
     private final String DEAD_EXCHANGE = "http_call_exchange_dead";//死信交换机
     public final static String DEAD_QUEUE = "http_call_queue_dead";//死信队列
@@ -57,7 +55,7 @@ public class HttpRabbitMqConfig {
 
     //绑定死信队列到死信交换机
     @Bean
-    public Binding httpDeadBinding(Queue httpDeadQueue, DirectExchange httpDeadExchange) {
+    public Binding httpDeadBinding(@Qualifier("httpDeadQueue") Queue httpDeadQueue, @Qualifier("httpDeadExchange") DirectExchange httpDeadExchange) {
         return BindingBuilder.bind(httpDeadQueue).to(httpDeadExchange).with(DEAD_ROUTING_KEY);
     }
 
@@ -85,7 +83,7 @@ public class HttpRabbitMqConfig {
 
     //绑定正常队列到正常交换机
     @Bean
-    public Binding httpNormalBinding(Queue httpNormalQueue, DirectExchange httpNormalExchange) {
+    public Binding httpNormalBinding(@Qualifier("httpNormalQueue") Queue httpNormalQueue, @Qualifier("httpNormalExchange") DirectExchange httpNormalExchange) {
         return BindingBuilder.bind(httpNormalQueue).to(httpNormalExchange).with(NORMAL_ROUTING_KEY);
     }
 }

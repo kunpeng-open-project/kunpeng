@@ -21,14 +21,14 @@ import com.kp.framework.utils.kptool.KPRequsetUtil;
 import com.kp.framework.utils.kptool.KPServiceUtil;
 import com.kp.framework.utils.kptool.KPStringUtil;
 import com.kp.framework.utils.kptool.KPUuidUtil;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.reflect.MethodSignature;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import javax.servlet.http.HttpServletRequest;
 import java.lang.reflect.Field;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -48,13 +48,13 @@ public class ObjectChangeUtil {
 
 
     /**
-     * @Author lipeng
-     * @Description 处理请求前执行
-     * @Date
-     * @param proceedingJoinPoint
-     * @param operateLog
-     * @return com.alibaba.fastjson.JSONObject
-     **/
+     * 处理请求前执行。
+     * @author lipeng
+     * 2024/2/22
+     * @param proceedingJoinPoint 切面织入点
+     * @param operateLog 注解
+     * @return com.alibaba.fastjson2.JSONObject
+     */
     public JSONObject boBefore(ProceedingJoinPoint proceedingJoinPoint, KPObjectChangeLogNote operateLog) {
         String type = ""; //类型
         List<Object> oldObject = new ArrayList<>(); //旧值
@@ -103,16 +103,14 @@ public class ObjectChangeUtil {
                 .build();
     }
 
-
     /**
-     * @Author lipeng
-     * @Description 处理请求后执行
-     * @Date 2024/2/22 10:31
-     * @param proceedingJoinPoint
-     * @param operateLog
-     * @param beforeJson
-     * @return void
-     **/
+     * 处理请求后执行。
+     * @author lipeng
+     * 2024/2/22
+     * @param proceedingJoinPoint 切面织入点
+     * @param operateLog 注解
+     * @param beforeJson 请求前的数据
+     */
     public void boAround(ProceedingJoinPoint proceedingJoinPoint, KPObjectChangeLogNote operateLog, JSONObject beforeJson) throws Throwable {
         HttpServletRequest request = KPRequsetUtil.getRequest();
         beforeJson.put("url", request.getRequestURL().toString());
@@ -150,15 +148,14 @@ public class ObjectChangeUtil {
         }).start();
     }
 
-
     /**
-     * @Author lipeng
-     * @Description 获取数据库内容
-     * @Date 2024/2/23 9:46
-     * @param proceedingJoinPoint
+     * 获取数据库内容。
+     * @author lipeng
+     * 2024/2/23
+     * @param proceedingJoinPoint 切面织入点
      * @param objectChangeLog 注解
-     * @return java.lang.Object
-     **/
+     * @return java.util.List<java.lang.Object>
+     */
     private List<Object> getResult(ProceedingJoinPoint proceedingJoinPoint, KPObjectChangeLogNote objectChangeLog) {
         String fileName, databaseFileName;
         if (objectChangeLog.identification().contains(",")) {
@@ -211,16 +208,15 @@ public class ObjectChangeUtil {
         return result;
     }
 
-
     /**
-     * @Author lipeng
-     * @Description 比较新老数据差异
-     * @Date 2024/2/25 14:12
+     * 比较新老数据差异。
+     * @author lipeng
+     * 2024/2/25
      * @param newObjects 新数据
      * @param oldObjects 老数据
      * @param operateLog 注解
      * @return java.util.List<java.util.List<java.util.Map<java.lang.String,java.lang.Object>>>
-     **/
+     */
     private List<List<Map<String, Object>>> defaultDealUpdate(List<Object> newObjects, List<Object> oldObjects, KPObjectChangeLogNote operateLog) {
         List<List<Map<String, Object>>> returnList = new ArrayList<>();
         try {
@@ -242,7 +238,7 @@ public class ObjectChangeUtil {
                         field = oldObjects.get(i).getClass().getSuperclass().getDeclaredField(key);
                     }
 
-                    ApiModelProperty dataName = field.getAnnotation(ApiModelProperty.class);
+                    Schema dataName = field.getAnnotation(Schema.class);
                     Object oldValue = oldData.get(key) == null ? "" : oldData.get(key);
                     Object newValue = newData.get(key) == null ? "" : newData.get(key);
 
@@ -254,9 +250,9 @@ public class ObjectChangeUtil {
                     result.put("newValue", newValue);
 
                     if (dataName != null) {
-                        oldValue = this.translate(oldData.get(key), dataName.value());
-                        newValue = this.translate(newData.get(key), dataName.value());
-                        result.put("filedName", dataName.value());
+                        oldValue = this.translate(oldData.get(key), dataName.description());
+                        newValue = this.translate(newData.get(key), dataName.description());
+                        result.put("filedName", dataName.description());
                     }
                     if (oldValue == null) oldValue = "";
                     if (newValue == null) newValue = "";
@@ -274,15 +270,14 @@ public class ObjectChangeUtil {
         }
     }
 
-
     /**
-     * @Author lipeng
-     * @Description 翻译 把 数字转成字符 入 0-女 1 -男
-     * @Date 2024/2/23 11:25
+     * 翻译 把 数字转成字符 入 0-女 1 -男。
+     * @author lipeng
+     * 2024/2/23
      * @param obj 内容
      * @param value 转换的依据
      * @return java.lang.Object
-     **/
+     */
     private Object translate(Object obj, String value) {
         if (KPStringUtil.isEmpty(value)) return obj;
 
@@ -295,16 +290,15 @@ public class ObjectChangeUtil {
         }
     }
 
-
     /**
-     * @Author lipeng
-     * @Description 新增处理逻辑
-     * @Date 2024/2/25 14:13
-     * @param proceedingJoinPoint
-     * @param operateLog
-     * @param objects
-     * @return void
-     **/
+     * 新增处理逻辑。
+     * @author lipeng
+     * 2024/2/25
+     * @param proceedingJoinPoint 切点
+     * @param operateLog 注解
+     * @param objects 新增数据
+     * @param beforeJson 新增数据前的数据
+     */
     private void add(ProceedingJoinPoint proceedingJoinPoint, KPObjectChangeLogNote operateLog, List<Object> objects, JSONObject beforeJson) {
         if (objects.size() == 0) return;
 
@@ -344,7 +338,15 @@ public class ObjectChangeUtil {
         }
     }
 
-
+    /**
+     * 批量新增。
+     * @author lipeng
+     * 2024/2/25
+     * @param proceedingJoinPoint 切点
+     * @param operateLog 注解
+     * @param objects 新增数据
+     * @param beforeJson 新增数据前的数据
+     */
     private void addBatch(ProceedingJoinPoint proceedingJoinPoint, KPObjectChangeLogNote operateLog, List<Object> objects, JSONObject beforeJson) {
         if (objects.size() == 0) return;
 
@@ -384,15 +386,14 @@ public class ObjectChangeUtil {
     }
 
     /**
-     * @Author lipeng
-     * @Description 修改处理逻辑
-     * @Date 2024/2/25 14:13
-     * @param proceedingJoinPoint
-     * @param operateLog
-     * @param newObject
-     * @param beforeJson
-     * @return void
-     **/
+     * 修改处理逻辑。
+     * @author lipeng
+     * 2024/2/25
+     * @param proceedingJoinPoint 切点
+     * @param operateLog 注解
+     * @param newObject 修改数据
+     * @param beforeJson 修改数据前的数据
+     */
     private void update(ProceedingJoinPoint proceedingJoinPoint, KPObjectChangeLogNote operateLog, List<Object> newObject, JSONObject beforeJson) {
         MethodSignature signature = (MethodSignature) proceedingJoinPoint.getSignature();
 
@@ -443,15 +444,15 @@ public class ObjectChangeUtil {
     }
 
     /**
-     * @Author lipeng
-     * @Description 批量修改处理逻辑
-     * @Date 2025/11/26 21:28
-     * @param proceedingJoinPoint
-     * @param operateLog
-     * @param newObject
-     * @param beforeJson
+     * 批量修改处理逻辑。
+     * @author lipeng
+     * 2025/11/26
+     * @param proceedingJoinPoint 切点
+     * @param operateLog 注解
+     * @param newObject 批量修改数据
+     * @param beforeJson 修改数据前的数据
      * @return void
-     **/
+     */
     private void updateBatch(ProceedingJoinPoint proceedingJoinPoint, KPObjectChangeLogNote operateLog, List<Object> newObject, JSONObject beforeJson) {
         MethodSignature signature = (MethodSignature) proceedingJoinPoint.getSignature();
 
@@ -526,14 +527,14 @@ public class ObjectChangeUtil {
     }
 
     /**
-     * @Author lipeng
-     * @Description 先删除后新增
-     * @Date 2024/3/13 10:20
-     * @param proceedingJoinPoint
-     * @param operateLog
-     * @param result
-     * @return void
-     **/
+     * 先删除后新增。
+     * @author lipeng
+     * 2024/3/13
+     * @param proceedingJoinPoint 切点
+     * @param operateLog 注解
+     * @param result 批量修改数据
+     * @param beforeJson 修改数据前的数据
+     */
     private void deleteAdd(ProceedingJoinPoint proceedingJoinPoint, KPObjectChangeLogNote operateLog, List<Object> result, JSONObject beforeJson) {
         List<Object> oldObject = beforeJson.getJSONArray("oldObject");
         MethodSignature signature = (MethodSignature) proceedingJoinPoint.getSignature();
@@ -616,16 +617,14 @@ public class ObjectChangeUtil {
         DynamicDataSourceContextHolder.poll();
     }
 
-
     /**
-     * @Author lipeng
-     * @Description 删除
-     * @Date 2025/10/28 17:03
-     * @param proceedingJoinPoint
-     * @param kpObjectChangeLogNote
-     * @param beforeJson
-     * @return void
-     **/
+     * 删除。
+     * @author lipeng
+     * 2025/10/28
+     * @param proceedingJoinPoint 切点
+     * @param kpObjectChangeLogNote 注解
+     * @param beforeJson 修改数据前的数据
+     */
     private void delete(ProceedingJoinPoint proceedingJoinPoint, KPObjectChangeLogNote kpObjectChangeLogNote, JSONObject beforeJson) {
         MethodSignature signature = (MethodSignature) proceedingJoinPoint.getSignature();
 

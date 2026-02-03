@@ -9,6 +9,7 @@ import com.github.yulichang.wrapper.MPJLambdaWrapper;
 import com.kp.framework.common.cache.ProjectCache;
 import com.kp.framework.constant.ReturnFinishedMessageConstant;
 import com.kp.framework.entity.bo.DictionaryBO;
+import com.kp.framework.entity.bo.KPResult;
 import com.kp.framework.enums.DeleteFalgEnum;
 import com.kp.framework.enums.YesNoEnum;
 import com.kp.framework.exception.KPServiceException;
@@ -22,6 +23,8 @@ import com.kp.framework.utils.kptool.KPAuthorizationUtil;
 import com.kp.framework.utils.kptool.KPJsonUtil;
 import com.kp.framework.utils.kptool.KPStringUtil;
 import com.kp.framework.utils.kptool.KPVerifyUtil;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -30,21 +33,22 @@ import java.util.Arrays;
 import java.util.List;
 
 /**
- * @Author lipeng
- * @Description 项目表 服务实现类
- * @Date 2025-03-14
- **/
+ * 项目表 服务实现类。
+ * @author lipeng
+ * 2025-03-14
+ */
 @Service
 public class ProjectService extends ServiceImpl<ProjectMapper, ProjectPO> {
 
     /**
-     * @Author lipeng
-     * @Description 查询项目列表
-     * @Date 2025-03-1
-     * @param projectListParamPO
-     * @return java.util.List<ProjectPO>
-     **/
-    public List<ProjectPO> queryPageList(ProjectListParamPO projectListParamPO) {
+     * 查询项目列表。
+     * @author lipeng
+     * 2025-03-1
+     * @param projectListParamPO 查询参数
+     * @return com.kp.framework.entity.bo.KPResult<com.kp.framework.modules.project.po.ProjectPO>
+     */
+    @Cacheable(value = "projectCache", keyGenerator = "pageKeyGenerator", unless = "T(com.kp.framework.utils.kptool.KPStringUtil).isEmpty(#result)")
+    public KPResult<ProjectPO> queryPageList(ProjectListParamPO projectListParamPO) {
         //搜索条件
         LambdaQueryWrapper<ProjectPO> queryWrapper = Wrappers.lambdaQuery(ProjectPO.class)
                 .like(KPStringUtil.isNotEmpty(projectListParamPO.getProjectName()), ProjectPO::getProjectName, projectListParamPO.getProjectName())
@@ -55,31 +59,30 @@ public class ProjectService extends ServiceImpl<ProjectMapper, ProjectPO> {
 
         //分页和排序
         PageHelper.startPage(projectListParamPO.getPageNum(), projectListParamPO.getPageSize(), projectListParamPO.getOrderBy(ProjectPO.class));
-        return this.baseMapper.selectList(queryWrapper);
+        return KPResult.list(this.baseMapper.selectList(queryWrapper));
     }
 
-
     /**
-     * @Author lipeng
-     * @Description 根据项目Id查询详情
-     * @Date 2025-03-14
-     * @param parameter
-     * @return ProjectPO
-     **/
+     * 根据项目Id查询详情。
+     * @author lipeng
+     * 2025-03-14
+     * @param parameter 查询参数
+     * @return com.kp.framework.modules.project.po.ProjectPO
+     */
+    @Cacheable(value = "projectCache", keyGenerator = "pageKeyGenerator", unless = "T(com.kp.framework.utils.kptool.KPStringUtil).isEmpty(#result)")
     public ProjectPO queryDetailsById(JSONObject parameter) {
         ProjectPO projectPO = KPJsonUtil.toJavaObject(parameter, ProjectPO.class);
         KPVerifyUtil.notNull(projectPO.getProjectId(), "请输入projectId");
         return this.baseMapper.selectById(projectPO.getProjectId());
     }
 
-
     /**
-     * @Author lipeng
-     * @Description 新增项目
-     * @Date 2025-03-14
-     * @param projectEditParamPO
-     * @return void
-     **/
+     * 新增项目。
+     * @author lipeng
+     * 2025-03-14
+     * @param projectEditParamPO 新增参数
+     */
+    @CacheEvict(value = "projectCache", allEntries = true)
     public void saveProject(ProjectEditParamPO projectEditParamPO) {
         ProjectPO projectPO = KPJsonUtil.toJavaObjectNotEmpty(projectEditParamPO, ProjectPO.class);
 
@@ -88,7 +91,7 @@ public class ProjectService extends ServiceImpl<ProjectMapper, ProjectPO> {
                 .or()
                 .eq(ProjectPO::getProjectCode, projectPO.getProjectCode()));
 
-        if (projectPOList.size() > 0) {
+        if (KPStringUtil.isNotEmpty(projectPOList)) {
             projectPOList.forEach(projectPO1 -> {
                 if (projectPO1.getProjectName().equals(projectPO.getProjectName()))
                     throw new KPServiceException("项目名称已存在，请勿重复添加");
@@ -109,14 +112,13 @@ public class ProjectService extends ServiceImpl<ProjectMapper, ProjectPO> {
         ProjectCache.clear();
     }
 
-
     /**
-     * @Author lipeng
-     * @Description 修改项目
-     * @Date 2025-03-14
-     * @param projectEditParamPO
-     * @return void
-     **/
+     * 修改项目。
+     * @author lipeng
+     * 2025-03-14
+     * @param projectEditParamPO 修改参数
+     */
+    @CacheEvict(value = "projectCache", allEntries = true)
     public void updateProject(ProjectEditParamPO projectEditParamPO) {
         ProjectPO projectPO = KPJsonUtil.toJavaObjectNotEmpty(projectEditParamPO, ProjectPO.class);
 
@@ -127,7 +129,7 @@ public class ProjectService extends ServiceImpl<ProjectMapper, ProjectPO> {
                         .eq(ProjectPO::getProjectCode, projectPO.getProjectCode())
                 ));
 
-        if (projectPOList.size() > 0) {
+        if (KPStringUtil.isNotEmpty(projectPOList)) {
             projectPOList.forEach(projectPO1 -> {
                 if (projectPO1.getProjectName().equals(projectPO.getProjectName()))
                     throw new KPServiceException("项目名称已存在，请勿重复添加");
@@ -143,32 +145,31 @@ public class ProjectService extends ServiceImpl<ProjectMapper, ProjectPO> {
         ProjectCache.clear();
     }
 
-
     /**
-     * @Author lipeng
-     * @Description 批量删除项目
-     * @Date 2025-03-14
-     * @param ids
-     * @return String
-     **/
+     * 批量删除项目。
+     * @author lipeng
+     * 2025-03-14
+     * @param ids 删除的ID集合
+     * @return java.lang.String
+     */
+    @CacheEvict(value = "projectCache", allEntries = true)
     public String batchRemove(List<String> ids) {
         if (KPStringUtil.isEmpty(ids)) throw new KPServiceException("请选择要删除的内容！");
 
-        Integer row = this.baseMapper.deleteBatchIds(ids);
+        int row = this.baseMapper.deleteByIds(ids);
         if (row == 0) throw new KPServiceException(ReturnFinishedMessageConstant.ERROR);
 
         ProjectCache.clear();
         return KPStringUtil.format("删除成功{0}条数据", row);
     }
 
-
     /**
-     * @Author lipeng
-     * @Description 设置项目状态
-     * @Date 2025/3/27
-     * @param parameter
-     * @return void
-     **/
+     * 设置项目状态。
+     * @author lipeng
+     * 2025/3/27
+     * @param parameter 设置参数
+     */
+    @CacheEvict(value = "projectCache", allEntries = true)
     public void doStatus(JSONObject parameter) {
         ProjectPO projectParameter = KPJsonUtil.toJavaObject(parameter, ProjectPO.class);
         KPVerifyUtil.notNull(projectParameter.getProjectId(), "请输入项目id");
@@ -184,18 +185,17 @@ public class ProjectService extends ServiceImpl<ProjectMapper, ProjectPO> {
         ProjectCache.clear();
     }
 
-
     /**
-     * @Author lipeng
-     * @Description 查询下拉框
-     * @Date 2025/3/31
-     * @param parameter
+     * 查询下拉框。
+     * @author lipeng
+     * 2025/3/31
+     * @param parameter 查询参数
      * @return java.util.List<com.kp.framework.entity.bo.DictionaryBO>
-     **/
+     */
     public List<DictionaryBO> queryProjectSelect(JSONObject parameter) {
         KPVerifyUtil.notNull(parameter.getInteger("manageType"), "请输入管理类型！");
 
-        LoginUserBO loginUserBO = LoginUserBO.getLoginUser();
+        LoginUserBO loginUserBO = LoginUserBO.getLoginUserNotEmpty();
         List<ProjectPO> projectPOList = null;
 
         if (Arrays.asList("admin", "admin1").contains(loginUserBO.getUsername())) {
@@ -206,7 +206,7 @@ public class ProjectService extends ServiceImpl<ProjectMapper, ProjectPO> {
         } else {
             MPJLambdaWrapper<ProjectPO> wrapper = new MPJLambdaWrapper<ProjectPO>()
                     .selectAll(ProjectPO.class)
-                    .leftJoin(UserProjectPO.class, "userProjectPO", on->on
+                    .leftJoin(UserProjectPO.class, "userProjectPO", on -> on
                             .eq(UserProjectPO::getProjectId, ProjectPO::getProjectId)
                             .eq(UserProjectPO::getDeleteFlag, DeleteFalgEnum.NORMAL.code())
                     ).disableSubLogicDel()

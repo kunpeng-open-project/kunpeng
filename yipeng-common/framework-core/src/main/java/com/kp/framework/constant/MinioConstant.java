@@ -1,5 +1,9 @@
 package com.kp.framework.constant;
 
+/**
+ * minio相关常量信息。
+ * @author lipeng
+ */
 public class MinioConstant {
 
     //临时上传目录

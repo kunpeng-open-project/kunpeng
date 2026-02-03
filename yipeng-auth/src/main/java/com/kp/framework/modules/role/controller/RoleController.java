@@ -2,10 +2,11 @@ package com.kp.framework.modules.role.controller;
 
 import com.alibaba.fastjson2.JSONObject;
 import com.github.xiaoymin.knife4j.annotations.ApiSupport;
-import com.kp.framework.annotation.KPApiJsonlParam;
-import com.kp.framework.annotation.KPApiJsonlParamMode;
+import com.kp.framework.annotation.KPApiJsonParam;
+import com.kp.framework.annotation.KPApiJsonParamMode;
 import com.kp.framework.annotation.KPObjectChangeLogListNote;
 import com.kp.framework.annotation.KPObjectChangeLogNote;
+import com.kp.framework.annotation.sub.KPJsonField;
 import com.kp.framework.annotation.verify.KPVerifyNote;
 import com.kp.framework.constant.ObjectChangeLogOperateType;
 import com.kp.framework.entity.bo.KPResult;
@@ -18,9 +19,8 @@ import com.kp.framework.modules.role.po.param.RoleEditParamPO;
 import com.kp.framework.modules.role.po.param.RoleListParamPO;
 import com.kp.framework.modules.role.service.RoleService;
 import com.kp.framework.modules.user.service.UserRoleService;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiModelProperty;
-import io.swagger.annotations.ApiOperation;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -31,14 +31,14 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 
 /**
- * @Author lipeng
- * @Description 角色信息表相关接口
- * @Date 2025-03-31
- **/
+ * 角色信息表相关接口。
+ * @author lipeng
+ * 2025-03-31
+ */
 @RestController
 @RequestMapping("/auth/role")
-@Api(tags = "角色信息相关接口", value = "角色信息相关接口")
-@ApiSupport(order = 2)
+@Tag(name = "角色信息相关接口")
+@ApiSupport(author = "lipeng", order = 25)
 public class RoleController {
 
     @Autowired
@@ -49,19 +49,19 @@ public class RoleController {
 
 
     @PreAuthorize("hasPermission('/auth/role/page/list', 'auth:role:page:list')")
-    @ApiOperation(value = "查询角色信息分页列表", notes = "权限 auth:role:page:list")
+    @Operation(summary = "查询角色信息分页列表", description = "权限 auth:role:page:list")
     @PostMapping("/page/list")
     @KPVerifyNote
     public KPResult<RoleListCustomerPO> queryPageList(@RequestBody RoleListParamPO roleListParamPO) {
-        return KPResult.list(roleService.queryPageList(roleListParamPO));
+        return roleService.queryPageList(roleListParamPO);
     }
 
 
     @PreAuthorize("hasPermission('/auth/role/details','auth:role:details')")
-    @ApiOperation(value = "根据角色Id查询详情", notes = "权限 auth:role:details")
+    @Operation(summary = "根据角色Id查询详情", description = "权限 auth:role:details")
     @PostMapping("/details")
-    @KPApiJsonlParam({
-            @ApiModelProperty(name = "roleId", value = "角色Id", required = true)
+    @KPApiJsonParam({
+            @KPJsonField(name = "roleId", description = "角色Id", required = true)
     })
     public KPResult<RoleDetailsCustomerPO> queryDetailsById(@RequestBody JSONObject parameter) {
         return KPResult.success(roleService.queryDetailsById(parameter));
@@ -69,14 +69,14 @@ public class RoleController {
 
 
     @PreAuthorize("hasPermission('/auth/role/save','auth:role:save')")
-    @ApiOperation(value = "新增角色信息", notes = "权限 auth:role:save")
+    @Operation(summary = "新增角色信息", description = "权限 auth:role:save")
     @PostMapping("/save")
     @KPObjectChangeLogListNote({
             @KPObjectChangeLogNote(parentMapper = RoleMapper.class, identification = "roleId,role_id", operateType = ObjectChangeLogOperateType.ADD, businessType = "角色信息"),
             @KPObjectChangeLogNote(parentMapper = RoleProjectRelevanceMapper.class, identification = "roleId,role_id", operateType = ObjectChangeLogOperateType.ADD_BATCH, businessType = "角色关联项目信息")
     })
     @KPVerifyNote
-    @KPApiJsonlParamMode(component = RoleEditParamPO.class, ignores = "roleId")
+    @KPApiJsonParamMode(component = RoleEditParamPO.class, ignores = "roleId")
     public KPResult<RolePO> save(@RequestBody RoleEditParamPO roleEditParamPO) {
         roleService.saveRole(roleEditParamPO);
         return KPResult.success();
@@ -84,7 +84,7 @@ public class RoleController {
 
 
     @PreAuthorize("hasPermission('/auth/role/update','auth:role:update')")
-    @ApiOperation(value = "修改角色信息", notes = "权限 auth:role:update")
+    @Operation(summary = "修改角色信息", description = "权限 auth:role:update")
     @PostMapping("/update")
     @KPObjectChangeLogListNote({
             @KPObjectChangeLogNote(parentMapper = RoleMapper.class, identification = "roleId,role_id", businessType = "角色信息"),
@@ -98,10 +98,10 @@ public class RoleController {
 
 
     @PreAuthorize("hasPermission('/auth/role/batch/remove','auth:role:batch:remove')")
-    @ApiOperation(value = "批量删除角色信息", notes = "权限 auth:role:batch:remove")
+    @Operation(summary = "批量删除角色信息", description = "权限 auth:role:batch:remove")
     @PostMapping("/batch/remove")
-    @KPApiJsonlParam({
-            @ApiModelProperty(name = "ids", value = "角色Id", required = true, dataType = "list")
+    @KPApiJsonParam({
+            @KPJsonField(name = "ids", description = "角色Id", required = true, dataType = "array<string>")
     })
     @KPObjectChangeLogNote(parentMapper = RoleMapper.class, identification = "roleId,role_id", operateType = ObjectChangeLogOperateType.DELETE, businessType = "角色信息")
     public KPResult<String> batchRemove(@RequestBody List<String> ids) {
@@ -110,26 +110,26 @@ public class RoleController {
 
 
     @PreAuthorize("hasPermission('/auth/role/update/status','auth:role:update:status')")
-    @ApiOperation(value = "修改角色状态", notes = "权限 auth:role:update:status")
+    @Operation(summary = "修改角色状态", description = "权限 auth:role:update:status")
     @PostMapping(value = "/update/status")
-    @KPApiJsonlParam({
-            @ApiModelProperty(name = "roleId", value = "角色Id", required = true, example = "4c2943e45aa513c079045020b0d1bd8e")
+    @KPApiJsonParam({
+            @KPJsonField(name = "roleId", description = "角色Id", required = true, example = "4c2943e45aa513c079045020b0d1bd8e")
     })
     @KPObjectChangeLogNote(parentMapper = RoleMapper.class, identification = "roleId,role_id", businessType = "角色信息")
-    public KPResult updateStatus(@RequestBody JSONObject parameter) {
+    public KPResult<Void> updateStatus(@RequestBody JSONObject parameter) {
         roleService.updateStatus(parameter);
         return KPResult.success();
     }
 
 
     @PreAuthorize("hasPermission('/auth/role/add/user','auth:role:add:user')")
-    @ApiOperation(value = "设置用户", notes = "权限 auth:role:add:user")
-    @KPApiJsonlParam({
-            @ApiModelProperty(name = "roleId", value = "角色Id", required = true),
-            @ApiModelProperty(name = "userIds", value = "用户id集合", required = true, dataType = "list")
+    @Operation(summary = "设置用户", description = "权限 auth:role:add:user")
+    @KPApiJsonParam({
+            @KPJsonField(name = "roleId", description = "角色Id", required = true),
+            @KPJsonField(name = "userIds", description = "用户id集合", required = true, dataType = "array<string>")
     })
     @PostMapping(value = "/add/user")
-    public KPResult roleAddUser(@RequestBody JSONObject parameter) {
+    public KPResult<Void> roleAddUser(@RequestBody JSONObject parameter) {
         userRoleService.userRoleService(parameter);
         return KPResult.success();
     }

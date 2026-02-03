@@ -22,6 +22,7 @@ import com.kp.framework.utils.kptool.KPJsonUtil;
 import com.kp.framework.utils.kptool.KPStringUtil;
 import com.kp.framework.utils.kptool.KPVerifyUtil;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -30,12 +31,9 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
- * <p>
- * 角色菜单关联表 服务实现类
- * </p>
- *
+ * 角色菜单关联表 服务实现类。
  * @author lipeng
- * @since 2024-04-19
+ * 2024-04-19
  */
 @Service
 public class RoleMenuService extends ServiceImpl<RoleMenuMapper, RoleMenuPO> {
@@ -49,33 +47,28 @@ public class RoleMenuService extends ServiceImpl<RoleMenuMapper, RoleMenuPO> {
     @Autowired
     private MenuMapper menuMapper;
 
-
     /**
-     * @Author lipeng
-     * @Description 设置菜单权限
-     * @Date 2024/4/26
-     * @param roleMenuInstallParamPO
-     * @return void
-     **/
+     * 设置菜单权限。
+     * @author lipeng
+     * 2024/4/26
+     * @param roleMenuInstallParamPO 菜单权限参数
+     */
+    @CacheEvict(value = {"userCache", "menuCache"}, allEntries = true)
     public void doMenuInstall(RoleMenuInstallParamPO roleMenuInstallParamPO) {
         RolePO rolePO = roleMapper.selectById(roleMenuInstallParamPO.getRoleId());
         if (rolePO == null) throw new RuntimeException("角色不存在");
 
         List<RoleProjectRelevancePO> authRoleProjectRelevanceList = roleProjectRelevanceMapper.selectList(Wrappers.lambdaQuery(RoleProjectRelevancePO.class).eq(RoleProjectRelevancePO::getRoleId, roleMenuInstallParamPO.getRoleId()));
-        if (authRoleProjectRelevanceList != null
-                && authRoleProjectRelevanceList.size() != 0
-                && !authRoleProjectRelevanceList.stream().map(RoleProjectRelevancePO::getRoleId).collect(Collectors.toList()).contains(roleMenuInstallParamPO.getRoleId())
-        ) {
+        if (KPStringUtil.isNotEmpty(authRoleProjectRelevanceList) && !authRoleProjectRelevanceList.stream().map(RoleProjectRelevancePO::getRoleId).toList().contains(roleMenuInstallParamPO.getRoleId())) {
             throw new RuntimeException("该角色没有分配该项目，请在角色里面设置所属项目");
         }
-
 
         //删除历史菜单
         List<String> armIds = this.baseMapper.selectList(new LambdaQueryWrapper<>(RoleMenuPO.class)
                 .eq(RoleMenuPO::getRoleId, rolePO.getRoleId())
                 .eq(RoleMenuPO::getProjectId, roleMenuInstallParamPO.getProjectId())
         ).stream().map(RoleMenuPO::getArmId).collect(Collectors.toList());
-        if (armIds != null && armIds.size() != 0) this.baseMapper.deleteAllByIds(armIds);
+        if (KPStringUtil.isNotEmpty(armIds)) this.baseMapper.kpDeleteAllByIds(armIds);
 
         if (KPStringUtil.isEmpty(roleMenuInstallParamPO.getMenuIds())) return;
 
@@ -87,18 +80,17 @@ public class RoleMenuService extends ServiceImpl<RoleMenuMapper, RoleMenuPO> {
                     .setMenuId(menuId));
         });
 
-        if (this.baseMapper.insertBatchSomeColumn(roleMenuPOList) == 0)
+        if (this.baseMapper.kpInsertBatchSomeColumn(roleMenuPOList) == 0)
             throw new KPServiceException(ReturnFinishedMessageConstant.ERROR);
     }
 
-
     /**
-     * @Author lipeng
-     * @Description 查询选中的菜单权限
-     * @Date 2024/4/26
-     * @param parameter
+     * 查询选中的菜单权限。
+     * @author lipeng
+     * 2024/4/26
+     * @param parameter 查询参数
      * @return java.util.List<java.lang.String>
-     **/
+     */
     public List<String> queryMenuInstall(JSONObject parameter) {
         KPVerifyUtil.notNull(parameter.getString("roleId"), "请输入角色Id");
         KPVerifyUtil.notNull(parameter.getString("projectId"), "请输入项目Id");
@@ -119,7 +111,7 @@ public class RoleMenuService extends ServiceImpl<RoleMenuMapper, RoleMenuPO> {
         Map<String, List<MenuCustomerPO>> map = menuPOList.stream().collect(Collectors.groupingBy(MenuCustomerPO::getParentId));
         List<String> row = new ArrayList<>();
         this.baseMapper.selectJoinList(RoleMenuPO.class, wrapper).forEach(roleMenuPO -> {
-            if (map.get(roleMenuPO.getMenuId()) == null)  row.add(roleMenuPO.getMenuId());
+            if (map.get(roleMenuPO.getMenuId()) == null) row.add(roleMenuPO.getMenuId());
         });
         return row;
     }

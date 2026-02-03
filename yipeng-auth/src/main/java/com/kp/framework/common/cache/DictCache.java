@@ -26,19 +26,19 @@ import java.util.stream.Collectors;
 
 public class DictCache {
 
-    private static String key = RedisSecurityConstant.AUTHENTICATION + "dictCache";
+    private static final String key = RedisSecurityConstant.AUTHENTICATION + "dictCache";
+    private static final DictDataMapper dictDataMapper = KPServiceUtil.getBean(DictDataMapper.class);
+    private static final DictTypeMapper dictTypeMapper = KPServiceUtil.getBean(DictTypeMapper.class);
 
-    private static DictDataMapper dictDataMapper = KPServiceUtil.getBean(DictDataMapper.class);
-    private static DictTypeMapper dictTypeMapper = KPServiceUtil.getBean(DictTypeMapper.class);
 
     /**
-     * @Author lipeng
-     * @Description 根据类型查询字典内容
-     * @Date 2025/7/4
+     * 根据类型查询字典内容。
+     * @author lipeng
+     * 2025/7/4
      * @param projectCode 项目code
-     * @param dictType
+     * @param dictType 字典类型
      * @return java.util.List<com.kp.framework.modules.dict.po.DictDataPO>
-     **/
+     */
     public static List<DictDataPO> getDictData(String projectCode, String dictType) {
         String dictTypeId = getDictTypeId(dictType);
         if (KPStringUtil.isEmpty(dictTypeId)) return new ArrayList<>();
@@ -47,15 +47,14 @@ public class DictCache {
         return dictDataMap.get(dictTypeId);
     }
 
-
     /**
-     * @Author lipeng
-     * @Description 根据类型批量查询字典内容
-     * @Date 2025/7/4
+     * 根据类型批量查询字典内容。
+     * @author lipeng
+     * 2025/7/4
      * @param projectCode 项目code
-     * @param dictTypes
-     * @return java.util.Map<java.lang.String, java.util.List < com.kp.framework.modules.dict.po.DictDataPO>>
-     **/
+     * @param dictTypes 字典类型
+     * @return java.util.Map<java.lang.String,java.util.List<com.kp.framework.modules.dict.po.DictDataPO>>
+     */
     public static Map<String, List<DictDataPO>> getDictData(String projectCode, List<String> dictTypes) {
         Map<String, List<DictDataPO>> dictDataMap = queryDictAll(projectCode);
 
@@ -70,18 +69,15 @@ public class DictCache {
         return map;
     }
 
-
-
-
     /**
-     * @Author lipeng
-     * @Description 查询某个类型下的某个值是否存在
-     * @Date 2025/7/4
+     * 查询某个类型下的某个值是否存在。
+     * @author lipeng
+     * 2025/7/4
      * @param projectCode 项目code
-     * @param dictType
-     * @param value
+     * @param dictType 字典类型
+     * @param value 字典键值
      * @return boolean
-     **/
+     */
     public static boolean getIsExist(String projectCode, String dictType, String value) {
         String dictTypeId = getDictTypeId(dictType);
         if (KPStringUtil.isEmpty(dictTypeId)) return false;
@@ -96,16 +92,15 @@ public class DictCache {
         return false;
     }
 
-
     /**
-     * @Author lipeng
-     * @Description 校验
-     * @Date 2025/7/4
-     * @param dictType 类型
-     * @param value 值
-     * @param fileName dictType 的中文意思
-     * @return void
-     **/
+     * 校验指定的内容是否存在。
+     * @author lipeng
+     * 2025/7/4
+     * @param projectCode 项目code
+     * @param dictType 字典类型
+     * @param value 字典键值
+     * @param fileName 校验提示文件名
+     */
     public static void verify(String projectCode, String dictType, String value, String fileName) {
         String dictTypeId = getDictTypeId(dictType);
         if (KPStringUtil.isEmpty(dictTypeId)) throw new KPServiceException(dictType + "不存在, 请检查字典表中是否存在");
@@ -121,19 +116,22 @@ public class DictCache {
         throw new KPServiceException(fileName + "不存在, 请检查字典表中是否存在");
     }
 
-
+    /**
+     * 清空缓存。
+     * @author lipeng
+     * 2025/7/4
+     */
     public static void clearAll() {
         KPRedisUtil.removeBacth(key);
     }
 
-
     /**
-     * @Author lipeng
-     * @Description 查询所有字典数据
-     * @Date 2025/7/4
-     * @param
-     * @return java.util.Map<java.lang.String, java.util.List < com.kp.framework.modules.dict.po.DictDataPO>>
-     **/
+     * 查询所有字典数据。
+     * @author lipeng
+     * 2025/7/4
+     * @param projectCode 项目code
+     * @return java.util.Map<java.lang.String,java.util.List<com.kp.framework.modules.dict.po.DictDataPO>>
+     */
     private static Map<String, List<DictDataPO>> queryDictAll(String projectCode) {
         String redisKet = key + ":" + projectCode;
         Map<String, List<DictDataPO>> dictDataMap = new HashMap<>();
@@ -160,23 +158,21 @@ public class DictCache {
 
 
         List<DictDataPO> list = dictDataMapper.selectJoinList(DictDataPO.class, wrapper);
-        if (list.size() == 0) return dictDataMap;
+        if (KPStringUtil.isEmpty(list)) return dictDataMap;
 
         KPRedisUtil.set(redisKet, KPJsonUtil.toJsonString(list), 3600);
         return list.stream().collect(Collectors.groupingBy(DictDataPO::getDictTypeId));
     }
 
-
-
     /**
-     * @Author lipeng
-     * @Description 根据dictType字典类型查询字典类型ID
-     * @Date 2025/7/30
-     * @param dictType
+     * 根据dictType字典类型查询字典类型ID。
+     * @author lipeng
+     * 2025/7/30
+     * @param dictType 字典类型
      * @return java.lang.String
-     **/
+     */
     public static String getDictTypeId(String dictType) {
-        if (KPStringUtil.isEmpty(dictType))  return null;
+        if (KPStringUtil.isEmpty(dictType)) return null;
 
         return queryDictTypeAll().stream()
                 .filter(po -> po != null && dictType.equals(po.getDictType()))
@@ -186,16 +182,15 @@ public class DictCache {
                 .orElse(null);
     }
 
-
     /**
-     * @Author lipeng
-     * @Description 根据字典类型ID查询字典类型
-     * @Date 2025/7/30
-     * @param dictTypeId
+     * 根据字典类型ID查询字典类型。
+     * @author lipeng
+     * 2025/7/30
+     * @param dictTypeId 字典类型ID
      * @return java.lang.String
-     **/
+     */
     public static String getDictType(String dictTypeId) {
-        if (KPStringUtil.isEmpty(dictTypeId))  return null;
+        if (KPStringUtil.isEmpty(dictTypeId)) return null;
 
         return queryDictTypeAll().stream()
                 .filter(po -> po != null && dictTypeId.equals(po.getDictTypeId()))
@@ -205,16 +200,15 @@ public class DictCache {
                 .orElse(null);
     }
 
-
     /**
-     * @Author lipeng
-     * @Description 根据dictType字典类型集合查询字典类型ID集合
-     * @Date 2025/7/30
-     * @param dictTypes
+     * 根据dictType字典类型集合查询字典类型ID集合。
+     * @author lipeng
+     * 2025/7/30
+     * @param dictTypes 字典类型集合
      * @return java.util.List<java.lang.String>
-     **/
+     */
     private static List<String> getDictTypeIdList(List<String> dictTypes) {
-        if (KPStringUtil.isEmpty(dictTypes))  return null;
+        if (KPStringUtil.isEmpty(dictTypes)) return null;
 
 
         Map<String, String> dictTypeToIdMap = queryDictTypeAll().stream()
@@ -232,17 +226,17 @@ public class DictCache {
     }
 
     /**
-     * @Author lipeng
-     * @Description 查询所有字段类型
-     * @Date 2025/7/30
-     * @return java.util.List<java.lang.String>
-     **/
+     * 查询所有字段类型。
+     * @author lipeng
+     * 2025/7/30
+     * @return java.util.List<com.kp.framework.modules.dict.po.DictTypePO>
+     */
     private static List<DictTypePO> queryDictTypeAll() {
         String redisKet = key + ":dictType";
         if (KPRedisUtil.hasKey(redisKet)) return KPJsonUtil.toJavaObjectList(KPRedisUtil.get(redisKet), DictTypePO.class);
-        
+
         List<DictTypePO> list = dictTypeMapper.selectList(Wrappers.lambdaQuery(DictTypePO.class).eq(DictTypePO::getStatus, YesNoEnum.YES.code()));
-        if (list.size() == 0) return new ArrayList<>();
+        if (KPStringUtil.isEmpty(list)) return new ArrayList<>();
 
         KPRedisUtil.set(redisKet, KPJsonUtil.toJsonString(list), 3700);
         return list;

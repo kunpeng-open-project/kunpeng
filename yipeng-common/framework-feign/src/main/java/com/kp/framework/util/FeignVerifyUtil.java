@@ -10,11 +10,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * @Author lipeng
- * @Description 结果校验器
- * @Date 2025/7/31
- * @return
- **/
+ * 结果校验器。
+ * @author lipeng
+ * 2025/7/31
+ */
 public class FeignVerifyUtil {
 //    /**
 //     * @Description 校验list 并且返回list
@@ -66,15 +65,15 @@ public class FeignVerifyUtil {
 //    }
 
     /**
-     * @Author lipeng
-     * @Description 校验数据并返回查询到的对象
-     * @Date 20254/9/01
+     * 校验数据并返回查询到的对象。
+     * @author lipeng
+     * 2025/9/01
      * @param serviceName 服务名名称
      * @param result 接口返回值
      * @param interfaceName 调用的接口名称
      * @param clazz 返回的类型
      * @return T
-     **/
+     */
     public final static <T> T verifyBySingle(String serviceName, KPResult result, String interfaceName, Class<T> clazz) {
         if (!result.getCode().equals(200))
             throw new KPServiceException(KPStringUtil.format("【调用{0}】-{1}接口异常！", serviceName, interfaceName));
@@ -82,17 +81,16 @@ public class FeignVerifyUtil {
         return KPJsonUtil.toJavaObject(result.getData(), clazz);
     }
 
-
     /**
-     * @Author lipeng
-     * @Description 校验带分页的list接口
-     * @Date 20254/9/01
+     * 校验带分页的list接口。
+     * @author lipeng
+     * 2025/9/01
      * @param serviceName 服务名名称
      * @param result 接口返回值
      * @param interfaceName 调用的接口名称
      * @param clazz 返回的类型
      * @return java.util.List<T>
-     **/
+     */
     public static <T> List<T> verifyPageList(String serviceName, KPResult result, String interfaceName, Class<T> clazz) {
         if (!result.getCode().equals(200))
             throw new KPServiceException(KPStringUtil.format("【调用{0}】-{1}接口异常！", serviceName, interfaceName));
@@ -103,19 +101,16 @@ public class FeignVerifyUtil {
         return KPJsonUtil.toJavaObjectList(jsonArray, clazz);
     }
 
-
-
-
     /**
-     * @Author lipeng
-     * @Description 校验不带分页的list接口
-     * @Date 20254/9/01
+     * 校验不带分页的list接口。
+     * @author lipeng
+     * 2025/9/01
      * @param serviceName 服务名名称
      * @param result 接口返回值
      * @param interfaceName 调用的接口名称
      * @param clazz 返回的类型
      * @return java.util.List<T>
-     **/
+     */
     public static <T> List<T> verifyList(String serviceName, KPResult result, String interfaceName, Class<T> clazz) {
         if (!result.getCode().equals(200))
             throw new KPServiceException(KPStringUtil.format("【调用{0}】-{1}接口异常！", serviceName, interfaceName));

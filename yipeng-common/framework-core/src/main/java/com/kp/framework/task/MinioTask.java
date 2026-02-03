@@ -16,12 +16,10 @@ import java.net.URLDecoder;
 public class MinioTask {
 
     /**
-     * @Author lipeng
-     * @Description 清空临时上传目录 防止垃圾文件堆积
-     * @Date 2022/5/19 15:28
-     * @param
-     * @return void
-     **/
+     * 清空临时上传目录 防止垃圾文件堆积。
+     * @author lipeng
+     * 2022/5/19
+     */
     @Scheduled(cron = "0 0 1 * * ?")
     private void process() {
         if (!KPRedisUtil.lock("process", 300))
@@ -38,8 +36,8 @@ public class MinioTask {
             }
 //            DBMinioUtil.removeBucket(MinioConstant.TEMPORARY_BUCKET_NAME);
             log.info("清空桶{}成功！", MinioConstant.TEMPORARY_BUCKET_NAME);
-        } catch (NullPointerException e) {}
-        catch (Exception ex){
+        } catch (NullPointerException e) {
+        } catch (Exception ex) {
             log.info("清空桶{}失败！ 原因{}", MinioConstant.TEMPORARY_BUCKET_NAME, ex.getMessage());
         }
     }

@@ -38,12 +38,11 @@ public class WelcomeService {
     private MonthlyReportMapper monthlyReportMapper;
 
     /**
-     * @Author lipeng
-     * @Description 查询首页看板统计信息
-     * @Date 2025/10/2
-     * @param
-     * @return com.kp.framework.modules.report.po.customer.StatisticalCustomerPO
-     **/
+     * 查询首页看板统计信息。
+     * @author lipeng
+     * 2025/10/2
+     * @return StatisticalCustomerPO
+     */
     public StatisticalCustomerPO queryStatistical() {
         MonthlyReportStatisticsCustomerPO monthlyReportStatisticsCustomerPO = monthlyReportCustomerMapper.countByReviewMonthStatus(Wrappers.lambdaQuery(MonthlyReportPO.class)
                 .eq(MonthlyReportPO::getPlanDate, KPLocalDateUtil.getMinDayOfMonth(LocalDate.now()))
@@ -59,14 +58,12 @@ public class WelcomeService {
                 .setWeek(weellyTaskSummaryCustomerPO);
     }
 
-
     /**
-     * @Author lipeng
-     * @Description 查询首页月计划拆分完成度
-     * @Date 2025/10/3
-     * @param
-     * @return java.util.List<com.kp.framework.modules.week.po.customer.WeeklyPalanCustomerCustomerPO>
-     **/
+     * 查询首页月计划拆分完成度。
+     * @author lipeng
+     * 2025/10/3
+     * @return java.util.List<WeeklyPalanCustomerCustomerPO>
+     */
     public List<WeeklyPalanCustomerCustomerPO> queryMonthlyCmpletion() {
         LambdaQueryWrapper<WeeklyPalanPO> wrappers = Wrappers.lambdaQuery(WeeklyPalanPO.class)
                 .eq(WeeklyPalanPO::getMonthlyPlanDate, KPLocalDateUtil.getMinDayOfMonth(LocalDate.now()))
@@ -76,14 +73,12 @@ public class WelcomeService {
         return weeklyPalanCustomerMapper.queryWeeklyPalanCustomer(wrappers);
     }
 
-
     /**
-     * @Author lipeng
-     * @Description 查询首页月计划拆分数
-     * @Date 2025/10/3
-     * @param
-     * @return java.util.List<com.kp.framework.modules.monthly.po.customer.WeeklyPalanSplitCustomerPO>
-     **/
+     * 查询首页月计划拆分数。
+     * @author lipeng
+     * 2025/10/3
+     * @return java.util.List<WeeklyPalanSplitCustomerPO>
+     */
     public List<WeeklyPalanSplitCustomerPO> queryMonthlySplit() {
         MPJLambdaWrapper<MonthlyReportPO> wrapper = new MPJLambdaWrapper<MonthlyReportPO>("mr")
                 .select("mr.task_name as taskName")

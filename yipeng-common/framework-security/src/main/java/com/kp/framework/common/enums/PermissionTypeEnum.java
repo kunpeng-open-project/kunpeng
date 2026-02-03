@@ -1,23 +1,21 @@
 package com.kp.framework.common.enums;
 
-
 /**
- * @Author lipeng
- * @Description 数据权限类型
- * @Date 2024/4/26
- * @return
- **/
+ * 数据权限类型。
+ * @author lipeng
+ * 2024/4/26
+ */
 public enum PermissionTypeEnum {
     ONESELF(1, "仅本人数据权限"),
     CUSTOM_USER(2, "自定义用户数据"),
     ONESELF_DEPARTMENT(3, "本部门权限"),
     ONESELF_DEPARTMENT_UNDER(4, "本部门及以下权限"),
     CUSTOM(5, "自定义数据权限"),
-    ALL(6, "全部数据权限");
+    ALL(6, "全部数据权限"),
+    UNKNOWN(0, "未知");
 
-    private String message;
-
-    private Integer code;
+    private final String message;
+    private final Integer code;
 
     PermissionTypeEnum(Integer code, String message) {
         this.code = code;
@@ -30,7 +28,7 @@ public enum PermissionTypeEnum {
                 return value;
             }
         }
-        return null;
+        return UNKNOWN;
     }
 
     public static PermissionTypeEnum getCode(Integer code){
@@ -39,7 +37,7 @@ public enum PermissionTypeEnum {
                 return value;
             }
         }
-        return null;
+        return UNKNOWN;
     }
 
     public String message() {
@@ -49,5 +47,4 @@ public enum PermissionTypeEnum {
     public Integer code() {
         return this.code;
     }
-
 }

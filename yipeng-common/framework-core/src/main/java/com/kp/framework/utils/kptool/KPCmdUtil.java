@@ -18,10 +18,10 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * @Author lipeng
- * @Description 操作命令窗口
- * @Date 2020/9/22
- **/
+ * 操作命令窗口。
+ * @author lipeng
+ * 2020/9/22
+ */
 @UtilityClass
 public class KPCmdUtil {
 
@@ -36,12 +36,12 @@ public class KPCmdUtil {
     private static final Pattern IP_PATTERN = Pattern.compile("((25[0-5]|2[0-4]\\d|((1\\d{2})|([1-9]?\\d)))\\.){3}(25[0-5]|2[0-4]\\d|((1\\d{2})|([1-9]?\\d)))");
 
     /**
-     * @Author lipeng
-     * @Description 执行cmd命令
-     * @Date 2020/9/22
-     * @Param [cmd] cmd 命令
+     * 执行cmd命令。
+     * @author lipeng
+     * 2020/9/22
+     * @param cmd [cmd] cmd 命令
      * @return java.lang.String
-     **/
+     */
     public static String command(String cmd) {
         if (cmd == null || cmd.trim().isEmpty()) {
             throw new KPUtilException("命令不能为空");
@@ -79,12 +79,12 @@ public class KPCmdUtil {
     }
 
     /**
-     * @Author lipeng
-     * @Description 根据指定ip获取对应的mac地址（支持本机IP）
-     * @Date 2020/9/22
-     * @Param [ip] ip地址
+     * 根据指定ip获取对应的mac地址（支持本机IP）。
+     * @author lipeng
+     * 2020/9/22
+     * @param ip [ip] ip地址
      * @return java.lang.String
-     **/
+     */
     public static String getMac(String ip) {
         if (!isValidIp(ip)) {
             throw new KPUtilException("无效的IP地址: " + ip);
@@ -108,13 +108,12 @@ public class KPCmdUtil {
         }
     }
 
-
     /**
-     * @Author lipeng
-     * @Description 查询所有ip 和 mac（基于ARP缓存）
-     * @Date 2020/9/22
-     * @return java.util.List<com.alibaba.fastjson.JSONObject>
-     **/
+     * 查询所有ip 和 mac（基于ARP缓存）。
+     * @author lipeng
+     * 2020/9/22
+     * @return java.util.List<com.alibaba.fastjson2.JSONObject>
+     */
     public static List<JSONObject> getIPAndMacs() {
         String result = command("arp -a");
         if (KPStringUtil.isEmpty(result)) {
@@ -140,12 +139,14 @@ public class KPCmdUtil {
     }
 
     /**
-     * @Author lipeng
-     * @Description 主动扫描局域网所有活跃设备（包含本机）
-     * @Date 2024/11/17
-     * @Param [subnet, start, end] 子网（如"192.168.1."）、起始和结束IP段
-     * @return java.util.List<com.alibaba.fastjson.JSONObject> 包含ip和mac的设备列表
-     **/
+     * 主动扫描局域网所有活跃设备（包含本机）
+     * @author lipeng
+     * 2024/11/17
+     * @param subnet 子网（如"192.168.1."）
+     * @param start 起始IP段 如 1
+     * @param end 结束IP段 如 255
+     * @return java.util.List<com.alibaba.fastjson2.JSONObject>
+     */
     public static List<JSONObject> scanAllLanDevices(String subnet, int start, int end) {
         List<JSONObject> devices = new ArrayList<>();
         // 1. 主动扫描活跃IP

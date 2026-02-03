@@ -19,12 +19,10 @@ public class CacheTask {
     private InterfaceLogService interfaceLogService;
 
     /**
-     * @Author lipeng
-     * @Description 项目启动立即执行一次 然后每隔60分钟执行一次
-     * @Date 2025/10/17
-     * @param
-     * @return void
-     **/
+     * 项目启动立即执行一次 然后每隔60分钟执行一次。
+     * @author lipeng
+     * 2025/10/17
+     */
     @Scheduled(fixedRate = 3600000, initialDelay = 0) // 以固定频率执
     private void preload() {
         if (!KPRedisUtil.lock("preloadServiceName", 11, 1800))

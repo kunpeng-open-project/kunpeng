@@ -27,6 +27,8 @@ import com.kp.framework.utils.kptool.KPServiceUtil;
 import com.kp.framework.utils.kptool.KPStringUtil;
 import com.kp.framework.utils.kptool.KPVerifyUtil;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.util.HashSet;
@@ -37,10 +39,10 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 /**
- * @Author lipeng
- * @Description 部门信息表 服务实现类
- * @Date 2025-04-08
- **/
+ * 部门信息表 服务实现类。
+ * @author lipeng
+ * 2025-04-08
+ */
 @Service
 public class DeptService extends ServiceImpl<DeptMapper, DeptPO> {
 
@@ -48,12 +50,13 @@ public class DeptService extends ServiceImpl<DeptMapper, DeptPO> {
     private UserDeptMapper userDeptMapper;
 
     /**
-     * @Author lipeng
-     * @Description 查询部门信息列表
-     * @Date 2025-04-08
-     * @param deptListParamPO
-     * @return java.util.List<DeptPO>
-     **/
+     * 查询部门信息列表。
+     * @author lipeng
+     * 2025-04-08
+     * @param deptListParamPO 查询参数
+     * @return java.util.List<com.kp.framework.modules.dept.po.customer.DeptCustomerPO>
+     */
+    @Cacheable(value = "deptCache", keyGenerator = "pageKeyGenerator", unless = "T(com.kp.framework.utils.kptool.KPStringUtil).isEmpty(#result)")
     public List<DeptCustomerPO> queryList(DeptListParamPO deptListParamPO) {
         PageHelper.orderBy(new PageBO().getOrderBy(deptListParamPO.getOrderBy(), DeptPO.class));
         List<DeptCustomerPO> list = KPJsonUtil.toJavaObjectList(this.baseMapper.selectList(null), DeptCustomerPO.class);
@@ -80,38 +83,36 @@ public class DeptService extends ServiceImpl<DeptMapper, DeptPO> {
         }
 
         // 过滤出需要包含的部门
-        List<DeptCustomerPO> filteredList = list.stream().filter(dept -> includedIds.contains(dept.getDeptId())).collect(Collectors.toList());
+        List<DeptCustomerPO> filteredList = list.stream().filter(dept -> includedIds.contains(dept.getDeptId())).toList();
         // 构建树形结构
         Map<String, List<DeptCustomerPO>> map = filteredList.stream().collect(Collectors.groupingBy(DeptCustomerPO::getParentId));
         //设置子结构
         filteredList.forEach(deptPO -> deptPO.setChildren(map.get(deptPO.getDeptId())));
         //删除不是跟节点的内容
-        List<DeptCustomerPO> body = filteredList.stream().filter(deptPO -> KPStringUtil.isEmpty(deptPO.getParentId())).collect(Collectors.toList());
-        return body;
+        return filteredList.stream().filter(deptPO -> KPStringUtil.isEmpty(deptPO.getParentId())).collect(Collectors.toList());
     }
 
-
     /**
-     * @Author lipeng
-     * @Description 根据部门Id查询详情
-     * @Date 2025-04-08
-     * @param parameter
-     * @return DeptPO
-     **/
+     * 根据部门Id查询详情。
+     * @author lipeng
+     * 2025-04-08
+     * @param parameter 查询参数
+     * @return com.kp.framework.modules.dept.po.DeptPO
+     */
+    @Cacheable(value = "deptCache", keyGenerator = "pageKeyGenerator", unless = "T(com.kp.framework.utils.kptool.KPStringUtil).isEmpty(#result)")
     public DeptPO queryDetailsById(JSONObject parameter) {
         DeptPO deptPO = KPJsonUtil.toJavaObject(parameter, DeptPO.class);
         KPVerifyUtil.notNull(deptPO.getDeptId(), "请输入deptId");
         return this.baseMapper.selectById(deptPO.getDeptId());
     }
 
-
     /**
-     * @Author lipeng
-     * @Description 新增部门信息
-     * @Date 2025-04-08
-     * @param deptEditParamPO
-     * @return void
-     **/
+     * 新增部门信息。
+     * @author lipeng
+     * 2025-04-08
+     * @param deptEditParamPO 新增参数
+     */
+    @CacheEvict(value = "deptCache", allEntries = true)
     public void saveDept(DeptEditParamPO deptEditParamPO) {
         DeptPO deptPO = KPJsonUtil.toJavaObjectNotEmpty(deptEditParamPO, DeptPO.class);
 
@@ -119,7 +120,7 @@ public class DeptService extends ServiceImpl<DeptMapper, DeptPO> {
                 .eq(DeptPO::getDeptName, deptPO.getDeptName())
                 .eq(KPStringUtil.isNotEmpty(deptPO.getParentId()), DeptPO::getParentId, deptPO.getParentId())
                 .eq(DeptPO::getStatus, YesNoEnum.YES.code()));
-        if (deptPOList.size() > 0) throw new KPServiceException("部门名称已存在，请勿重复添加");
+        if (KPStringUtil.isNotEmpty(deptPOList)) throw new KPServiceException("部门名称已存在，请勿重复添加");
 
         if (KPStringUtil.isEmpty(deptPO.getParentId())) {
             deptPO.setHierarchy(1);
@@ -149,14 +150,13 @@ public class DeptService extends ServiceImpl<DeptMapper, DeptPO> {
         deptEditParamPO.setDeptId(deptPO.getDeptId());
     }
 
-
     /**
-     * @Author lipeng
-     * @Description 修改部门信息
-     * @Date 2025-04-08
-     * @param deptEditParamPO
-     * @return void
-     **/
+     * 修改部门信息。
+     * @author lipeng
+     * 2025-04-08
+     * @param deptEditParamPO 修改参数
+     */
+    @CacheEvict(value = "deptCache", allEntries = true)
     public void updateDept(DeptEditParamPO deptEditParamPO) {
         DeptPO deptPO = KPJsonUtil.toJavaObjectNotEmpty(deptEditParamPO, DeptPO.class);
         deptPO.setSource(null);
@@ -166,7 +166,7 @@ public class DeptService extends ServiceImpl<DeptMapper, DeptPO> {
                 .eq(DeptPO::getDeptName, deptPO.getDeptName())
                 .eq(KPStringUtil.isNotEmpty(deptPO.getParentId()), DeptPO::getParentId, deptPO.getParentId())
                 .eq(DeptPO::getStatus, YesNoEnum.YES.code()));
-        if (deptPOList.size() > 0) throw new KPServiceException("部门名称已存在，请勿重复添加");
+        if (KPStringUtil.isNotEmpty(deptPOList)) throw new KPServiceException("部门名称已存在，请更换名称");
 
         if (KPStringUtil.isEmpty(deptPO.getParentId())) {
             deptPO.setHierarchy(1);
@@ -191,14 +191,14 @@ public class DeptService extends ServiceImpl<DeptMapper, DeptPO> {
         KPServiceUtil.getBean(DeptUtil.class).asyncUpdateChildrenDeptInfo(deptPO.getDeptId());
     }
 
-
     /**
-     * @Author lipeng
-     * @Description 批量删除部门信息
-     * @Date 2025-04-08
-     * @param ids
-     * @return String
-     **/
+     * 批量删除部门信息。
+     * @author lipeng
+     * 2025-04-08
+     * @param ids 删除id集合
+     * @return java.lang.String
+     */
+    @CacheEvict(value = "deptCache", allEntries = true)
     public String batchRemove(List<String> ids) {
         if (KPStringUtil.isEmpty(ids)) throw new KPServiceException("请选择要删除的内容！");
 
@@ -210,10 +210,10 @@ public class DeptService extends ServiceImpl<DeptMapper, DeptPO> {
                 ).disableSubLogicDel()
                 .in(UserDeptPO::getDeptId, ids));
 
-        if (userDeptPOList.size() > 0)
+        if (KPStringUtil.isNotEmpty(userDeptPOList))
             throw new KPServiceException(this.baseMapper.selectById(userDeptPOList.get(0).getDeptId()).getDeptName() + "部门下存在用户,不允许删除！");
 
-        Integer row = this.baseMapper.deleteBatchIds(ids);
+        int row = this.baseMapper.deleteByIds(ids);
         if (row == 0) throw new KPServiceException(ReturnFinishedMessageConstant.ERROR);
 
         List<DeptPO> deptPOList = this.baseMapper.selectList(Wrappers.lambdaQuery(DeptPO.class)
@@ -223,10 +223,17 @@ public class DeptService extends ServiceImpl<DeptMapper, DeptPO> {
                     }
                 }));
 
-        if (deptPOList.size() != 0) throw new KPServiceException("该部门下存在其他部门， 不允许删除！");
+        if (KPStringUtil.isNotEmpty(deptPOList)) throw new KPServiceException("该部门下存在其他部门， 不允许删除！");
         return KPStringUtil.format("删除成功{0}条数据", row);
     }
 
+    /**
+     * 设置部门状态。
+     * @author lipeng
+     * 2025-04-08
+     * @param parameter 参数
+     */
+    @CacheEvict(value = "deptCache", allEntries = true)
     public void doStatus(JSONObject parameter) {
         DeptPO deptParameter = KPJsonUtil.toJavaObjectNotEmpty(parameter, DeptPO.class);
         KPVerifyUtil.notNull(deptParameter.getDeptId(), "请输入部门id");
@@ -240,14 +247,14 @@ public class DeptService extends ServiceImpl<DeptMapper, DeptPO> {
             throw new KPServiceException(ReturnFinishedMessageConstant.ERROR);
     }
 
-
     /**
-     * @Author lipeng
-     * @Description 查询部门下拉框
-     * @Date 2024/12/6
-     * @param deptListParamPO
-     * @return java.util.List<com.jfzh.framework.entity.bo.DictionaryChildrenStringBO>
-     **/
+     * 查询部门下拉框。
+     * @author lipeng
+     * 2024/12/6
+     * @param deptListParamPO 查询参数
+     * @return java.util.List<com.kp.framework.entity.bo.DictionaryChildrenBO>
+     */
+    @Cacheable(value = "deptCache", keyGenerator = "pageKeyGenerator", unless = "T(com.kp.framework.utils.kptool.KPStringUtil).isEmpty(#result)")
     public List<DictionaryChildrenBO> queryDeptSelect(DeptListParamPO deptListParamPO) {
         deptListParamPO.setOrderBy("sort asc");
         deptListParamPO.setStatus(YesNoEnum.YES.code());
@@ -255,14 +262,13 @@ public class DeptService extends ServiceImpl<DeptMapper, DeptPO> {
         return DeptUtil.assembleDeptSelect(deptList);
     }
 
-
     /**
-     * @Author lipeng
-     * @Description 排序
-     * @Date 2025/4/10
-     * @param deptSortParamList
-     * @return void
-     **/
+     * 排序。
+     * @author lipeng
+     * 2025/4/10
+     * @param deptSortParamList 排序参数
+     */
+    @CacheEvict(value = "deptCache", allEntries = true)
     public void doSetSort(List<DeptSortParamPO> deptSortParamList) {
         List<DeptPO> deptPOList = deptSortParamList.stream()
                 .map(param -> KPJsonUtil.toJavaObject(param, DeptPO.class))
@@ -270,14 +276,14 @@ public class DeptService extends ServiceImpl<DeptMapper, DeptPO> {
         this.updateBatchById(deptPOList);
     }
 
-
     /**
-     * @Author lipeng
-     * @Description 根据部门id集合查询部门列表
-     * @Date 2025/8/28
-     * @param deptIds
+     * 根据部门id集合查询部门列表。
+     * @author lipeng
+     * 2025/8/28
+     * @param deptIds 部门id集合
      * @return java.util.List<com.kp.framework.modules.dept.po.DeptPO>
-     **/
+     */
+    @Cacheable(value = "deptCache", keyGenerator = "pageKeyGenerator", unless = "T(com.kp.framework.utils.kptool.KPStringUtil).isEmpty(#result)")
     public List<DeptPO> queryDeptIdList(List<String> deptIds) {
         KPVerifyUtil.notNull(deptIds, "部门id集合不能为空");
 

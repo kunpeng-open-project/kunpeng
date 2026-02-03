@@ -1,20 +1,18 @@
 package com.kp.framework.modules.user.enums;
 
 /**
- * @Author lipeng
- * @Description 用户状态
- * @Date 2024/9/10
- * @return
- **/
+ * 用户状态。
+ * @author lipeng
+ * 2024/9/10
+ */
 public enum UserStatusEnum {
     INTERNSHIP(1, "实习"),
     FORMAL(2, "转正"),
-    QUIT(3, "离职");
+    QUIT(3, "离职"),
+    UNKNOWN(0, "未知");
 
-
-    private String message;
-
-    private Integer code;
+    private final String message;
+    private final Integer code;
 
     UserStatusEnum(Integer code, String message) {
         this.code = code;
@@ -29,13 +27,13 @@ public enum UserStatusEnum {
         return this.code;
     }
 
-    public static UserStatusEnum getCode(Integer code){
-        for(UserStatusEnum value : values()){
+    public static UserStatusEnum getCode(Integer code) {
+        for (UserStatusEnum value : values()) {
             if (value.code.equals(code)) {
                 return value;
             }
         }
-        return null;
+        return UNKNOWN;
     }
 
 }

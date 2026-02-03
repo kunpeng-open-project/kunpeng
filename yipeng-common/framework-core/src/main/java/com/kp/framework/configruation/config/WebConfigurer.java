@@ -1,6 +1,5 @@
 package com.kp.framework.configruation.config;
 
-
 import com.kp.framework.configruation.interceptor.GlobalHandlerInstantiator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
@@ -8,13 +7,11 @@ import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
-
 /**
- * @Author lipeng
- * @Description web相关配置
- * @Date 2021-04-12
- * @return
- **/
+ * web相关配置。
+ * @author lipeng
+ * 2021-04-12
+ */
 @Configuration
 public class WebConfigurer implements WebMvcConfigurer {
 

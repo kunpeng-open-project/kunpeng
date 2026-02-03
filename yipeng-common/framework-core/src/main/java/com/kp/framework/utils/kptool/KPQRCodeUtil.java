@@ -4,23 +4,22 @@ import cn.hutool.core.img.ImgUtil;
 import cn.hutool.extra.qrcode.QrCodeUtil;
 import cn.hutool.extra.qrcode.QrConfig;
 import com.kp.framework.exception.KPServiceException;
+import jakarta.servlet.ServletOutputStream;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
 import javax.imageio.ImageIO;
-import javax.servlet.ServletOutputStream;
-import javax.servlet.http.HttpServletResponse;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 
 /**
- * @Author lipeng
- * @Description 生成二维码
- * @Date 2022/10/13 10:36
- * @return
- **/
+ * 生成二维码。
+ * @author lipeng
+ * 2022/10/13
+ */
 @Slf4j
 public final class KPQRCodeUtil {
 
@@ -84,14 +83,12 @@ public final class KPQRCodeUtil {
         return this;
     }
 
-
     /**
-     * @Author lipeng
-     * @Description 生成二维码
-     * @Date 2022/10/13 10:36
-     * @param
-     * @return com.daoben.framework.util.KPQRCodeUtil
-     **/
+     * 生成二维码。
+     * @author lipeng
+     * 2022/10/13
+     * @return com.kp.framework.utils.kptool.KPQRCodeUtil
+     */
     public KPQRCodeUtil generate() {
         //设置二维码的大小
         QrConfig config = new QrConfig(this.width, this.height);
@@ -126,24 +123,22 @@ public final class KPQRCodeUtil {
     }
 
     /**
-     * @Author lipeng
-     * @Description 返回二维码图片
-     * @Date 2022/10/13 10:36
-     * @param
+     * 返回二维码图片。
+     * @author lipeng
+     * 2022/10/13
      * @return java.awt.image.BufferedImage
-     **/
-    public BufferedImage getBufferedImage() {
+     */
+    public BufferedImage buildImage() {
         return this.bufferedImage;
     }
 
 
     /**
-     * @Author lipeng
-     * @Description 生成并且下载二维码
-     * @Date 2022/10/13 10:37
-     * @param downLoadFileNme
-     * @return void
-     **/
+     * 生成并且下载二维码。
+     * @author lipeng
+     * 2022/10/13
+     * @param downLoadFileNme 文件名
+     */
     public void downLoad(String downLoadFileNme) {
         this.generate();
         HttpServletResponse response = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getResponse();
@@ -157,5 +152,4 @@ public final class KPQRCodeUtil {
             throw new KPServiceException("生成二维码异常！" + e.getMessage());
         }
     }
-
 }

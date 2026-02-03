@@ -25,11 +25,10 @@ import java.util.List;
 
 
 /**
- * @Author lipeng
- * @Description 月计划统计相关接口
- * @Date 2025/9/29
- * @return
- **/
+ * 月计划统计相关接口。
+ * @author lipeng
+ * 2025/9/29
+ */
 @Service
 public class MonthlyStatistcsService {
 
@@ -40,12 +39,12 @@ public class MonthlyStatistcsService {
     private MonthlyReportMapper monthlyReportMapper;
 
     /**
-     * @Author lipeng
-     * @Description 查询月度计划统计信息
-     * @Date 2025/9/15
-     * @param monthlyReportListParamPO
-     * @return java.util.List<com.kp.framework.modules.monthly.po.customer.MonthlyReportListCustomerPO>
-     **/
+     * 查询月度计划统计信息。
+     * @author lipeng
+     * 2025/9/15
+     * @param monthlyReportListParamPO 查询参数
+     * @return MonthlyReportStatisticsCustomerPO
+     */
     public MonthlyReportStatisticsCustomerPO queryReviewStatistics(MonthlyReportListParamPO monthlyReportListParamPO) {
         LambdaQueryWrapper<MonthlyReportPO> queryWrapper = Wrappers.lambdaQuery(MonthlyReportPO.class)
                 .between(KPStringUtil.isNotEmpty(monthlyReportListParamPO.getPlanTimes()), MonthlyReportPO::getPlanDate, monthlyReportListParamPO.getPlanTimes() == null ? LocalDate.now() : KPLocalDateUtil.getEffectiveDate(monthlyReportListParamPO.getPlanTimes().get(0)), monthlyReportListParamPO.getPlanTimes() == null ? LocalDate.now() : KPLocalDateUtil.getEffectiveDate(monthlyReportListParamPO.getPlanTimes().get(1)))
@@ -60,14 +59,13 @@ public class MonthlyStatistcsService {
         return monthlyReportCustomerMapper.countByReviewMonthStatus(queryWrapper);
     }
 
-
     /**
-     * @Author lipeng
-     * @Description 查询本人月计划拆分数
-     * @Date 2025/9/23
-     * @param parameter
-     * @return java.util.List<com.kp.framework.modules.week.po.customer.WeeklyPalanSplitCustomerPO>
-     **/
+     * 查询本人月计划拆分数。
+     * @author lipeng
+     * 2025/9/23
+     * @param parameter 查询参数
+     * @return java.util.List<WeeklyPalanSplitCustomerPO>
+     */
     public List<WeeklyPalanSplitCustomerPO> queryWeeklyPalanSplit(JSONObject parameter) {
         KPVerifyUtil.notNull(parameter.getString("planTime"), "请选择计划时间");
         KPVerifyUtil.notNull(parameter.getJSONArray("monthlyIds"), "请输入要统计的计划集合");
@@ -82,20 +80,19 @@ public class MonthlyStatistcsService {
                 .disableSubLogicDel()
                 .in(MonthlyReportPO::getMonthlyId, parameter.getJSONArray("monthlyIds"))
                 .eq(MonthlyReportPO::getPlanDate, KPLocalDateUtil.parse(parameter.getString("planTime") + "-01", KPLocalDateUtil.DATE_PATTERN))
-                .eq(WeeklyPalanPO::getTaskUserId, LoginUserBO.getLoginUser().getIdentification())
+                .eq(WeeklyPalanPO::getTaskUserId, LoginUserBO.getLoginUserNotEmpty().getIdentification())
                 .ne(WeeklyPalanPO::getTaskStatus, WeeklyPalanStatusEnum.DISCARD.code())
                 .groupBy("mr.task_name");
         return monthlyReportMapper.selectJoinList(WeeklyPalanSplitCustomerPO.class, wrapper);
     }
 
-
     /**
-     * @Author lipeng
-     * @Description 查询月度计划看板统计信息
-     * @Date 2025/9/29
-     * @param parameter
-     * @return com.kp.framework.modules.monthly.po.customer.MonthlyReportStatisticsCustomerPO
-     **/
+     * 查询月度计划看板统计信息。
+     * @author lipeng
+     * 2025/9/29
+     * @param parameter 查询参数
+     * @return framework.modules.monthly.po.customer.MonthlyReportStatisticsCustomerPO
+     */
     public MonthlyReportStatisticsCustomerPO queryStatisticsByBoard(JSONObject parameter) {
         KPVerifyUtil.notNull(parameter.getString("planTime"), "请选择计划时间");
 

@@ -1,24 +1,22 @@
 package com.kp.framework.utils.kptool;
 
 import com.kp.framework.exception.KPUtilException;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.experimental.UtilityClass;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.servlet.http.HttpServletRequest;
 import java.net.InetAddress;
 import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.Arrays;
 import java.util.List;
 
-
 /**
- * @Author lipeng
- * @Description  IP地址与网络相关的工具类。
- * @Date 2024/11/20 10:51
- * @return
- **/
+ * IP地址与网络相关的工具类。
+ * @author lipeng
+ * 2024/11/20
+ */
 @UtilityClass
 public final class KPIPUtil {
 

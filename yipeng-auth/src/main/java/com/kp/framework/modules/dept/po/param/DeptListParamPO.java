@@ -1,37 +1,44 @@
 package com.kp.framework.modules.dept.po.param;
 
 import com.baomidou.mybatisplus.annotation.TableField;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
 
-/**
- * @Author lipeng
- * @Description 部门信息列表查询入参
- * @Date 2025-04-08
-**/
-@Data
-@Accessors(chain = true)
-@ApiModel(value = "DeptListParamPO对象", description = "部门信息列表查询入参")
-public class DeptListParamPO {
+import java.io.Serial;
+import java.io.Serializable;
 
-    @ApiModelProperty("部门名称")
+/**
+ * 部门信息列表查询入参。
+ * @author lipeng
+ * 2025-04-08
+ */
+@Data
+@EqualsAndHashCode(callSuper = false)
+@Accessors(chain = true)
+@Schema(name = "DeptListParamPO对象", description = "部门信息列表查询入参")
+public class DeptListParamPO implements Serializable {
+
+    @Serial
+    private static final long serialVersionUID = 1L;
+
+    @Schema(description = "部门名称")
     @TableField("dept_name")
     private String deptName;
 
-    @ApiModelProperty("部门状态 0停用 1正常")
+    @Schema(description = "部门状态 0停用 1正常")
     @TableField("status")
     private Integer status;
 
-    @ApiModelProperty("数据来源")
+    @Schema(description = "数据来源")
     @TableField("source")
     private String source;
 
-    @ApiModelProperty(value = "是否树形结构 1 树形 2 列表", required = true, example = "1")
+    @Schema(description = "是否树形结构 1 树形 2 列表", requiredMode = Schema.RequiredMode.REQUIRED, example = "1")
     private Integer isTree = 2;
 
-    @ApiModelProperty(value = "排序规则 如 id desc, name asc", required = false, example = "")
+    @Schema(description = "排序规则 如 id desc, name asc")
     @TableField(exist = false)
     private String orderBy;
 }

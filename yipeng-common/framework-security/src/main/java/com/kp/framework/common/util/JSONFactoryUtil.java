@@ -3,11 +3,10 @@ package com.kp.framework.common.util;
 import com.alibaba.fastjson2.JSONObject;
 
 /**
- * @Author lipeng
- * @Description 组装josn
- * @Date 2021/3/4
- * @return
- **/
+ * 组装josn。
+ * @author lipeng
+ * 2021/3/4
+ */
 @Deprecated
 public final class JSONFactoryUtil {
     private JSONObject json = null;

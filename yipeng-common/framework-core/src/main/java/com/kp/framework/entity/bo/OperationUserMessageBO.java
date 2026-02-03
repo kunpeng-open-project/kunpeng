@@ -1,15 +1,13 @@
 package com.kp.framework.entity.bo;
 
-
 import lombok.Data;
 import lombok.experimental.Accessors;
 
 /**
- * @Author lipeng
- * @Description 操作用户信息
- * @Date 2024/2/4 15:49
- * @return
- **/
+ * 操作用户信息。
+ * @author lipeng
+ * 2024/2/4
+ */
 @Data
 @Accessors(chain = true)
 public class OperationUserMessageBO {

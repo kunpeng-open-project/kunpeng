@@ -704,7 +704,7 @@ CREATE TABLE `auth_object_change_log`
 DROP TABLE IF EXISTS `auth_dict_type`;
 CREATE TABLE `auth_dict_type`
 (
-    `dict_type_id`     char(36) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL COMMENT '字典类型ID',
+    `dict_type_id`     varchar(36) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL COMMENT '字典类型ID',
     `dict_name`        varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL COMMENT '字典名称',
     `dict_type`        varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL COMMENT '字典类型',
     `status`           int                                                           DEFAULT NULL COMMENT '状态 0 停用 1 正常',
@@ -729,8 +729,8 @@ CREATE TABLE `auth_dict_type`
 DROP TABLE IF EXISTS `auth_dict_data`;
 CREATE TABLE `auth_dict_data`
 (
-    `dict_data_id`     char(36) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL COMMENT '字典编码ID',
-    `dict_type_id`     char(36) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL COMMENT '字典类型ID',
+    `dict_data_id`     varchar(36) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL COMMENT '字典编码ID',
+    `dict_type_id`     varchar(36) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL COMMENT '字典类型ID',
     `sort`             int                                                           DEFAULT '0' COMMENT '字典排序',
     `label`            varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL COMMENT '字典标签',
     `value`            varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL COMMENT '字典键值',

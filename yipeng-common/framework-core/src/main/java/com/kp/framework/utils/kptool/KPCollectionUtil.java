@@ -18,54 +18,49 @@ import java.util.stream.Collectors;
 
 
 /**
- * @Author lipeng
- * @Description 集合相关的内容
- * @Date 2021/9/28 16:02
- * @return
- **/
+ * 集合相关的内容。
+ * @author lipeng
+ * 2021/9/28n
+ */
 @UtilityClass
 public final class KPCollectionUtil {
 
-
-
     /**
-     * @Author lipeng
-     * @Description 检查一个元素是否存在于指定的列表中。
-     * @Date 2021/2/20 16:06
-     * @param element 要检查的元素 (可以为 null)
+     * 检查一个元素是否存在于指定的列表中。
+     * @author lipeng
+     * 2021/2/20
+     * @param element 检查的元素 (可以为 null)
      * @param list 要在其中搜索的列表
      * @param <T>     元素的类型
-     * @return boolean 如果元素在列表中存在，则返回 true，否则返回 false
-     **/
+     * @return boolean
+     */
     public static <T> boolean isEquals(T element, List<T> list) {
-        if (CollectionUtils.isEmpty(list))  return false;
+        if (CollectionUtils.isEmpty(list)) return false;
         return list.stream().anyMatch(item -> Objects.equals(element, item));
     }
 
-
     /**
-     * @Author lipeng
-     * @Description 检查一个元素是否存在于指定的列表中。
-     * @Date 2025/11/28
-     * @param element
-     * @param list
+     * 检查一个元素是否存在于指定的列表中。
+     * @author lipeng
+     * 2025/11/28
+     * @param element 检查的元素 (可以为 null)
+     * @param list 要在其中搜索的列表
      * @return boolean
-     **/
+     */
     public static boolean isContain(String element, List<String> list) {
-        if (CollectionUtils.isEmpty(list))  return false;
+        if (CollectionUtils.isEmpty(list)) return false;
         return list.stream().anyMatch(element::contains);
     }
 
-
     /**
-     * @Author lipeng
-     * @Description 查询list中某个属性的位置
-     * @Date 2021/11/1 17:33
+     * 查询list中某个属性的位置。
+     * @author lipeng
+     * 2021/11/1
      * @param list list
-     * @param field  属性
+     * @param field 属性
      * @param conditon 条件
      * @return java.lang.Integer
-     **/
+     */
     public static Integer index(List<?> list, String field, String conditon) {
         for (int i = 0; i < list.size(); i++) {
             JSONObject json = KPJsonUtil.toJson(list.get(i));
@@ -76,30 +71,28 @@ public final class KPCollectionUtil {
         return -1;
     }
 
-
     /**
-     * @Author lipeng
-     * @Description 物理分页
-     * @Date 2022/1/25 17:30
-     * @param list
-     * @param pageNo
-     * @param pageSize
+     * 物理分页。
+     * @author lipeng
+     * 2022/1/25
+     * @param list 列表
+     * @param pageNo 页码
+     * @param pageSize 页大小
      * @return java.util.List<?>
-     **/
+     */
     public static List<?> paging(List<?> list, Integer pageNo, Integer pageSize) {
         return list.stream().skip((pageNo - 1) * pageSize).limit(pageSize).collect(Collectors.toList());
     }
 
-
     /**
-     * @Author lipeng
-     * @Description 获取俩个对象key 值的补集 单独给 join 使用
-     * @Date 2024/3/14 16:32
+     * 获取俩个对象key 值的补集 单独给 join 使用。
+     * @author lipeng
+     * 2024/3/14
      * @param clazz 全量的对象
      * @param clazz2 比较的对象
      * @param prefix 前缀
      * @return java.lang.String
-     **/
+     */
     public static String getFileNameDisjunction(Class clazz, Class clazz2, String prefix) {
         try {
             List<Field> fields = KPReflectUtil.getAllDeclaredFields(clazz);
@@ -125,9 +118,9 @@ public final class KPCollectionUtil {
 
 
                 if (KPStringUtil.isNotEmpty(prefix))
-                    sb.append(prefix).append(".").append(fileName).append(" as ") .append(field.getName()).append(",");
+                    sb.append(prefix).append(".").append(fileName).append(" as ").append(field.getName()).append(",");
                 if (KPStringUtil.isEmpty(prefix))
-                    sb.append(fileName).append(" as ") .append(field.getName()).append(",");
+                    sb.append(fileName).append(" as ").append(field.getName()).append(",");
             }
             return sb.toString().substring(0, sb.toString().length() - 1);
         } catch (KPServiceException ex) {
@@ -137,14 +130,14 @@ public final class KPCollectionUtil {
         }
     }
 
-
     /**
-     * 批量插入数据，自动按指定大小分组
+     * 批量插入数据，自动按指定大小分组。
+     * @author lipeng
+     * 2024/3/14
      * @param baseMapper MyBatis-Plus的BaseMapper接口实例
      * @param list 待插入的数据列表
      * @param batchSize 每组大小（默认100）
-     * @param <T> 实体类型
-     * @return 成功插入的总记录数
+     * @return boolean
      */
     public static <T> boolean insertBatch(ParentMapper<T> baseMapper, List<T> list, int batchSize) {
         if (KPStringUtil.isEmpty(list)) return true;
@@ -154,7 +147,7 @@ public final class KPCollectionUtil {
         List<List<T>> partitions = ListUtils.partition(list, batchSize);
         // 逐组插入并累加成功记录数
         for (List<T> batch : partitions) {
-            int result = baseMapper.insertBatchSomeColumn(batch);
+            int result = baseMapper.kpInsertBatchSomeColumn(batch);
             if (result > 0) totalSuccess += result;
         }
 
@@ -162,17 +155,16 @@ public final class KPCollectionUtil {
         return false;
     }
 
-
     /**
-     * @Author lipeng
-     * @Description 批量插入数据，自动按指定大小分组
-     * @Date 2025/9/3 23:12
+     * 批量插入数据，自动按指定大小分组。
+     * @author lipeng
+     * 2025/9/3
      * @param baseMapper MyBatis-Plus的BaseMapper接口实例
      * @param list 待插入的数据列表
      * @param clazz 插入时需要转换的实体类
-     * @param batchSize  每组大小（默认100）
+     * @param batchSize 每组大小（默认100）
      * @return boolean
-     **/
+     */
     public static <T> boolean insertBatch(ParentMapper<T> baseMapper, List list, Class<T> clazz, int batchSize) {
         if (KPStringUtil.isEmpty(list)) return true;
 
@@ -181,7 +173,7 @@ public final class KPCollectionUtil {
         List<List> partitions = ListUtils.partition(list, batchSize);
         // 逐组插入并累加成功记录数
         for (List<T> batch : partitions) {
-            int result = baseMapper.insertBatchSomeColumn(KPJsonUtil.toJavaObjectList(batch, clazz));
+            int result = baseMapper.kpInsertBatchSomeColumn(KPJsonUtil.toJavaObjectList(batch, clazz));
             if (result > 0) totalSuccess += result;
         }
 

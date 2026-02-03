@@ -7,6 +7,7 @@ import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import com.github.yulichang.wrapper.MPJLambdaWrapper;
 import com.kp.framework.constant.ReturnFinishedMessageConstant;
+import com.kp.framework.entity.bo.KPResult;
 import com.kp.framework.enums.DeleteFalgEnum;
 import com.kp.framework.enums.YesNoEnum;
 import com.kp.framework.exception.KPServiceException;
@@ -33,6 +34,7 @@ import com.kp.framework.utils.kptool.KPLocalDateTimeUtil;
 import com.kp.framework.utils.kptool.KPLocalDateUtil;
 import com.kp.framework.utils.kptool.KPStringUtil;
 import com.kp.framework.utils.kptool.KPVerifyUtil;
+import jakarta.annotation.Resource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -47,27 +49,28 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 /**
- * @Author lipeng
- * @Description 月度计划表 服务实现类
- * @Date 2025-07-25
- **/
+ * 月度计划表 服务实现类
+ * @author lipeng
+ * 2025-07-25
+ */
 @Service
 public class MonthlyReportService extends ServiceImpl<MonthlyReportMapper, MonthlyReportPO> {
 
-    @Autowired
+    @Resource
     private FeignAuthUtil feignAuthUtil;
 
     @Autowired
     private MonthlyReportUserMapper monthlyReportUserMapper;
 
+
     /**
-     * @Author lipeng
-     * @Description 查询月度计划列表
-     * @Date 2025-07-25
-     * @param monthlyReportListParamPO
-     * @return java.util.List<MonthlyReportPO>
-     **/
-    public List<MonthlyReportListCustomerPO> queryPageList(MonthlyReportListParamPO monthlyReportListParamPO) {
+     * 查询月度计划列表。
+     * @author lipeng
+     * 2025-07-25
+     * @param monthlyReportListParamPO 查询参数
+     * @return com.kp.framework.entity.bo.KPResult<framework.modules.monthly.po.customer.MonthlyReportListCustomerPO>
+     */
+    public KPResult<MonthlyReportListCustomerPO> queryPageList(MonthlyReportListParamPO monthlyReportListParamPO) {
         MPJLambdaWrapper<MonthlyReportPO> wrapper = new MPJLambdaWrapper<MonthlyReportPO>("monthlyReport")
                 .selectAll(MonthlyReportPO.class, "monthlyReport")
                 .select(KPDatabaseUtil.groupDistinctConcat("monthlyReportUser.user_name", "userNamss"))
@@ -95,17 +98,16 @@ public class MonthlyReportService extends ServiceImpl<MonthlyReportMapper, Month
 
         body.forEach(po -> po.setPlanTime(KPLocalDateUtil.format(po.getPlanDate(), KPLocalDateTimeUtil.MONTH_PATTERN)));
 
-        return body;
+        return KPResult.list(body);
     }
 
-
     /**
-     * @Author lipeng
-     * @Description 根据月度计划Id查询详情
-     * @Date 2025-07-25
-     * @param parameter
-     * @return MonthlyReportPO
-     **/
+     * 根据月度计划Id查询详情。
+     * @author lipeng
+     * 2025-07-25
+     * @param parameter 查询参数
+     * @return MonthlyReportDetailsCustomerPO
+     */
     public MonthlyReportDetailsCustomerPO queryDetailsById(JSONObject parameter) {
         MonthlyReportPO monthlyReportPO = KPJsonUtil.toJavaObject(parameter, MonthlyReportPO.class);
         KPVerifyUtil.notNull(monthlyReportPO.getMonthlyId(), "请输入monthlyId");
@@ -141,14 +143,12 @@ public class MonthlyReportService extends ServiceImpl<MonthlyReportMapper, Month
         return row;
     }
 
-
     /**
-     * @Author lipeng
-     * @Description 新增月度计划
-     * @Date 2025-07-25
-     * @param monthlyReportEditParamPO
-     * @return void
-     **/
+     * 新增月度计划。
+     * @author lipeng
+     * 2025-07-25
+     * @param monthlyReportEditParamPO 新增参数
+     */
     public void saveMonthlyReport(MonthlyReportEditParamPO monthlyReportEditParamPO) {
         MonthlyReportPO monthlyReportPO = KPJsonUtil.toJavaObjectNotEmpty(monthlyReportEditParamPO, MonthlyReportPO.class);
         monthlyReportPO
@@ -173,17 +173,15 @@ public class MonthlyReportService extends ServiceImpl<MonthlyReportMapper, Month
             );
         });
 
-        monthlyReportUserMapper.insertBatchSomeColumn(monthlyReportUserPOList);
+        monthlyReportUserMapper.kpInsertBatchSomeColumn(monthlyReportUserPOList);
     }
 
-
     /**
-     * @Author lipeng
-     * @Description 修改月度计划
-     * @Date 2025-07-25
-     * @param monthlyReportEditParamPO
-     * @return void
-     **/
+     * 修改月度计划。
+     * @author lipeng
+     * 2025-07-25
+     * @param monthlyReportEditParamPO 修改参数
+     */
     public void updateMonthlyReport(MonthlyReportEditParamPO monthlyReportEditParamPO) {
         MonthlyReportPO monthlyReportPO = KPJsonUtil.toJavaObjectNotEmpty(monthlyReportEditParamPO, MonthlyReportPO.class);
 
@@ -204,7 +202,7 @@ public class MonthlyReportService extends ServiceImpl<MonthlyReportMapper, Month
 
 
         List<String> delIds = monthlyReportUserMapper.selectList(Wrappers.lambdaQuery(MonthlyReportUserPO.class).eq(MonthlyReportUserPO::getMonthlyId, monthlyReportPO.getMonthlyId())).stream().map(MonthlyReportUserPO::getMruId).collect(Collectors.toList());
-        if (KPStringUtil.isNotEmpty(delIds)) monthlyReportUserMapper.deleteAllByIds(delIds);
+        if (KPStringUtil.isNotEmpty(delIds)) monthlyReportUserMapper.kpDeleteAllByIds(delIds);
 
         List<UserFeignPO> userList = feignAuthUtil.queryUserListByIds(monthlyReportEditParamPO.getUserIds());
         Map<String, UserFeignPO> userListMap = userList.stream().collect(Collectors.toMap(UserFeignPO::getUserId, Function.identity()));
@@ -218,44 +216,42 @@ public class MonthlyReportService extends ServiceImpl<MonthlyReportMapper, Month
             );
         });
 
-        monthlyReportUserMapper.insertBatchSomeColumn(monthlyReportUserPOList);
+        monthlyReportUserMapper.kpInsertBatchSomeColumn(monthlyReportUserPOList);
     }
 
-
     /**
-     * @Author lipeng
-     * @Description 批量删除月度计划
-     * @Date 2025-07-25
-     * @param ids
-     * @return String
-     **/
+     * 批量删除月度计划。
+     * @author lipeng
+     * 2025-07-25
+     * @param ids 删除的ID集合
+     * @return java.lang.String
+     */
     public String batchRemove(List<String> ids) {
         if (KPStringUtil.isEmpty(ids)) throw new KPServiceException("请选择要删除的内容！");
 
-        this.baseMapper.selectBatchIds(ids).forEach(monthlyReportPO -> {
+        this.baseMapper.selectByIds(ids).forEach(monthlyReportPO -> {
             if (!monthlyReportPO.getStatus().equals(MonthlyReportStatusEnum.DRAFT.code()))
                 throw new KPServiceException(KPStringUtil.format("只能删除草稿状态的计划， {0} 不允许删除", monthlyReportPO.getTaskName()));
         });
 
-        Integer row = this.baseMapper.deleteBatchIds(ids);
+        int row = this.baseMapper.deleteByIds(ids);
         if (row == 0) throw new KPServiceException(ReturnFinishedMessageConstant.ERROR);
 
         return KPStringUtil.format("删除成功{0}条数据", row);
     }
 
-
     /**
-     * @Author lipeng
-     * @Description 提交审核
-     * @Date 2025/8/30
-     * @param ids
+     * 提交审核。
+     * @author lipeng
+     * 2025/8/30
+     * @param ids 提交审核的ID集合
      * @return java.lang.String
-     **/
+     */
     public String doSubmitReview(List<String> ids) {
         if (KPStringUtil.isEmpty(ids)) throw new KPServiceException("请选择要提交的内容！");
 
         List<MonthlyReportPO> body = new ArrayList<>();
-        this.baseMapper.selectBatchIds(ids).forEach(monthlyReportPO -> {
+        this.baseMapper.selectByIds(ids).forEach(monthlyReportPO -> {
             if (!monthlyReportPO.getStatus().equals(MonthlyReportStatusEnum.DRAFT.code()))
                 throw new KPServiceException(KPStringUtil.format("只有草稿状态的计划才可以提交审核， {0} 不能提交审核", monthlyReportPO.getTaskName()));
             body.add(new MonthlyReportPO()
@@ -268,15 +264,14 @@ public class MonthlyReportService extends ServiceImpl<MonthlyReportMapper, Month
         return KPStringUtil.format("删除提交{0}条数据", body.size());
     }
 
-
     /**
-     * @Author lipeng
-     * @Description 查询月度计划审核分页列表
-     * @Date 2025/9/16
-     * @param monthlyReportListParamPO
-     * @return java.util.List<com.kp.framework.modules.monthly.po.customer.MonthlyReportReviewListCustomerPO>
-     **/
-    public List<MonthlyReportReviewListCustomerPO> queryReviewPageList(MonthlyReportListParamPO monthlyReportListParamPO) {
+     * 查询月度计划审核分页列表。
+     * @author lipeng
+     * 2025/9/16
+     * @param monthlyReportListParamPO 查询参数
+     * @return com.kp.framework.entity.bo.KPResult<framework.modules.monthly.po.customer.MonthlyReportReviewListCustomerPO>
+     */
+    public KPResult<MonthlyReportReviewListCustomerPO> queryReviewPageList(MonthlyReportListParamPO monthlyReportListParamPO) {
         MPJLambdaWrapper<MonthlyReportPO> wrapper = new MPJLambdaWrapper<MonthlyReportPO>("monthlyReport")
                 .selectAll(MonthlyReportPO.class, "monthlyReport")
                 .select(KPDatabaseUtil.groupDistinctConcat("monthlyReportUser.user_id", "userIds"))
@@ -298,7 +293,8 @@ public class MonthlyReportService extends ServiceImpl<MonthlyReportMapper, Month
         Page page = PageHelper.startPage(monthlyReportListParamPO.getPageNum(), monthlyReportListParamPO.getPageSize(), monthlyReportListParamPO.getOrderBy(MonthlyReportPO.class));
         page.setCountColumn("distinct monthly_id");
         List<MonthlyReportReviewListCustomerPO> body = this.baseMapper.selectJoinList(MonthlyReportReviewListCustomerPO.class, wrapper);
-        if (KPStringUtil.isEmpty(body)) return body;
+        if (KPStringUtil.isEmpty(body)) return KPResult.list(body);
+        ;
 
         //查询部门信息
         Map<String, DeptFeignPO> deptMap = feignAuthUtil.queryDeptIdList(body.stream().map(MonthlyReportReviewListCustomerPO::getDeptId).collect(Collectors.toList()))
@@ -337,20 +333,19 @@ public class MonthlyReportService extends ServiceImpl<MonthlyReportMapper, Month
             }
         });
 
-        return body;
+        return KPResult.list(body);
     }
 
-
     /**
-     * @Author lipeng
-     * @Description 批量审核
-     * @Date 2025/9/4
-     * @param monthlyReportReviewParamPO
+     * 批量审核。
+     * @author lipeng
+     * 2025/9/4
+     * @param monthlyReportReviewParamPO 入参
      * @return java.lang.String
-     **/
+     */
     public String batchReview(MonthlyReportReviewParamPO monthlyReportReviewParamPO) {
         List<MonthlyReportPO> body = new ArrayList<>();
-        this.baseMapper.selectBatchIds(monthlyReportReviewParamPO.getIds()).forEach(monthlyReportPO -> {
+        this.baseMapper.selectByIds(monthlyReportReviewParamPO.getIds()).forEach(monthlyReportPO -> {
             if (!monthlyReportPO.getStatus().equals(MonthlyReportStatusEnum.SUBMIT_FOR_REVIEW.code()))
                 throw new KPServiceException(KPStringUtil.format("只有提交审核的计划才可以审核, {0} 不是待审核状态", monthlyReportPO.getTaskName()));
 
@@ -367,14 +362,13 @@ public class MonthlyReportService extends ServiceImpl<MonthlyReportMapper, Month
         return KPStringUtil.format("删除提交{0}条数据", body.size());
     }
 
-
     /**
-     * @Author lipeng
-     * @Description 查询我的月度计划
-     * @Date 2025/9/19
-     * @param parameter
-     * @return java.util.List<com.kp.framework.modules.monthly.po.MonthlyReportPO>
-     **/
+     * 查询我的月度计划。
+     * @author lipeng
+     * 2025/9/19
+     * @param parameter 查询参数
+     * @return java.util.List<framework.modules.monthly.po.MonthlyReportPO>
+     */
     public List<MonthlyReportPO> queryMyList(JSONObject parameter) {
         KPVerifyUtil.notNull(parameter.getString("planTime"), "请选择计划时间");
 
@@ -386,20 +380,19 @@ public class MonthlyReportService extends ServiceImpl<MonthlyReportMapper, Month
                 )
                 .disableSubLogicDel()
                 .eq(MonthlyReportPO::getPlanDate, KPLocalDateUtil.parse(parameter.getString("planTime") + "-01", KPLocalDateUtil.DATE_PATTERN))
-                .eq(MonthlyReportUserPO::getUserId, LoginUserBO.getLoginUser().getIdentification())
+                .eq(MonthlyReportUserPO::getUserId, LoginUserBO.getLoginUserNotEmpty().getIdentification())
                 .in(MonthlyReportPO::getStatus, Arrays.asList(MonthlyReportStatusEnum.REVIEW_PASSED_WAITING_FOR_SPLIT.code(), MonthlyReportStatusEnum.SPLITTED_IN_PROGRESS.code(), MonthlyReportStatusEnum.COMPLETED.code(), MonthlyReportStatusEnum.OVERDUE.code()));
 
         return this.baseMapper.selectJoinList(MonthlyReportPO.class, wrapper);
     }
 
-
     /**
-     * @Author lipeng
-     * @Description 查询指定月份月计划列表(按状态分组)
-     * @Date 2025/9/30
-     * @param parameter
-     * @return java.util.Map<java.lang.Integer,java.util.List<com.kp.framework.modules.monthly.po.customer.MonthlyReportReviewListCustomerPO>>
-     **/
+     * 查询指定月份月计划列表(按状态分组)。
+     * @author lipeng
+     * 2025/9/30
+     * @param parameter 查询参数
+     * @return java.util.Map<java.lang.Integer,java.util.List<framework.modules.monthly.po.customer.MonthlyReportReviewListCustomerPO>>
+     */
     public Map<Integer, List<MonthlyReportReviewListCustomerPO>> queryListByStatus(JSONObject parameter) {
         KPVerifyUtil.notNull(parameter.getString("planTime"), "请选择计划时间");
         MPJLambdaWrapper<MonthlyReportPO> wrapper = new MPJLambdaWrapper<MonthlyReportPO>("monthlyReport")
@@ -451,14 +444,12 @@ public class MonthlyReportService extends ServiceImpl<MonthlyReportMapper, Month
         return body.stream().collect(Collectors.groupingBy(MonthlyReportReviewListCustomerPO::getStatus));
     }
 
-
     /**
-     * @Author lipeng
-     * @Description 移动设置月计划状态
-     * @Date 2025/10/1
-     * @param parameter
-     * @return void
-     **/
+     * 移动设置月计划状态。
+     * @author lipeng
+     * 2025/10/1
+     * @param parameter 设置参数
+     */
     public void updateMoveStatus(JSONObject parameter) {
         MonthlyReportPO monthlyParameter = KPJsonUtil.toJavaObjectNotEmpty(parameter, MonthlyReportPO.class);
         KPVerifyUtil.notNull(monthlyParameter.getMonthlyId(), "请选择要移动的内容！");

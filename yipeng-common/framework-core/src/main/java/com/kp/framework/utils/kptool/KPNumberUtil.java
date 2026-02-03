@@ -9,43 +9,34 @@ import java.util.List;
 import java.util.Map;
 
 /**
- *
- * @ClassName: util.KPNumberUtil
- * @Description:对数值的操作
- * @author: 李鹏
- * @date: 2018年10月17日 上午8:44:05
+ * 对数值的操作。
+ * @author lipeng
+ * 2018年10月17日
  */
 @UtilityClass
 public final class KPNumberUtil {
 
-
     /**
-     *
-     * @author 李鹏
-     * @Title: rod
-     * @Description: 获取随机数
-     * @param: @param start 开始数
-     * @param: @param end 结束数
-     * @param: @return
-     * @return: int 返回随机数
-     * @throws
-     * @date 2018年10月17日上午8:44:23
-     * @version 1.0.0
+     * 获取随机数。
+     * @author lipeng
+     * 2026/1/21
+     * @param start 开始数
+     * @param end 结束数
+     * @return int 返回随机数
      */
-    public final int rod(int start, int end) {
+    public int rod(int start, int end) {
         return (int) (Math.random() * (end - start + 1)) + start;
     }
 
-
     /**
-     * @Author lipeng
-     * @Description 随机生成指定位数的随机数
-     * @Date 2024/8/2 10:24
+     * 随机生成指定位数的随机数。
+     * @author lipeng
+     * 2024/8/2
      * @param length  长度
      * @param pattern  是否以时间开头 如果以时间开头 输入格式  YYYYmmddhh...
      * @return java.lang.String
-     **/
-    public final String random(int length, String pattern) {
+     */
+    public String random(int length, String pattern) {
         String row = "";
         if (KPStringUtil.isNotEmpty(pattern))
             row = KPDateUtil.format(new Date(), pattern);
@@ -56,12 +47,12 @@ public final class KPNumberUtil {
     }
 
     /**
-     * @Author lipeng
-     * @Description 查询字符串中的数字
-     * @Date 2024/2/23 11:41
+     * 查询字符串中的数字。
+     * @author lipeng
+     * 2024/2/23
      * @param str 要查询的字符
-     * @return java.lang.Integer
-     **/
+     * @return java.util.List<java.lang.Integer>
+     */
     public List<Integer> queryNumber(String str) {
         StringBuilder digitString = new StringBuilder();
         List<Integer> numbers = new ArrayList<>();
@@ -83,7 +74,6 @@ public final class KPNumberUtil {
         }
         return numbers;
     }
-
 
     public Map<Integer, String> queryNumberSplit(String str) {
         List<Integer> numbers = queryNumber(str);
@@ -113,15 +103,14 @@ public final class KPNumberUtil {
         return map;
     }
 
-
     /**
-     * @Author lipeng
-     * @Description 生成唯一编号  通过redis 保证唯一
-     * @Date 2025/11/2 18:00
+     * 生成唯一编号  通过redis 保证唯一。
+     * @author lipeng
+     * 2025/11/2
      * @param project 项目名称  一般是RedisSecurityConstant 或者  RedisConstant 里面的内容
      * @param prefix 前缀
      * @return java.lang.String
-     **/
+     */
     public String createNumber(String project, String prefix) {
         String datePart = KPDateUtil.format(new Date(), "yyyyMMddHH");
         String number = prefix + "-" + datePart + "-" + KPNumberUtil.rod(0, 9999);

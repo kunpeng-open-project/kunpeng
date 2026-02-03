@@ -9,16 +9,11 @@ import java.util.Base64;
 import java.util.Random;
 
 /**
- * <p>
  * 一个增强的 Base64 工具类，提供标准和 URL 安全的 Base64 编码/解码功能，并集成了加盐机制。
- * </p>
- * <p>
  * 该工具类采用在 Base64 编码后的字符串首尾添加随机盐值的方式，
  * 有效防止对固定明文的 Base64 编码进行彩虹表攻击，增加了加密的安全性。
- * </p>
  * @author lipeng
- * @version 2.0
- * @since 2023/10/27
+ * 2023/10/27
  */
 @UtilityClass
 @Slf4j
@@ -30,40 +25,38 @@ public class KPBase64Utils {
     // 用于生成随机数的 {@link Random} 实例。
     private static final Random RANDOM = new Random();
 
-
     /**
-     * @Author lipeng
-     * @Description 标准 Base64 加密
-     * @Date 2023/9/28
+     * 标准 Base64 加密。
+     * @author lipeng
+     * 2023/9/28
      * @param plainText 待编码的明文
-     * @return java.lang.String 标准 Base64 编码后的字符串。
-     **/
+     * @return java.lang.String
+     */
     public static String encode(String plainText) {
         if (KPStringUtil.isEmpty(plainText)) return plainText;
         return Base64.getEncoder().encodeToString(plainText.getBytes(StandardCharsets.UTF_8));
     }
 
-
     /**
-     * @Author lipeng
-     * @Description 对url加密
+     * 对url加密。
      * 该算法使用 '-' 代替 '+'，使用 '_' 代替 '/'，并且默认不进行填充（即移除末尾的 '='）。
-     * @Date 2023/9/28
+     * @author lipeng
+     * 2023/9/28
      * @param plainText 待编码的明文
-     * @return java.lang.String  URL 安全的 Base64 编码后的字符串。
-     **/
+     * @return java.lang.String
+     */
     public static String encodeUrlSafe(String plainText) {
         if (KPStringUtil.isEmpty(plainText)) return plainText;
         return Base64.getUrlEncoder().withoutPadding().encodeToString(plainText.getBytes(StandardCharsets.UTF_8));
     }
 
     /**
-     * @Author lipeng
-     * @Description 对标准 Base64 编码的字符串进行解码。
-     * @Date 2023/9/28
-     * @param base64String  标准 Base64 编码的字符串。
-     * @return java.lang.String 解码后的明文。
-     **/
+     * 对标准 Base64 编码的字符串进行解码。。
+     * @author lipeng
+     * 2023/9/28
+     * @param base64String 标准 Base64 编码的字符串
+     * @return java.lang.String
+     */
     public static String decode(String base64String) {
         if (KPStringUtil.isEmpty(base64String)) return base64String;
         try {
@@ -73,13 +66,14 @@ public class KPBase64Utils {
         }
     }
 
+
     /**
-     * @Author lipeng
-     * @Description 对 URL 安全的 Base64 编码的字符串进行解码。
-     * @Date 2023/9/28
-     * @param urlSafeBase64String URL 安全的 Base64 编码的字符串。
-     * @return java.lang.String 解码后的明文
-     **/
+     * 对 URL 安全的 Base64 编码的字符串进行解码。
+     * @author lipeng
+     * 2023/9/28
+     * @param urlSafeBase64String URL 安全的 Base64 编码的字符串
+     * @return java.lang.String
+     */
     public static String decodeUrlSafe(String urlSafeBase64String) {
         if (KPStringUtil.isEmpty(urlSafeBase64String)) return urlSafeBase64String;
         try {
@@ -89,16 +83,14 @@ public class KPBase64Utils {
         }
     }
 
-
     /**
-     * @Author lipeng
-     * @Description 在一个字符串的开头和结尾添加随机生成的盐。
-     * 对 Base64 编码后的字符串使用此方法。
-     * @Date 2023/9/28
+     * 在一个字符串的开头和结尾添加随机生成的盐。
+     * @author lipeng
+     * 2023/9/28
      * @param input 原始输入字符串（推荐是 Base64 编码后的字符串）。
      * @param saltLength 盐的长度。前缀和后缀的盐将各占此长度。
-     * @return java.lang.String 添加了盐的新字符串。
-     **/
+     * @return java.lang.String
+     */
     public static String addSalt(String input, int saltLength) {
         if (KPStringUtil.isEmpty(input)) return input;
         if (saltLength < 0) saltLength = 10;
@@ -107,16 +99,15 @@ public class KPBase64Utils {
         return prefix + input + suffix;
     }
 
-
     /**
-     * @Author lipeng
-     * @Description 移除在字符串开头和结尾添加的盐。
+     * 移除在字符串开头和结尾添加的盐。
      *  调用时必须提供与 {@link #addSalt(String, int)} 时相同的盐长度。
-     * @Date 2023/9/28
-     * @param saltedInput 加盐后的字符串。
-     * @param saltLength 盐的长度。将从字符串首尾各移除此长度的字符。
-     * @return java.lang.String 如果字符串长度小于 2 * saltLength，无法执行去盐操作。
-     **/
+     * @author lipeng
+     * 2023/9/28
+     * @param saltedInput 加盐后的字符串
+     * @param saltLength 盐的长度。将从字符串首尾各移除此长度的字符
+     * @return java.lang.String
+     */
     public static String removeSalt(String saltedInput, int saltLength) {
         if (KPStringUtil.isEmpty(saltedInput)) return saltedInput;
         if (saltLength < 0) saltLength = 10;
@@ -128,14 +119,13 @@ public class KPBase64Utils {
         return saltedInput.substring(saltLength, saltedInput.length() - saltLength);
     }
 
-
     /**
-     * @Author lipeng
-     * @Description 生成一个指定长度的随机盐字符串
-     * @Date 2023/9/28
+     * 生成一个指定长度的随机盐字符串。
+     * @author lipeng
+     * 2023/9/28
      * @param length 期望生成的盐的长度。如果 length <= 0，则返回空字符串。
-     * @return java.lang.String 生成的随机盐字符串
-     **/
+     * @return java.lang.String
+     */
     private static String generateRandomSalt(int length) {
         if (length <= 0) {
             return "";
@@ -148,7 +138,6 @@ public class KPBase64Utils {
         }
         return sb.toString();
     }
-
 
 
     public static void main(String[] args) {

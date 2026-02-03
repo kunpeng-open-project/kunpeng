@@ -40,33 +40,28 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 /**
- * @Author lipeng
- * @Description minio操作工具类
- * @Date 2021/12/29 10:59
- * @return
- **/
+ * minio操作工具类。
+ * @author lipeng
+ * 2021/12/29
+ */
 @UtilityClass
 public final class KPMinioUtil {
 
-
     private static MinioClient minioClient;
 
-
     private static final int DEFAULT_EXPIRY_TIME = 7 * 24 * 3600;
-
 
     static {
         minioClient = KPServiceUtil.getBean("minioClient", MinioClient.class);
     }
 
-
     /**
-     * @Author lipeng
-     * @Description 检查存储桶是否存在
-     * @Date 2021/12/16 16:52
+     * 检查存储桶是否存在。
+     * @author lipeng
+     * 2021/12/16
      * @param bucketName 存储桶名称
      * @return boolean
-     **/
+     */
     public static boolean bucketExists(String bucketName) {
         boolean flag = false;
         try {
@@ -78,12 +73,11 @@ public final class KPMinioUtil {
     }
 
     /**
-     * @Author lipeng
-     * @Description 存储桶名称
-     * @Date 2021/12/16 16:53
+     * 存储桶名称。
+     * @author lipeng
+     * 2021/12/16
      * @param bucketName 桶名称
-     * @return void
-     **/
+     */
     public static void createBucket(String bucketName) {
         boolean flag = bucketExists(bucketName);
         if (flag) return;
@@ -97,13 +91,12 @@ public final class KPMinioUtil {
     }
 
     /**
-     * @Author lipeng
-     * @Description 设置桶权限 在最新的minio管理页面中 已经没有设置的地方 只能通过代码设置
-     * @Date 2025/7/9
+     * 设置桶权限 在最新的minio管理页面中 已经没有设置的地方 只能通过代码设置。
+     * @author lipeng
+     * 2025/7/9
      * @param bucketName 桶名称
      * @param isPublic 是否公有桶 true 为公有桶 false 为私有桶
-     * @return void
-     **/
+     */
     public static void setBucketAccessPolicy(String bucketName, Boolean isPublic) {
         try {
             String policy = new KPJSONFactoryUtil()
@@ -143,14 +136,12 @@ public final class KPMinioUtil {
         }
     }
 
-
     /**
-     * @Author lipeng
-     * @Description 列出所有存储桶名称
-     * @Date 2021/12/16 17:09
-     * @param
+     * 列出所有存储桶名称。
+     * @author lipeng
+     * 2021/12/16
      * @return java.util.List<java.lang.String>
-     **/
+     */
     public static List<String> listBucketNames() {
         List<Bucket> bucketList = listBuckets();
         List<String> bucketListName = new ArrayList<>();
@@ -161,12 +152,11 @@ public final class KPMinioUtil {
     }
 
     /**
-     * @Author lipeng
-     * @Description 列出所有存储桶
-     * @Date 2021/12/16 17:09
-     * @param
+     * 列出所有存储桶。
+     * @author lipeng
+     * 2021/12/16
      * @return java.util.List<io.minio.messages.Bucket>
-     **/
+     */
     public static List<Bucket> listBuckets() {
         try {
             return minioClient.listBuckets();
@@ -176,12 +166,12 @@ public final class KPMinioUtil {
     }
 
     /**
-     * @Author lipeng
-     * @Description 删除存储桶
-     * @Date 2021/12/16 17:10
+     * 删除存储桶。
+     * @author lipeng
+     * 2021/12/16
      * @param bucketName 存储桶名称
      * @return boolean
-     **/
+     */
     public static boolean removeBucket(String bucketName) {
         boolean flag = bucketExists(bucketName);
         if (!flag) return true;
@@ -196,13 +186,13 @@ public final class KPMinioUtil {
     }
 
     /**
-     * @Author lipeng
-     * @Description 列出存储桶中的所有对象名称
-     * @Date 2021/12/16 17:11
+     * 列出存储桶中的所有对象名称。
+     * @author lipeng
+     * 2021/12/16
      * @param bucketName 存储桶名称
-     * @param  isFile 递归查询存储桶下文件信息：
+     * @param isFile 递归查询存储桶下文件信息
      * @return java.util.List<java.lang.String>
-     **/
+     */
     public static List<String> listObjectNames(String bucketName, Boolean isFile) {
         List<String> listObjectNames = new ArrayList<>();
         boolean flag = bucketExists(bucketName);
@@ -222,13 +212,13 @@ public final class KPMinioUtil {
     }
 
     /**
-     * @Author lipeng
-     * @Description 列出存储桶中的所有对象
-     * @Date 2021/12/16 17:14
+     * 列出存储桶中的所有对象。
+     * @author lipeng
+     * 2021/12/16
      * @param bucketName 存储桶名称
-     * @param  isFile 递归查询存储桶下文件信息：
-     * @return java.lang.Iterable<io.minio.Result < io.minio.messages.Item>>
-     **/
+     * @param isFile 递归查询存储桶下文件信息
+     * @return java.lang.Iterable<io.minio.Result<io.minio.messages.Item>>
+     */
     public static Iterable<Result<Item>> listObjects(String bucketName, Boolean isFile) {
         boolean flag = KPMinioUtil.bucketExists(bucketName);
         if (!flag) return null;
@@ -239,18 +229,17 @@ public final class KPMinioUtil {
                         .build());
     }
 
-
     /**
-     * @Author lipeng
-     * @Description 复制文件
-     * @Date 2022/1/12 22:21
+     * 复制文件。
      * 如果通过上传获取到的filePath  第一个/ 前标识通名称 （bucketName） 后面的 标识 存储路径（objectName）
+     * @author lipeng
+     * 2022/1/12
      * @param bucketName 目标桶名称 说明
      * @param objectName 目标文件存储路径
      * @param newBucketName 移动桶名称
      * @param newObjectName 移动存储路径
-     * @return boolean
-     **/
+     * @return io.minio.ObjectWriteResponse
+     */
     public static ObjectWriteResponse copyObject(String bucketName, String objectName, String newBucketName, String newObjectName) {
         KPMinioUtil.createBucket(newBucketName);
         try {
@@ -266,17 +255,15 @@ public final class KPMinioUtil {
         }
     }
 
-
     /**
-     * @Author lipeng
-     * @Description 通过文件上传到对象
-     * @Date 2021/12/16 17:14
-     * 如果通过上传获取到的filePath  第一个/ 前标识通名称 （bucketName） 后面的 标识 存储路径（objectName）
+     * 通过文件上传到对象。
+     * @author lipeng
+     * 2021/12/16
      * @param bucketName 存储桶名称
      * @param objectName 存储桶里的对象名称 aa.txt
      * @param fileName  文件全路径 d://aa.txt
      * @return boolean
-     **/
+     */
     public static boolean putObject(String bucketName, String objectName, String fileName) {
         if (!bucketExists(bucketName)) createBucket(bucketName);
 
@@ -296,17 +283,15 @@ public final class KPMinioUtil {
         return false;
     }
 
-
     /**
-     * @Author lipeng
-     * @Description 通过InputStream上传对象
-     * @Date 2021/12/16 17:17
-     * 如果通过上传获取到的filePath  第一个/ 前标识通名称 （bucketName） 后面的 标识 存储路径（objectName）
+     * 通过InputStream上传对象。
+     * @author lipeng
+     * 2021/12/16
      * @param bucketName 存储桶名称
      * @param objectName 存储桶里的对象名称
      * @param stream 要上传的流
      * @return boolean
-     **/
+     */
     public static boolean putObject(String bucketName, String objectName, InputStream stream) {
         if (!bucketExists(bucketName)) createBucket(bucketName);
 
@@ -333,18 +318,16 @@ public final class KPMinioUtil {
         }
     }
 
-
     /**
-     * @Author lipeng
-     * @Description 以流的形式获取一个文件对象（断点下载）
-     * @Date 2021/12/16 17:18
-     * 如果通过上传获取到的filePath  第一个/ 前标识通名称 （bucketName） 后面的 标识 存储路径（objectName）
+     * 以流的形式获取一个文件对象（断点下载）。
+     * @author lipeng
+     * 2021/12/16
      * @param bucketName 存储桶名称
      * @param objectName 存储桶里的对象名称
      * @param offset     起始字节的位置
      * @param length     要读取的长度 (可选，如果无值则代表读到文件结尾)
      * @return java.io.InputStream
-     **/
+     */
     public static InputStream getObject(String bucketName, String objectName, long offset, Long length) {
         if (!bucketExists(bucketName)) return null;
 
@@ -366,14 +349,13 @@ public final class KPMinioUtil {
     }
 
     /**
-     * @Author lipeng
-     * @Description 以流的形式获取一个文件对象
-     * @Date 2021/12/16 17:18
-     * 如果通过上传获取到的filePath  第一个/ 前标识通名称 （bucketName） 后面的 标识 存储路径（objectName）
+     * 以流的形式获取一个文件对象。
+     * @author lipeng
+     * 2021/12/16
      * @param bucketName 存储桶名称
      * @param objectName 存储桶里的对象名称
      * @return java.io.InputStream
-     **/
+     */
     public static InputStream getObject(String bucketName, String objectName) {
         if (!bucketExists(bucketName)) return null;
         StatObjectResponse statObject = statObject(bucketName, objectName);
@@ -391,17 +373,15 @@ public final class KPMinioUtil {
         return null;
     }
 
-
     /**
-     * @Author lipeng
-     * @Description 下载并将文件保存到本地
-     * @Date 2021/12/16 17:19
-     * 如果通过上传获取到的filePath  第一个/ 前标识通名称 （bucketName） 后面的 标识 存储路径（objectName）
+     * 下载并将文件保存到本地。
+     * @author lipeng
+     * 2021/12/16
      * @param bucketName 存储桶名称
      * @param objectName 存储桶里的对象名称
      * @param fileName   File name 全路径
      * @return boolean
-     **/
+     */
     public static boolean getObject(String bucketName, String objectName, String fileName) {
         if (!bucketExists(bucketName)) return false;
         StatObjectResponse statObject = statObject(bucketName, objectName);
@@ -421,16 +401,14 @@ public final class KPMinioUtil {
         return false;
     }
 
-
     /**
-     * @Author lipeng
-     * 如果通过上传获取到的filePath  第一个/ 前标识通名称 （bucketName） 后面的 标识 存储路径（objectName）
-     * @Description 删除一个对象
-     * @Date 2021/12/16 17:19
+     * 删除一个对象。
+     * @author lipeng
+     * 2021/12/16
      * @param bucketName 存储桶名称
      * @param objectName 存储桶里的对象名称
      * @return boolean
-     **/
+     */
     public static boolean removeObject(String bucketName, String objectName) {
         if (!bucketExists(bucketName)) return false;
 
@@ -442,16 +420,14 @@ public final class KPMinioUtil {
         return true;
     }
 
-
     /**
-     * @Author lipeng
-     * 如果通过上传获取到的filePath  第一个/ 前标识通名称 （bucketName） 后面的 标识 存储路径（objectName）
-     * @Description 除指定桶的多个文件对象, 返回删除错误的对象列表，全部删除成功，返回空列表
-     * @Date 2021/12/16 17:19
+     * 除指定桶的多个文件对象, 返回删除错误的对象列表，全部删除成功，返回空列表。
+     * @author lipeng
+     * 2021/12/16
      * @param bucketName  存储桶名称
      * @param objectNames 含有要删除的多个object名称的迭代器对象
      * @return java.util.List<java.lang.String>
-     **/
+     */
     public static List<String> removeObject(String bucketName, List<String> objectNames) {
         List<DeleteObject> objects = new LinkedList<>();
         objectNames.forEach(fileName -> {
@@ -474,18 +450,15 @@ public final class KPMinioUtil {
         return deleteErrorNames;
     }
 
-
     /**
-     * @Author lipeng
-     * 如果通过上传获取到的filePath  第一个/ 前标识通名称 （bucketName） 后面的 标识 存储路径（objectName）
-     * @Description 生成一个给HTTP GET请求用的presigned URL。
-     * 浏览器/移动端的客户端可以用这个URL进行下载，即使其所在的存储桶是私有的。这个presigned URL可以设置一个失效时间，默认值是7天。
-     * @Date 2021/12/16 17:20
+     * 生成一个给HTTP GET请求用的presigned URL。
+     * @author lipeng
+     * 2021/12/16
      * @param bucketName 存储桶名称
      * @param objectName 存储桶里的对象名称
      * @param hours    失效时间（以小时为单位），不得大于七天
      * @return java.lang.String
-     **/
+     */
     public static String getUrl(String bucketName, String objectName, Integer hours) {
         if (KPStringUtil.isEmpty(objectName)) return null;
         if (!bucketExists(bucketName)) return null;
@@ -502,33 +475,29 @@ public final class KPMinioUtil {
         }
     }
 
-
     /**
-     * @Author lipeng
-     * @Description 易鹏框架简化版获取文件访问路径 只正对通过通用上传后 或者 移动后获取的路径有效
-     * @Date 2025/11/25 21:05
-     * @param filePath
-     * @param hours
+     * 易鹏框架简化版获取文件访问路径 只正对通过通用上传后 或者 移动后获取的路径有效。
+     * @author lipeng
+     * 2025/11/25
+     * @param filePath 文件路径
+     * @param hours 失效时间
      * @return java.lang.String
-     **/
+     */
     public static String getUrl(String filePath, Integer hours) {
         UploadFilePO uploadFilePO = new UploadFilePO(filePath);
         return KPMinioUtil.getUrl(uploadFilePO.getBucketName(), uploadFilePO.getFilePath(), hours);
     }
 
-
-
     /**
-     * @Author lipeng
-     * @Description 获取url地址
-     * @Date 2025/7/8 17:25
-     * 如果通过上传获取到的filePath  第一个/ 前标识通名称 （bucketName） 后面的 标识 存储路径（objectName）
+     * 获取url地址。
+     * @author lipeng
+     * 2025/7/8
      * @param bucketName 存储桶名称
      * @param objectName 存储桶里的对象名称
      * @param time 失效时间
      * @param timeUnit 时间单位
      * @return java.lang.String
-     **/
+     */
     public static String getUrl(String bucketName, String objectName, Integer time, TimeUnit timeUnit) {
         if (KPStringUtil.isEmpty(objectName)) return null;
         if (!bucketExists(bucketName)) return null;
@@ -543,16 +512,14 @@ public final class KPMinioUtil {
         }
     }
 
-
     /**
-     * @Author lipeng
-     * @Description 获取对象的元数据
-     * @Date 2021/12/16 17:21
-     * 如果通过上传获取到的filePath  第一个/ 前标识通名称 （bucketName） 后面的 标识 存储路径（objectName）
+     * 获取对象的元数据。
+     * @author lipeng
+     * 2021/12/16
      * @param bucketName 存储桶名称
      * @param objectName 存储桶里的对象名称
-     * @return io.minio.ObjectStat
-     **/
+     * @return io.minio.StatObjectResponse
+     */
     public static StatObjectResponse statObject(String bucketName, String objectName) {
         if (!bucketExists(bucketName)) return null;
         try {
@@ -654,15 +621,14 @@ public final class KPMinioUtil {
 //
 
     /**
-     * @Author lipeng
-     * @Description 把临时桶里面的文件转入业务数据正式桶中 如果不是临时桶移动 请使用copyObject
-     * 如果通过上传获取到的filePath  第一个/ 前标识通名称 （bucketName） 后面的 标识 存储路径（objectName）
-     * @Date 2022/6/10 14:50
+     * 把临时桶里面的文件转入业务数据正式桶中 如果不是临时桶移动 请使用copyObject。
+     * @author lipeng
+     * 2022/6/10
      * @param folder 保存的文件夹
      * @param filePath 临时文件地址
      * @param newBucketName 新的桶名称
      * @return java.lang.String
-     **/
+     */
     public static String copyTemporaryFile(String folder, String filePath, String newBucketName) {
         if (KPStringUtil.isEmpty(filePath)) return null;
         if (!filePath.startsWith(MinioConstant.TEMPORARY_BUCKET_NAME)) return filePath;

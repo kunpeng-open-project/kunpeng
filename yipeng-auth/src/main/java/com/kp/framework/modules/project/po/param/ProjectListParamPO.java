@@ -2,38 +2,39 @@ package com.kp.framework.modules.project.po.param;
 
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.kp.framework.entity.bo.PageBO;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
 
 /**
- * @Author lipeng
- * @Description 项目列表查询入参
- * @Date 2025-03-14
-**/
+ * 项目列表查询入参。
+ * @author lipeng
+ * 2025-03-14
+ */
 @Data
+@EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
-@ApiModel(value = "ProjectListParamPO对象", description = "项目列表查询入参")
+@Schema(name = "ProjectListParamPO对象", description = "项目列表查询入参")
 public class ProjectListParamPO extends PageBO {
 
-    @ApiModelProperty("项目名称")
+    @Schema(description = "项目名称")
     @TableField("project_name")
     private String projectName;
 
-    @ApiModelProperty("项目编号")
+    @Schema(description = "项目编号")
     @TableField("project_code")
     private String projectCode;
 
-    @ApiModelProperty("项目状态 0停用 1正常")
+    @Schema(description = "项目状态 0停用 1正常")
     @TableField("status")
     private Integer status;
 
-    @ApiModelProperty("管理状态 0不管理 1管理")
+    @Schema(description = "管理状态 0不管理 1管理")
     @TableField("manage")
     private Integer manage;
 
-    @ApiModelProperty("appId")
+    @Schema(description = "appId")
     @TableField("app_id")
     private String appId;
 }

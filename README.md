@@ -120,4 +120,4 @@ yipeng项目根目录
 
 ##快速开始
 
-[快速开始](http://kpopen.cn/kpBack/002_%E5%BF%AB%E9%80%9F%E5%BC%80%E5%A7%8B.html)
+[快速开始](http://kpopen.cn/kpBack-cloud-boot3/001_%E4%BB%8B%E7%BB%8D.html)

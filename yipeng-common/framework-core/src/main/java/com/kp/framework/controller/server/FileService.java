@@ -22,13 +22,11 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
-/* *
- * @Author 李鹏
- * @Description 调用service
- * @Date 2020/5/18 22:38
- * @Param
- * @return
- **/
+/**
+ * 调用service。
+ * @author lipeng
+ * 2020/5/18
+ */
 @Service
 public class FileService {
 
@@ -89,11 +87,12 @@ public class FileService {
 
 
     /**
-     * @Author lipeng
-     * @Description 单个上传文件
-     * @Date 2022/1/7 18:10
-     * @param file 文件
-     **/
+     * 单个上传文件。
+     * @author lipeng
+     * 2022/1/7
+     * @param file  文件
+     * @return com.kp.framework.entity.bo.FileUploadBO
+     */
     public FileUploadBO upload(MultipartFile file) {
 //        before("文件上传", "upload");
         if (file == null) throw new KPServiceException("请选择上传的文件！");
@@ -121,13 +120,13 @@ public class FileService {
         }
     }
 
-
     /**
-     * @Author lipeng
-     * @Description 批量上传文件
-     * @Date 2022/1/6 14:47
+     * 批量上传文件。
+     * @author lipeng
+     * 2022/1/6
      * @param files 文件集合
-     **/
+     * @return java.util.List<com.kp.framework.entity.bo.FileUploadBO>
+     */
     public List<FileUploadBO> uploadByBatch(MultipartFile[] files) {
 //        before("批量文件上传", "uploadByBatch");
         if (files == null) throw new KPServiceException("请选择上传的文件！");
@@ -193,14 +192,12 @@ public class FileService {
 //        }
 //    }
 
-
     /**
-     * @Author lipeng
-     * @Description 下载文件
-     * @Date 2022/3/7 13:34
-     * @param filePO
-     * @return void
-     **/
+     * 下载文件。
+     * @author lipeng
+     * 2022/3/7
+     * @param filePO 文件信息
+     */
     public void downLoad(FilePO filePO) {
         try {
             UploadFilePO uploadFilePO = new UploadFilePO(filePO.getFilePath());
@@ -214,16 +211,14 @@ public class FileService {
         }
     }
 
-
     /**
-     * @Author lipeng
-     * @Description 图片校验
-     * @Date 2022/3/7 13:34
+     * 图片校验上传。
+     * @author lipeng
+     * 2022/3/7
      * @param file 图片
      * @param size 图片大小限制
      * @param ratio 图片比例限制
-     * @return void
-     **/
+     */
     public void imageFormatVerify(MultipartFile file, String size, String ratio) {
         KPVerifyUtil.twoChoiceOne(size, "图片大小限制", ratio, "图片比例限制", false);
         if (KPStringUtil.isNotEmpty(size)) {

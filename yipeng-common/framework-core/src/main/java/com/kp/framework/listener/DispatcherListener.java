@@ -1,26 +1,23 @@
 package com.kp.framework.listener;
 
-
 import com.alibaba.fastjson2.JSONObject;
 
+
 /**
- * @Author lipeng
- * @Description 分发器接口
- * @Date 2020/9/26 10:56
- * @return
- **/
+ * 分发器接口。
+ * @author lipeng
+ * 2020/9/26
+ */
 public interface DispatcherListener {
 
 
     /**
-     * @Author lipeng
-     * @Description  分发器
-     * @Date 2020/9/26 10:58
-     * @param parameter
-     * @return void
-     **/
+     * 分发器。
+     * @author lipeng
+     * 2020/9/26
+     * @param parameter 参数
+     */
     public void execute(JSONObject parameter);
-
 
 
     //DispatcherListenerManager 中的 init 替代了
@@ -35,5 +32,7 @@ public interface DispatcherListener {
 //    public void construct();
 
 
-    default String key(){return "";}
+    default String key() {
+        return "";
+    }
 }

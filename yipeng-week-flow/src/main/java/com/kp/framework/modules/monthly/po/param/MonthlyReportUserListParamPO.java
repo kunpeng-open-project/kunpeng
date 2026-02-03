@@ -4,34 +4,36 @@ import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.kp.framework.entity.bo.PageBO;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
 
+
 /**
- * @Author lipeng
- * @Description 月度计划责任人信息列表查询入参
- * @Date 2025-07-25
-**/
+ * 月度计划责任人信息列表查询入参。
+ * @author lipeng
+ * 2025-07-25
+ */
 @Data
+@EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
-@ApiModel(value = "MonthlyReportUserListParamPO对象", description = "月度计划责任人信息列表查询入参")
+@Schema(name = "MonthlyReportUserListParamPO对象", description = "月度计划责任人信息列表查询入参")
 public class MonthlyReportUserListParamPO extends PageBO {
 
-    @ApiModelProperty("月度计划责任人Id")
+    @Schema(description = "月度计划责任人Id")
     @TableId(value = "mru_id", type = IdType.ASSIGN_UUID)
     private String mruId;
 
-    @ApiModelProperty("用户id")
+    @Schema(description = "用户id")
     @TableField("user_id")
     private String userId;
 
-    @ApiModelProperty("用户姓名")
+    @Schema(description = "用户姓名")
     @TableField("user_name")
     private String userName;
 
-    @ApiModelProperty("备注")
+    @Schema(description = "备注")
     @TableField("remark")
     private String remark;
 }

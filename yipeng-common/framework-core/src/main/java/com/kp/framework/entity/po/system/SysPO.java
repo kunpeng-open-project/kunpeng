@@ -1,31 +1,35 @@
 package com.kp.framework.entity.po.system;
 
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+/**
+ * 操作系统统计信息。
+ * @author lipeng
+ * 2025/10/17
+ */
 @Data
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-@ApiModel(value="Sys", description="Sys")
+@Schema(name = "Sys", description = "服务器信息")
 public class SysPO {
 
-    @ApiModelProperty(value = "服务器名称")
+    @Schema(description = "服务器名称")
     private String computerName;
 
-    @ApiModelProperty(value = "服务器IP")
+    @Schema(description = "服务器IP")
     private String computerIp;
 
-    @ApiModelProperty(value = "项目路径")
+    @Schema(description = "项目路径")
     private String userDir;
 
-    @ApiModelProperty(value = "操作系统")
+    @Schema(description = "操作系统")
     private String osName;
 
-    @ApiModelProperty(value = "系统架构")
+    @Schema(description = "系统架构")
     private String osArch;
 }

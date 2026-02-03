@@ -8,6 +8,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.github.pagehelper.PageHelper;
 import com.kp.framework.common.cache.ProjectCache;
 import com.kp.framework.common.enums.LoginUserTypeEnum;
+import com.kp.framework.entity.bo.KPResult;
 import com.kp.framework.entity.bo.PageBO;
 import com.kp.framework.enums.YesNoEnum;
 import com.kp.framework.exception.KPServiceException;
@@ -21,6 +22,7 @@ import com.kp.framework.utils.kptool.KPJsonUtil;
 import com.kp.framework.utils.kptool.KPLocalDateTimeUtil;
 import com.kp.framework.utils.kptool.KPStringUtil;
 import com.kp.framework.utils.kptool.KPVerifyUtil;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.util.Arrays;
@@ -28,22 +30,22 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 /**
- * @Author lipeng
- * @Description 用户登录记录表 服务实现类
- * @Date 2025-06-10
- **/
+ * 用户登录记录表 服务实现类。
+ * @author lipeng
+ * 2025-06-10
+ */
 @Service
 public class LoginRecordService extends ServiceImpl<LoginRecordMapper, LoginRecordPO> {
 
-
     /**
-     * @Author lipeng
-     * @Description 查询用户登录记录列表
-     * @Date 2025-06-10
-     * @param loginRecordListParamPO
-     * @return java.util.List<LoginRecordPO>
-     **/
-    public List<LoginRecordPO> queryPageList(LoginRecordListParamPO loginRecordListParamPO) {
+     * 查询用户登录记录列表。
+     * @author lipeng
+     * 2025-06-10
+     * @param loginRecordListParamPO 查询参数
+     * @return com.kp.framework.entity.bo.KPResult<com.kp.framework.modules.user.po.LoginRecordPO>
+     */
+    @Cacheable(value = "userLoginRecordCache", keyGenerator = "pageKeyGenerator", unless = "T(com.kp.framework.utils.kptool.KPStringUtil).isEmpty(#result)")
+    public KPResult<LoginRecordPO> queryPageList(LoginRecordListParamPO loginRecordListParamPO) {
         QueryWrapper<LoginRecordPO> queryWrapper = new QueryWrapper<>(LoginRecordPO.class)
                 .eq(KPStringUtil.isNotEmpty(loginRecordListParamPO.getUserName()), "user_name", loginRecordListParamPO.getUserName())
                 .eq(KPStringUtil.isNotEmpty(loginRecordListParamPO.getLoginType()), "login_type", loginRecordListParamPO.getLoginType())
@@ -58,7 +60,7 @@ public class LoginRecordService extends ServiceImpl<LoginRecordMapper, LoginReco
         if (loginRecordListParamPO.getOptions().contains("distinct")) {
             PageHelper.startPage(loginRecordListParamPO.getPageNum(), loginRecordListParamPO.getPageSize());
             list = this.baseMapper.selectList(queryWrapper);
-            if (list.size() == 0) return list;
+            if (KPStringUtil.isEmpty(list)) return KPResult.list(list);
             list = this.baseMapper.selectList(Wrappers.lambdaQuery(LoginRecordPO.class).in(LoginRecordPO::getAlrId, list.stream().map(LoginRecordPO::getAlrId).collect(Collectors.toList())));
         } else {
             PageHelper.startPage(loginRecordListParamPO.getPageNum(), loginRecordListParamPO.getPageSize(), loginRecordListParamPO.getOrderBy(LoginRecordPO.class));
@@ -66,39 +68,38 @@ public class LoginRecordService extends ServiceImpl<LoginRecordMapper, LoginReco
 
         }
 
-        if (list.size() == 0) return list;
-        list.stream().forEach(loginRecordPO -> {
+        if (KPStringUtil.isEmpty(list)) return KPResult.list(list);
+        list.forEach(loginRecordPO -> {
             if (KPStringUtil.isNotEmpty(loginRecordPO.getLoginType()) && loginRecordPO.getLoginType().equals(LoginUserTypeEnum.AUTHORIZATION.code())) {
                 loginRecordPO.setUserName(ProjectCache.getProjectByAppId(loginRecordPO.getUserName()).getProjectName());
             }
             loginRecordPO.setProjectId(ProjectCache.getProjectByProjectId(loginRecordPO.getProjectId()).getProjectName());
         });
-        return list;
+        return KPResult.list(list);
     }
 
-
     /**
-     * @Author lipeng
-     * @Description 根据登录记录id查询详情
-     * @Date 2025-06-10
-     * @param parameter
-     * @return LoginRecordPO
-     **/
+     * 根据登录记录id查询详情。
+     * @author lipeng
+     * 2025-06-10
+     * @param parameter 查询参数
+     * @return com.kp.framework.modules.user.po.LoginRecordPO
+     */
+    @Cacheable(value = "userLoginRecordCache", keyGenerator = "pageKeyGenerator", unless = "T(com.kp.framework.utils.kptool.KPStringUtil).isEmpty(#result)")
     public LoginRecordPO queryDetailsById(JSONObject parameter) {
         LoginRecordPO loginRecordPO = KPJsonUtil.toJavaObject(parameter, LoginRecordPO.class);
         KPVerifyUtil.notNull(loginRecordPO.getAlrId(), "请输入alrId");
         return this.baseMapper.selectById(loginRecordPO.getAlrId());
     }
 
-
     /**
-     * @Author lipeng
-     * @Description 查询本人登录记录列表
-     * @Date 2025/7/7
-     * @param parameter
-     * @return java.util.List<com.kp.framework.modules.user.po.LoginRecordPO>
-     **/
-    public List<LoginRecordPO> queryOneselfList(JSONObject parameter) {
+     * 查询本人登录记录列表。
+     * @author lipeng
+     * 2025/7/7
+     * @param parameter 查询参数
+     * @return com.kp.framework.entity.bo.KPResult<com.kp.framework.modules.user.po.LoginRecordPO>
+     */
+    public KPResult<LoginRecordPO> queryOneselfList(JSONObject parameter) {
         KPVerifyUtil.notNull(parameter.getString("projectCode"), "请输入项目编号");
         KPVerifyUtil.notNull(parameter.getString("pageNum"), "请输入当前页");
         KPVerifyUtil.notNull(parameter.getString("pageSize"), "请输入每页条数");
@@ -109,57 +110,10 @@ public class LoginRecordService extends ServiceImpl<LoginRecordMapper, LoginReco
         if (projectPO.getStatus().equals(YesNoEnum.NO.code())) throw new KPServiceException("该项目已停用！");
 
         LambdaQueryWrapper<LoginRecordPO> queryWrapper = new LambdaQueryWrapper<>();
-        queryWrapper.eq(LoginRecordPO::getUserName, LoginUserBO.getLoginUser().getUser().getUserName())
+        queryWrapper.eq(LoginRecordPO::getUserName, LoginUserBO.getLoginUserNotEmpty().getUser().getUserName())
                 .eq(LoginRecordPO::getProjectId, projectPO.getProjectId());
 
         PageHelper.startPage(parameter.getInteger("pageNum"), parameter.getInteger("pageSize"), new PageBO().getOrderBy(parameter.getString("orderBy"), LoginRecordPO.class));
-        return this.baseMapper.selectList(queryWrapper);
+        return KPResult.list(this.baseMapper.selectList(queryWrapper));
     }
-//
-//
-//    /**
-//     * @Author lipeng
-//     * @Description 新增用户登录记录
-//     * @Date 2025-06-10
-//     * @param loginRecordEditParamPO
-//     * @return void
-//     **/
-//    public void saveLoginRecord(LoginRecordEditParamPO loginRecordEditParamPO) {
-//        LoginRecordPO loginRecordPO = KPJsonUtil.toJavaObjectNotEmpty(loginRecordEditParamPO, LoginRecordPO.class);
-//
-//        if (this.baseMapper.insert(loginRecordPO) == 0)
-//            throw new KPServiceException(ReturnFinishedMessageConstant.ERROR);
-//    }
-//
-//
-//    /**
-//     * @Author lipeng
-//     * @Description 修改用户登录记录
-//     * @Date 2025-06-10
-//     * @param loginRecordEditParamPO
-//     * @return void
-//     **/
-//    public void updateLoginRecord(LoginRecordEditParamPO loginRecordEditParamPO) {
-//        LoginRecordPO loginRecordPO = KPJsonUtil.toJavaObjectNotEmpty(loginRecordEditParamPO, LoginRecordPO.class);
-//
-//        if (this.baseMapper.updateById(loginRecordPO) == 0)
-//            throw new KPServiceException(ReturnFinishedMessageConstant.ERROR);
-//    }
-//
-//
-//    /**
-//     * @Author lipeng
-//     * @Description 批量删除用户登录记录
-//     * @Date 2025-06-10
-//     * @param ids
-//     * @return String
-//     **/
-//    public String batchRemove(List<String> ids) {
-//        if (KPStringUtil.isEmpty(ids)) throw new KPServiceException("请选择要删除的内容！");
-//
-//        Integer row = this.baseMapper.deleteBatchIds(ids);
-//        if (row == 0) throw new KPServiceException(ReturnFinishedMessageConstant.ERROR);
-//
-//        return KPStringUtil.format("删除成功{0}条数据", row);
-//    }
 }

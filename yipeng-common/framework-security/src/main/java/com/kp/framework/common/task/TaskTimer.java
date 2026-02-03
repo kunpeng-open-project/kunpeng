@@ -10,14 +10,11 @@ import org.springframework.stereotype.Component;
 @Slf4j
 public class TaskTimer {
 
-
     /**
-     * @Author lipeng
-     * @Description 清空授权登录次数
-     * @Date 2022/5/19
-     * @param
-     * @return void
-     **/
+     * 清空授权登录次数。
+     * @author lipeng
+     * 2022/5/19
+     */
     @Scheduled(cron = "0 0 0 * * ?")
     private void process() {
         if (!CommonUtil.lock("authenticationToken", 11, 300))

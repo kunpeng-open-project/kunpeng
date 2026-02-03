@@ -1,0 +1,36 @@
+spring:
+  cloud:
+    nacos:
+      username: nacos
+      password: nacos123LP@#
+      discovery:
+        server-addr: http://nas.kunpengtool.cn
+        namespace: 62650fa8-471d-4f50-81b5-dd34119649bc
+      config:
+        server-addr: http://nas.kunpengtool.cn
+        namespace: 62650fa8-471d-4f50-81b5-dd34119649bc
+        group: DEFAULT_GROUP
+        file-extension: yaml
+        prefix: weekFlow
+        extension-configs:
+          - data-id: yipeng.core.yaml
+            group: DEFAULT_GROUP
+            refresh: true
+
+logging:
+  level:
+    feign.client: DEBUG
+    com.kp.framework.modules: DEBUG
+#    org.springframework.security: DEBUG
+#    # ============ 新增：打印缓存核心日志 ============
+#    org.springframework.cache: DEBUG
+#    org.springframework.data.redis: TRACE
+#    com.github.benmanes.caffeine: DEBUG
+#    # Lettuce 连接池日志
+#    io.lettuce.core: DEBUG
+#    # Spring Redis 连接池日志
+#    org.springframework.data.redis.connection.lettuce: DEBUG
+
+
+log:
+  path: ./logs/weekFlow   # 相对路径：文件夹不存在自动创建

@@ -1,5 +1,9 @@
 package com.kp.framework.constant;
 
+/**
+ * 数据修改类型常量。
+ * @author lipeng
+ */
 public class ObjectChangeLogOperateType {
 
     //新增

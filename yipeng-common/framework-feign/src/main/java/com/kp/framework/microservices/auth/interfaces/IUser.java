@@ -17,12 +17,12 @@ import java.util.List;
 public interface IUser {
 
     /**
-     * @Author lipeng
-     * @Description 根据用户id集合查询用户列表
-     * @Date 2025/8/26
-     * @param userIds
-     * @return com.kp.framework.entity.bo.KPResult<com.alibaba.fastjson2.JSONObject>
-     **/
+     * 根据用户id集合查询用户列表。
+     * @author lipeng
+     * 2025/8/26
+     * @param userIds 用户id集合
+     * @return com.kp.framework.entity.bo.KPResult<java.util.List<com.alibaba.fastjson2.JSONObject>>
+     */
     @PostMapping(value = "/api/user/ids/list", headers = {"content-type=application/json"})
     KPResult<List<JSONObject>> queryUserListByIds(@RequestBody List<String> userIds);
 }

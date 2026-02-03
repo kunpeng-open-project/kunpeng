@@ -2,14 +2,14 @@ package com.kp.framework.modules.week.controller;
 
 import com.alibaba.fastjson2.JSONObject;
 import com.github.xiaoymin.knife4j.annotations.ApiSupport;
-import com.kp.framework.annotation.KPApiJsonlParam;
+import com.kp.framework.annotation.KPApiJsonParam;
+import com.kp.framework.annotation.sub.KPJsonField;
 import com.kp.framework.entity.bo.KPResult;
 import com.kp.framework.modules.week.po.customer.WeeklyPalanCustomerCustomerPO;
 import com.kp.framework.modules.week.po.customer.WeellyTaskSummaryCustomerPO;
 import com.kp.framework.modules.week.service.WeeklyPalanService;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiModelProperty;
-import io.swagger.annotations.ApiOperation;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -25,26 +25,26 @@ import java.util.List;
  **/
 @RestController
 @RequestMapping("/week/weekly/palan/statistics")
-@Api(tags = "周计划统计相关接口", value = "周计划统计相关接口")
-@ApiSupport(order = 5)
+@Tag(name = "周计划统计相关接口")
+@ApiSupport(author = "lipeng", order = 31)
 public class WeeklyPalanStatisticsController {
 
     @Autowired
     private WeeklyPalanService weeklyPalanService;
 
-    @ApiOperation(value = "查询本人月计划拆分完成度")
+    @Operation(summary = "查询本人月计划拆分完成度")
     @PostMapping("/my/completion")
-    @KPApiJsonlParam({
-            @ApiModelProperty(name = "planTime", value = "月计划时间 yyyy-mm", required = true)
+    @KPApiJsonParam({
+            @KPJsonField(name = "planTime", description = "月计划时间 yyyy-mm", required = true)
     })
     public KPResult<List<WeeklyPalanCustomerCustomerPO>> queryWeeklyPalanCustomer(@RequestBody JSONObject parameter) {
         return KPResult.success(weeklyPalanService.queryWeeklyPalanCustomer(parameter));
     }
 
-    @ApiOperation(value = "查询本人周计划统计数")
+    @Operation(summary = "查询本人周计划统计数")
     @PostMapping("/my/number")
-    @KPApiJsonlParam({
-            @ApiModelProperty(name = "planTime", value = "月计划时间 yyyy-mm", required = true)
+    @KPApiJsonParam({
+            @KPJsonField(name = "planTime", description = "月计划时间 yyyy-mm", required = true)
     })
     public KPResult<WeellyTaskSummaryCustomerPO> queryWeeklyNumber(@RequestBody JSONObject parameter) {
         return KPResult.success(weeklyPalanService.queryWeeklyNumber(parameter));

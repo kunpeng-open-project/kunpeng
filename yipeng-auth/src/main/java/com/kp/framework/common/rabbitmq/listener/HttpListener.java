@@ -27,22 +27,25 @@ import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
- * @Author lipeng
- * @Description http 接口调用记录
- * @Date 2024/2/1
- * @return
- **/
+ * http接口调用记录。
+ * @author lipeng
+ * 2024/2/1
+ */
 @Component
 @Slf4j
 public class HttpListener {
 
-    public List<HttpLogMqCustomerPO> rows = new CopyOnWriteArrayList();
+    public List<HttpLogMqCustomerPO> rows = new CopyOnWriteArrayList<HttpLogMqCustomerPO>();
     @Autowired
     private HttpLogMapper httpLogMapper;
     @Autowired
     private MqProperties mqProperties;
 
-
+    /**
+     * 正常队列消费
+     * @author lipeng
+     * 2025/5/21
+     */
     @RabbitListener(queues = HttpRabbitMqConfig.NORMAL_QUEUE)
     public void interfaceQueues(List<Message> messages, Channel channel) throws IOException {
         log.info(KPStringUtil.format("【mq开始消费Http请求记录】 消费条数{0}, 入库条数：{1} 目前已有条数：{2}", messages.size(), mqProperties.getHttpConsumeNum(), rows.size() + messages.size()));
@@ -62,18 +65,23 @@ public class HttpListener {
             if (!KPCollectionUtil.insertBatch(httpLogMapper, KPJsonUtil.toJavaObjectList(rows, HttpLogPO.class), 100))
                 this.disposeFail(channel);
 
-            for (HttpLogMqCustomerPO row : rows){
+            for (HttpLogMqCustomerPO row : rows) {
                 channel.basicAck(row.getDeliveryTag(), false);
             }
             rows.clear();
-        }catch (Exception ex){
+        } catch (Exception ex) {
             this.disposeFail(channel);
         }
     }
 
 
+    /**
+     * 死信队列消费异常信息。
+     * @author lipeng
+     * 2025/5/21
+     */
     @RabbitListener(queues = HttpRabbitMqConfig.DEAD_QUEUE)
-    public void interfaceDeadQueues(List<Message> messages, Channel channel) throws InterruptedException, IOException {
+    public void interfaceDeadQueues(List<Message> messages, Channel channel) {
         log.info(KPStringUtil.format("【mq开始消费死信队列中的Http记录】 消费条数{0}", messages.size()));
 
         messages.forEach(message -> {
@@ -86,7 +94,9 @@ public class HttpListener {
             if (httpLogMapper.insert(body) == 1) {
                 try {
                     channel.basicAck(message.getMessageProperties().getDeliveryTag(), false);
-                } catch (IOException e) {}
+                } catch (IOException e) {
+                    log.error("【mq死信队列异常】 死信队列异常：{}", e.getMessage());
+                }
             }
         });
     }
@@ -94,7 +104,7 @@ public class HttpListener {
 
     private void createCommon(HttpLogMqCustomerPO body) {
         OperationUserMessageBO userMessageBO = body.getUserMessage();
-        if (userMessageBO != null){
+        if (userMessageBO != null) {
             body.setCreateUserId(userMessageBO.getId());
             body.setCreateUserName(userMessageBO.getName());
             body.setUpdateUserId(userMessageBO.getId());
@@ -113,21 +123,23 @@ public class HttpListener {
             JSONObject result = KPJsonUtil.toJson(body.getResult());
             body.setStatus(result.getInteger("code"));
             body.setMessage(StringUtils.abbreviate(result.getString("message"), 990));
-        }catch (Exception ex){}
+        } catch (Exception ex) {
+            log.error("【mq解析结果失败】{}", ex.getMessage());
+        }
     }
 
     /**
-     * @Author lipeng
-     * @Description 移动到死信队列
-     * @Date 2024/2/1
-     * @param channel
-     * @return void
-     **/
+     * 移动到死信队列。
+     * @author lipeng
+     * 2024/2/1
+     */
     private void disposeFail(Channel channel) {
-        rows.forEach(row->{
+        rows.forEach(row -> {
             try {
                 channel.basicReject(row.getDeliveryTag(), false);
-            } catch (IOException e) {}
+            } catch (IOException e) {
+                log.error("【mq移动到死信队列失败】{}", e.getMessage());
+            }
         });
         rows.clear();
     }

@@ -29,66 +29,60 @@ public class FeignAuthUtil {
     private IUser user;
 
     /**
-     * @Author lipeng
-     * @Description 根据岗位id查询岗位信息
-     * @Date 2025/8/1
+     * 根据岗位id查询岗位信息。
+     * @author lipeng
+     * 2025/8/1
      * @param postId 岗位id
-     * @return com.alibaba.fastjson2.JSONObject
-     **/
+     * @return com.kp.framework.microservices.auth.po.PostFeignPO
+     */
     public final PostFeignPO queryPostById(String postId) {
         KPResult<JSONObject> row = post.queryPostById(new KPJSONFactoryUtil().put("postId", postId).build());
         return FeignVerifyUtil.verifyBySingle(ServerApplicationNameConConstant.AUTH_NAME, row, "查询岗位信息", PostFeignPO.class);
     }
 
-
-
     /**
-     * @Author lipeng
-     * @Description 根据岗位id集合查询岗位列表
-     * @Date 2025/9/16
-     * @param postIds
+     * 根据岗位id集合查询岗位列表。
+     * @author lipeng
+     * 2025/9/16
+     * @param postIds 岗位id集合
      * @return java.util.List<com.kp.framework.microservices.auth.po.PostFeignPO>
-     **/
+     */
     public final List<PostFeignPO> queryPostIdList(List<String> postIds) {
         KPResult<List<JSONObject>> row = post.queryPostIdList(postIds);
         return FeignVerifyUtil.verifyList(ServerApplicationNameConConstant.AUTH_NAME, row, "根据岗位id集合查询岗位列表", PostFeignPO.class);
     }
 
-
     /**
-     * @Author lipeng
-     * @Description 根据部门id查询部门信息
-     * @Date 2025/8/1
-     * @param deptId
-     * @return com.alibaba.fastjson2.JSONObject
-     **/
+     * 根据部门id查询部门信息。
+     * @author lipeng
+     * 2025/8/1
+     * @param deptId 部门id
+     * @return com.kp.framework.microservices.auth.po.DeptFeignPO
+     */
     public final DeptFeignPO queryDeptById(String deptId) {
         KPResult<JSONObject> row = dept.queryDeptById(new KPJSONFactoryUtil().put("deptId", deptId).build());
         return FeignVerifyUtil.verifyBySingle(ServerApplicationNameConConstant.AUTH_NAME, row, "查询部门信息", DeptFeignPO.class);
     }
 
-
     /**
-     * @Author lipeng
-     * @Description 根据部门id集合查询部门列表
-     * @Date 2025/9/16
-     * @param deptIds
+     * 根据部门id集合查询部门列表。
+     * @author lipeng
+     * 2025/9/16
+     * @param deptIds 部门id集合
      * @return java.util.List<com.kp.framework.microservices.auth.po.DeptFeignPO>
-     **/
+     */
     public final List<DeptFeignPO> queryDeptIdList(List<String> deptIds) {
         KPResult<List<JSONObject>> row = dept.queryDeptIdList(deptIds);
         return FeignVerifyUtil.verifyList(ServerApplicationNameConConstant.AUTH_NAME, row, "根据部门id集合查询部门列表", DeptFeignPO.class);
     }
 
-
-
     /**
-     * @Author lipeng
-     * @Description 根据用户id集合查询用户列表
-     * @Date 2025/8/26
-     * @param userIds
-     * @return com.alibaba.fastjson2.JSONObject
-     **/
+     * 根据用户id集合查询用户列表。
+     * @author lipeng
+     * 2025/8/26
+     * @param userIds 用户id集合
+     * @return java.util.List<com.kp.framework.microservices.auth.po.UserFeignPO>
+     */
     public final List<UserFeignPO> queryUserListByIds(List<String> userIds) {
         KPResult<List<JSONObject>> row = user.queryUserListByIds(userIds);
         return FeignVerifyUtil.verifyList(ServerApplicationNameConConstant.AUTH_NAME, row, "根据用户id集合查询用户列表", UserFeignPO.class);

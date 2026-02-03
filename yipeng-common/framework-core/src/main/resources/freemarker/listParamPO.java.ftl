@@ -13,11 +13,11 @@ import com.kp.framework.entity.bo.PageBO;
 <#if springdoc>
 import io.swagger.v3.oas.annotations.media.Schema;
 <#elseif swagger>
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 </#if>
 <#if entityLombokModel>
 import lombok.Data;
+import lombok.EqualsAndHashCode;
     <#if chainModel>
 import lombok.experimental.Accessors;
     </#if>
@@ -26,20 +26,21 @@ import lombok.experimental.Accessors;
 <#assign commentMessage = table.comment?replace("表", "")>
 
 /**
- * @Author ${author}
- * @Description ${commentMessage!}列表查询入参
- * @Date ${date}
-**/
+ * ${commentMessage!}列表查询入参
+ * @author ${author}
+ * ${date}
+ */
 <#if entityLombokModel>
 @Data
+@EqualsAndHashCode(callSuper = false)
     <#if chainModel>
 @Accessors(chain = true)
     </#if>
 </#if>
 <#if springdoc>
-@Schema(name = "${entity}", description = "${table.comment!}")
+@Schema(name = "${EntityParam}", description = "${table.comment!}")
 <#elseif swagger>
-@ApiModel(value = "${EntityParam}ListParamPO对象", description = "${commentMessage!}列表查询入参")
+@Schema(name = "${EntityParam}EditParamPO", description = "${table.comment!}列表查询入参")
 </#if>
 public class ${EntityParam}ListParamPO extends PageBO {
 <#-- ----------  BEGIN 字段循环遍历  ---------->
@@ -50,9 +51,9 @@ public class ${EntityParam}ListParamPO extends PageBO {
 
     <#if field.comment!?length gt 0>
         <#if springdoc>
-            @Schema(description = "${field.comment}")
+    @Schema(description = "${field.comment}")
         <#elseif swagger>
-    @ApiModelProperty("${field.comment}")
+    @Schema(description = "${field.comment}")
         <#else>
             /**
             * ${field.comment}

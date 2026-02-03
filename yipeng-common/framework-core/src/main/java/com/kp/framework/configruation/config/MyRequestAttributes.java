@@ -1,22 +1,21 @@
 package com.kp.framework.configruation.config;
 
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.core.task.TaskDecorator;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.web.context.request.RequestAttributes;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
-import javax.servlet.http.HttpServletRequest;
 import java.util.Enumeration;
 
-
 /**
- * @Author lipeng
- * @Description 自定义RequestAttributes 进入新线程前复制 RequestAttributes 用于在新线程后能获取到RequestAttributes
- * @Date 2025/9/25
+ * 自定义RequestAttributes 进入新线程前复制 RequestAttributes 用于在新线程后能获取到RequestAttributes。
+ * @author lipeng
+ * 2025/9/25l
  * @return
- **/
-public class MyRequestAttributes implements TaskDecorator  {
+ */
+public class MyRequestAttributes implements TaskDecorator {
 
     @Override
     public Runnable decorate(Runnable runnable) {

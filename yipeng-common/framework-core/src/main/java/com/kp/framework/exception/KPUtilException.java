@@ -1,17 +1,18 @@
 package com.kp.framework.exception;
 
+import lombok.Getter;
 
 /**
- * @Author lipeng
- * @Description 工具类异常
- * @Date 2025/1/17 17:19
- * @return
- **/
+ * 工具类异常。
+ * @author lipeng
+ * 2025/1/17
+ */
+@Getter
 public class KPUtilException extends RuntimeException {
 
-    private String message;
+    private final String message;
 
-    public KPUtilException(String message){
+    public KPUtilException(String message) {
         super(message);
         this.message = message;
     }

@@ -1,19 +1,26 @@
 package com.kp.framework.modules.welcome.po.customer;
 
 
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
 
-@Data
-@Accessors(chain = true)
-@ApiModel(value="LoginRecordStatisticsCustomerPO", description="LoginRecordStatisticsCustomerPO")
-public class LoginRecordStatisticsCustomerPO {
+import java.io.Serial;
+import java.io.Serializable;
 
-    @ApiModelProperty(value = "时间")
+@Data
+@EqualsAndHashCode(callSuper = false)
+@Accessors(chain = true)
+@Schema(name = "LoginRecordStatisticsCustomerPO", description = "LoginRecordStatisticsCustomerPO")
+public class LoginRecordStatisticsCustomerPO implements Serializable {
+
+    @Serial
+    private static final long serialVersionUID = 1L;
+
+    @Schema(description = "时间")
     private String createDate;
 
-    @ApiModelProperty(value = "登录次数")
+    @Schema(description = "登录次数")
     private Integer number;
 }

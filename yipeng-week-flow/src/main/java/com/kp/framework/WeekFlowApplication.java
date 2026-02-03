@@ -1,6 +1,5 @@
 package com.kp.framework;
 
-import com.alibaba.druid.spring.boot.autoconfigure.DruidDataSourceAutoConfigure;
 import com.kp.framework.utils.kptool.KPIconUtil;
 import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.SpringApplication;
@@ -13,14 +12,13 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 
 import java.util.Arrays;
 
-@SpringBootApplication(exclude = {DruidDataSourceAutoConfigure.class} )
-@MapperScan({"com.**.modules.*.mapper","com.**.mapper"})
+@SpringBootApplication
+@MapperScan({"com.**.modules.*.mapper", "com.**.mapper"})
 @EnableFeignClients("com.kp.framework.microservices.*.interfaces")
 @EnableConfigurationProperties
 @EnableAsync
 @EnableScheduling
 @EnableDiscoveryClient
-//@EnableHystrix
 public class WeekFlowApplication {
 
     public static void main(String[] args) {

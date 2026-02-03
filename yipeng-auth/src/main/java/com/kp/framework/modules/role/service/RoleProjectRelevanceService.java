@@ -24,10 +24,10 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 /**
- * @Author lipeng
- * @Description 角色项目关联表 服务实现类
- * @Date 2025-03-31
- **/
+ * 角色项目关联表 服务实现类。
+ * @author lipeng
+ * 2025-03-31
+ */
 @Service
 public class RoleProjectRelevanceService extends ServiceImpl<RoleProjectRelevanceMapper, RoleProjectRelevancePO> {
 
@@ -35,20 +35,18 @@ public class RoleProjectRelevanceService extends ServiceImpl<RoleProjectRelevanc
     @Autowired
     private ProjectMapper projectMapper;
 
-
     /**
-     * @Author lipeng
-     * @Description 新增或者修改角色项目关联关系
-     * @Date 2025/3/31
-     * @param projectIds
-     * @param rolePO
-     * @return void
-     **/
+     * 新增或者修改角色项目关联关系。
+     * @author lipeng
+     * 2025/3/31
+     * @param projectIds 项目id
+     * @param rolePO 角色
+     */
     public void saveOrUpdate(List<String> projectIds, RolePO rolePO) {
         if (KPStringUtil.isEmpty(projectIds)) return;
         //删除历史
         List<String> arprIds = this.baseMapper.selectList(Wrappers.lambdaQuery(RoleProjectRelevancePO.class).in(RoleProjectRelevancePO::getRoleId, rolePO.getRoleId())).stream().map(RoleProjectRelevancePO::getArprId).collect(Collectors.toList());
-        if (arprIds != null && arprIds.size() != 0) this.baseMapper.deleteAllByIds(arprIds);
+        if (KPStringUtil.isNotEmpty(arprIds)) this.baseMapper.kpDeleteAllByIds(arprIds);
         List<RoleProjectRelevancePO> list = new ArrayList<>();
         projectIds.forEach(projectId -> {
             RoleProjectRelevancePO rp = new RoleProjectRelevancePO();
@@ -57,18 +55,17 @@ public class RoleProjectRelevanceService extends ServiceImpl<RoleProjectRelevanc
             list.add(rp);
         });
 
-        if (list.size() != 0 && this.baseMapper.insertBatchSomeColumn(list) == 0)
+        if (KPStringUtil.isNotEmpty(list) && this.baseMapper.kpInsertBatchSomeColumn(list) == 0)
             throw new KPServiceException(ReturnFinishedMessageConstant.ERROR);
     }
 
-
     /**
-     * @Author lipeng
-     * @Description 查询角色关联的项目下拉框
-     * @Date 2025/5/10
-     * @param parameter
+     * 查询角色关联的项目下拉框。
+     * @author lipeng
+     * 2025/5/10
+     * @param parameter 查询参数
      * @return java.util.List<com.kp.framework.entity.bo.DictionaryBO>
-     **/
+     */
     public List<DictionaryBO> queryRoleProjectSelect(JSONObject parameter) {
         KPVerifyUtil.notNull(parameter.getString("roleId"), "请输入角色id！");
 

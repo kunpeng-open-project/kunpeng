@@ -24,6 +24,8 @@ import com.kp.framework.utils.kptool.KPJsonUtil;
 import com.kp.framework.utils.kptool.KPServiceUtil;
 import com.kp.framework.utils.kptool.KPStringUtil;
 import com.kp.framework.utils.kptool.KPVerifyUtil;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.util.HashSet;
@@ -35,21 +37,21 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 /**
- * @Author lipeng
- * @Description 菜单信息表 服务实现类
- * @Date 2025-04-11
- **/
+ * 菜单信息表 服务实现类。
+ * @author lipeng
+ * 2025-04-11
+ */
 @Service
 public class MenuService extends ServiceImpl<MenuMapper, MenuPO> {
 
-
     /**
-     * @Author lipeng
-     * @Description 查询菜单信息列表
-     * @Date 2025-04-11
-     * @param menuListParamPO
-     * @return java.util.List<MenuPO>
-     **/
+     * 查询菜单信息列表。
+     * @author lipeng
+     * 2025-04-11
+     * @param menuListParamPO 查询参数
+     * @return java.util.List<com.kp.framework.modules.menu.po.customer.MenuCustomerPO>
+     */
+    @Cacheable(value = "menuCache", keyGenerator = "pageKeyGenerator", unless = "T(com.kp.framework.utils.kptool.KPStringUtil).isEmpty(#result)")
     public List<MenuCustomerPO> queryList(MenuListParamPO menuListParamPO) {
         PageHelper.orderBy(new PageBO().getOrderBy(menuListParamPO.getOrderBy(), MenuPO.class));
 
@@ -79,24 +81,23 @@ public class MenuService extends ServiceImpl<MenuMapper, MenuPO> {
         }
 
         // 过滤出需要包含的菜单
-        List<MenuCustomerPO> filteredList = list.stream().filter(menu -> includedIds.contains(menu.getMenuId())).collect(Collectors.toList());
+        List<MenuCustomerPO> filteredList = list.stream().filter(menu -> includedIds.contains(menu.getMenuId())).toList();
         // 构建树形结构
         Map<String, List<MenuCustomerPO>> map = filteredList.stream().collect(Collectors.groupingBy(MenuCustomerPO::getParentId));
         //设置子结构
         filteredList.forEach(menuPO -> menuPO.setChildren(map.get(menuPO.getMenuId())));
         //删除不是跟节点的内容
-        List<MenuCustomerPO> body = filteredList.stream().filter(menuPO -> menuPO.getParentId().equals("0")).collect(Collectors.toList());
-        return body;
+        return filteredList.stream().filter(menuPO -> menuPO.getParentId().equals("0")).collect(Collectors.toList());
     }
 
-
     /**
-     * @Author lipeng
-     * @Description 根据菜单Id查询详情
-     * @Date 2025-04-11
-     * @param parameter
-     * @return MenuPO
-     **/
+     * 根据菜单Id查询详情。
+     * @author lipeng
+     * 2025-04-11
+     * @param parameter 查询参数
+     * @return com.kp.framework.modules.menu.po.MenuPO
+     */
+    @Cacheable(value = "menuCache", keyGenerator = "pageKeyGenerator", unless = "T(com.kp.framework.utils.kptool.KPStringUtil).isEmpty(#result)")
     public MenuPO queryDetailsById(JSONObject parameter) {
         MenuPO menuPO = KPJsonUtil.toJavaObject(parameter, MenuPO.class);
         KPVerifyUtil.notNull(menuPO.getMenuId(), "请输入menuId");
@@ -108,15 +109,13 @@ public class MenuService extends ServiceImpl<MenuMapper, MenuPO> {
         return row;
     }
 
-
     /**
-     * @Author lipeng
-     * @Description 新增菜单信息
-     * @Date 2025-04-11
-     * @param menuEditParamPO
-     * @return void
-     **/
-
+     * 新增菜单信息。
+     * @author lipeng
+     * 2025-04-11
+     * @param menuEditParamPO 新增参数
+     */
+    @CacheEvict(value = "menuCache", allEntries = true)
     public void saveMenu(MenuEditParamPO menuEditParamPO) {
         if (ProjectCache.getProjectByProjectId(menuEditParamPO.getProjectId()) == null)
             throw new KPServiceException("项目不存在");
@@ -153,14 +152,13 @@ public class MenuService extends ServiceImpl<MenuMapper, MenuPO> {
         menuEditParamPO.setMenuId(menuPO.getMenuId());
     }
 
-
     /**
-     * @Author lipeng
-     * @Description 修改菜单信息
-     * @Date 2025-04-11
-     * @param menuEditParamPO
-     * @return void
-     **/
+     * 修改菜单信息。
+     * @author lipeng
+     * 2025-04-11
+     * @param menuEditParamPO 修改参数
+     */
+    @CacheEvict(value = "menuCache", allEntries = true)
     public void updateMenu(MenuEditParamPO menuEditParamPO) {
         if (ProjectCache.getProjectByProjectId(menuEditParamPO.getProjectId()) == null)
             throw new KPServiceException("项目不存在");
@@ -193,40 +191,36 @@ public class MenuService extends ServiceImpl<MenuMapper, MenuPO> {
         KPServiceUtil.getBean(MenuUtil.class).asyncUpdateChildrenAncestors(menuPO.getMenuId(), menuPO.getProjectId());
     }
 
-
-
-
-
-
     /**
-     * @Author lipeng
-     * @Description 批量删除菜单信息
-     * @Date 2025-04-11
-     * @param ids
-     * @return String
-     **/
+     * 批量删除菜单信息。
+     * @author lipeng
+     * 2025-04-11
+     * @param ids 删除id集合
+     * @return java.lang.String
+     */
+    @CacheEvict(value = "menuCache", allEntries = true)
     public String batchRemove(List<String> ids) {
         if (KPStringUtil.isEmpty(ids)) throw new KPServiceException("请选择要删除的内容！");
 
-        Integer row = this.baseMapper.deleteBatchIds(ids);
+        int row = this.baseMapper.deleteByIds(ids);
         if (row == 0) throw new KPServiceException(ReturnFinishedMessageConstant.ERROR);
 
         LambdaQueryWrapper<MenuPO> wrapper = Wrappers.lambdaQuery();
         for (String id : ids) wrapper.like(MenuPO::getAncestors, id).or();
         List<MenuPO> menuPOList = this.baseMapper.selectList(wrapper);
-        if (menuPOList.size() != 0) throw new KPServiceException("该菜单下存在子菜单， 不允许删除！");
+        if (KPStringUtil.isNotEmpty(menuPOList)) throw new KPServiceException("该菜单下存在子菜单， 不允许删除！");
 
         return KPStringUtil.format("删除成功{0}条数据", row);
     }
 
-
     /**
-     * @Author lipeng
-     * @Description 查询菜单下拉框
-     * @Date 2025/4/18
-     * @param parameter
+     * 查询菜单下拉框。
+     * @author lipeng
+     * 2025/4/18
+     * @param parameter 查询参数
      * @return java.util.List<com.kp.framework.entity.bo.DictionaryChildrenBO>
-     **/
+     */
+    @Cacheable(value = "menuCache", keyGenerator = "pageKeyGenerator", unless = "T(com.kp.framework.utils.kptool.KPStringUtil).isEmpty(#result)")
     public List<DictionaryChildrenBO> queryMenuSelect(JSONObject parameter) {
         KPVerifyUtil.notNull(parameter.getString("projectId"), "请输入项目Id");
         KPVerifyUtil.notNull(parameter.getString("isTree"), "请输入结构类型");
@@ -247,15 +241,13 @@ public class MenuService extends ServiceImpl<MenuMapper, MenuPO> {
         return MenuUtil.assembleMenuSelect(menuList);
     }
 
-
-
     /**
-     * @Author lipeng
-     * @Description 设置排序
-     * @Date 2025/4/20
-     * @param menuSortParamPOList
-     * @return void
-     **/
+     * 设置排序。
+     * @author lipeng
+     * 2025/4/20
+     * @param menuSortParamPOList 排序参数
+     */
+    @CacheEvict(value = "menuCache", allEntries = true)
     public void doSetSort(List<MenuSortParamPO> menuSortParamPOList) {
         List<MenuPO> meunPOList = menuSortParamPOList.stream()
                 .map(param -> KPJsonUtil.toJavaObject(param, MenuPO.class))
@@ -263,14 +255,13 @@ public class MenuService extends ServiceImpl<MenuMapper, MenuPO> {
         this.updateBatchById(meunPOList);
     }
 
-
     /**
-     * @Author lipeng
-     * @Description 设置菜单启用状态
-     * @Date 2025/4/20
-     * @param parameter
-     * @return void
-     **/
+     * 设置菜单启用状态。
+     * @author lipeng
+     * 2025/4/20
+     * @param parameter 启用参数
+     */
+    @CacheEvict(value = "menuCache", allEntries = true)
     public void doEnable(JSONObject parameter) {
         MenuPO menuParameter = KPJsonUtil.toJavaObjectNotEmpty(parameter, MenuPO.class);
         KPVerifyUtil.notNull(menuParameter.getMenuId(), "请输入菜单id");
@@ -284,14 +275,13 @@ public class MenuService extends ServiceImpl<MenuMapper, MenuPO> {
             throw new KPServiceException(ReturnFinishedMessageConstant.ERROR);
     }
 
-
     /**
-     * @Author lipeng
-     * @Description 复制菜单
-     * @Date 2025/4/20
-     * @param parameter
-     * @return void
-     **/
+     * 复制菜单。
+     * @author lipeng
+     * 2026/1/16
+     * @param parameter 复制参数
+     */
+    @CacheEvict(value = "menuCache", allEntries = true)
     public void doCopy(JSONObject parameter) {
         MenuPO menuParameter = KPJsonUtil.toJavaObjectNotEmpty(parameter, MenuPO.class);
         KPVerifyUtil.notNull(menuParameter.getMenuId(), "请输入菜单id");

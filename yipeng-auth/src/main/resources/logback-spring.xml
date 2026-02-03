@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!-- 核心修正：指定Spring Boot的Configurator，支持springProperty -->
+<configuration scan="true" scanPeriod="30 seconds" contextName="daoben-framework">
+    <contextListener class="ch.qos.logback.classic.jul.LevelChangePropagator">
+        <resetJUL>true</resetJUL>
+    </contextListener>
+
+    <!-- 文件存储地址 读取application.yml中的log.path配置 -->
+    <springProperty name="logPath" scope="context" source="log.path" defaultValue="./logs"/>
+    <!-- 自动创建history子目录（解决目录不存在问题） -->
+    <property name="archivePath" value="${logPath}/history"/>
+    <!-- 统一日志格式 -->
+    <property name="LOG_PATTERN" value="%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{56} - %msg%n"/>
+    <property name="LOG_CHARSET" value="UTF-8"/>
+
+    <!-- 开发打印控制台日志 -->
+    <include resource="org/springframework/boot/logging/logback/base.xml"/>
+
+    <!-- 1. 全部日志 Appender（核心修正：additivity=false 避免重复） -->
+    <appender name="all" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <!-- 多进程安全写入 -->
+        <prudent>false</prudent>
+        <File>${logPath}/all.log</File>
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <fileNamePattern>${archivePath}/all-%d{yyyyMMdd}.%i.log</fileNamePattern>
+            <!-- 修正：保留60天（原180天） -->
+            <maxHistory>60</maxHistory>
+            <maxFileSize>30MB</maxFileSize>
+            <totalSizeCap>1GB</totalSizeCap>
+            <!-- 自动创建归档目录 -->
+            <cleanHistoryOnStart>true</cleanHistoryOnStart>
+        </rollingPolicy>
+        <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+            <pattern>${LOG_PATTERN}</pattern>
+            <charset>${LOG_CHARSET}</charset>
+        </encoder>
+    </appender>
+    <root level="INFO">
+        <appender-ref ref="all"/>
+    </root>
+
+    <!-- 2. HTTP请求日志 Appender（核心修正：additivity=false） -->
+    <appender name="okHttp" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <prudent>false</prudent>
+        <File>${logPath}/http.log</File>
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <fileNamePattern>${archivePath}/http-%d{yyyyMMdd}.%i.log</fileNamePattern>
+            <maxHistory>60</maxHistory>
+            <maxFileSize>30MB</maxFileSize>
+            <totalSizeCap>1GB</totalSizeCap>
+            <cleanHistoryOnStart>true</cleanHistoryOnStart>
+        </rollingPolicy>
+        <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+            <pattern>${LOG_PATTERN}</pattern>
+            <charset>${LOG_CHARSET}</charset>
+        </encoder>
+    </appender>
+    <logger name="com.kp.framework.utils.kptool.KPOkHttpHelperUtil" level="info" additivity="true">
+        <appender-ref ref="okHttp"/>
+    </logger>
+
+    <!-- 5. Feign日志 Appender（核心修正：additivity=false） -->
+    <appender name="feignLoad" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <prudent>false</prudent>
+        <File>${logPath}/feign.log</File>
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <fileNamePattern>${archivePath}/feign-%d{yyyyMMdd}.%i.log</fileNamePattern>
+            <maxHistory>60</maxHistory>
+            <maxFileSize>30MB</maxFileSize>
+            <totalSizeCap>1GB</totalSizeCap>
+            <cleanHistoryOnStart>true</cleanHistoryOnStart>
+        </rollingPolicy>
+        <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+            <pattern>${LOG_PATTERN}</pattern>
+            <charset>${LOG_CHARSET}</charset>
+        </encoder>
+    </appender>
+    <logger name="com.kp.framework.configruation.config.FeignAspectConfig" level="info" additivity="true">
+        <appender-ref ref="feignLoad"/>
+    </logger>
+
+</configuration>

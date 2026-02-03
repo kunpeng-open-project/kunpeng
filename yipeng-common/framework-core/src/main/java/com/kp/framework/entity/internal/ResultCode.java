@@ -1,11 +1,10 @@
 package com.kp.framework.entity.internal;
 
 /**
- * @Author lipeng
- * @Description 系统返回码
- * @Date 2020/7/15
- * @return
- **/
+ * 系统返回码。
+ * @author lipeng
+ * 2020/7/15
+ */
 public enum ResultCode {
 
     SUCCESS(200, "操作成功"),

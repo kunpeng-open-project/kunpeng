@@ -10,43 +10,38 @@ import com.alibaba.excel.write.metadata.style.WriteFont;
 import com.alibaba.excel.write.style.HorizontalCellStyleStrategy;
 import com.kp.framework.constant.MinioConstant;
 import com.kp.framework.exception.KPServiceException;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.experimental.UtilityClass;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.poi.ss.usermodel.BorderStyle;
 import org.apache.poi.ss.usermodel.IndexedColors;
 import org.apache.tika.Tika;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
-import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URLEncoder;
 import java.util.List;
 
 /**
- * @Author lipeng
- * @Description 操作EasyExcel工具类
- * @Date 2021/1/6 18:02
- * @Param
- * @return
- **/
+ * 操作EasyExcel工具类。
+ * @author lipeng
+ * 2021/1/6
+ */
 @UtilityClass
+@Slf4j
 public final class KPEasyExcelUtil {
-    private static Logger logger = LoggerFactory.getLogger(KPEasyExcelUtil.class);
-
 
     /**
-     * @Author lipeng
-     * @Description 根据模板导出Excel
-     * @Date 2021/1/11 14:25
+     * 根据模板导出Excel。
+     * @author lipeng
+     * 2021/1/11
      * @param filename 文件名
      * @param tempLatePath tempLatePath 模板路径
      * @param list 导出内容
-     * @return void
-     **/
-    public static final void exportByTemplate(String filename, String tempLatePath, List<?> list) {
+     */
+    public static void exportByTemplate(String filename, String tempLatePath, List<?> list) {
         if (filename.indexOf("/") != -1)
             filename = filename.substring(filename.lastIndexOf("/") + 1);
         HttpServletResponse response = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getResponse();
@@ -94,21 +89,19 @@ public final class KPEasyExcelUtil {
             excelWriter.fill(list, writeSheet);
             excelWriter.finish();
         } catch (IOException e) {
-            logger.info("[导出Excel失败]" + e.getMessage());
+            log.info("[导出Excel失败]" + e.getMessage());
         }
     }
 
-
     /**
-     * @Author lipeng
-     * @Description 根据模板导出Excel
-     * @Date 2021/1/11 14:25
+     * 根据模板导出Excel。
+     * @author lipeng
+     * 2021/1/11
      * @param filename 文件名
      * @param inputStream 模版流文件
      * @param list 导出内容
-     * @return void
-     **/
-    public static final void exportByTemplate(String filename, InputStream inputStream, List<?> list) {
+     */
+    public static void exportByTemplate(String filename, InputStream inputStream, List<?> list) {
         if (filename.indexOf("/") != -1)
             filename = filename.substring(filename.lastIndexOf("/") + 1);
         HttpServletResponse response = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getResponse();
@@ -152,21 +145,19 @@ public final class KPEasyExcelUtil {
             excelWriter.fill(list, writeSheet);
             excelWriter.finish();
         } catch (IOException e) {
-            logger.info("[导出Excel失败]" + e.getMessage());
+            log.info("[导出Excel失败]" + e.getMessage());
         }
     }
 
-
     /**
-     * @Author lipeng
-     * @Description 根据模板导出，适用任何情况
-     * @Date 2022/10/8 10:39
-     * @param filename
-     * @param inputStream
-     * @param obj
-     * @return void
-     **/
-    public static final void exportByTemplate(String filename, InputStream inputStream, Object... obj) {
+     * 根据模板导出，适用任何情况。
+     * @author lipeng
+     * 2022/10/8
+     * @param filename 文件名
+     * @param inputStream 模版流文件
+     * @param obj 导出内容
+     */
+    public static void exportByTemplate(String filename, InputStream inputStream, Object... obj) {
         if (filename.indexOf("/") != -1)
             filename = filename.substring(filename.lastIndexOf("/") + 1);
         HttpServletResponse response = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getResponse();
@@ -191,20 +182,18 @@ public final class KPEasyExcelUtil {
 
             excelWriter.finish();
         } catch (IOException e) {
-            logger.info("[导出Excel失败]" + e.getMessage());
+            log.info("[导出Excel失败]" + e.getMessage());
         }
     }
 
-
     /**
-     * @Author lipeng
-     * @Description 根据模板导出（模板在minio中）
-     * @Date 2022/7/7 10:36
+     * 根据模板导出（模板在minio中）。
+     * @author lipeng
+     * 2022/7/7
      * @param bucketName 桶名称
      * @param fileName 文件名
      * @param list 导出内容
-     * @return void
-     **/
+     */
     public static void minioExprotByTemplate(String bucketName, String fileName, List<?> list) {
         InputStream inputStream = null;
         try {
@@ -222,12 +211,12 @@ public final class KPEasyExcelUtil {
     }
 
     /**
-     * @Author lipeng
-     * @Description 导出模板
-     * @Date 2021/1/11 14:32
-     * @Param [tempLatePath]
-     * @return void
-     **/
+     * 导出模板。
+     * @author lipeng
+     * 2021/1/11
+     * @param [tempLatePath]
+     * @return
+     */
 //    public static final void exportTemplate(String tempLatePath, String filename){
 //        HttpServletResponse response =((ServletRequestAttributes)RequestContextHolder.getRequestAttributes()).getResponse();
 //        try {

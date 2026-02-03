@@ -17,17 +17,17 @@ package ${package.Controller};
 
 import com.alibaba.fastjson2.JSONObject;
 import com.github.xiaoymin.knife4j.annotations.ApiSupport;
-import com.kp.framework.annotation.KPApiJsonlParam;
-import com.kp.framework.annotation.KPApiJsonlParamMode;
+import com.kp.framework.annotation.KPApiJsonParam;
+import com.kp.framework.annotation.KPApiJsonParamMode;
+import com.kp.framework.annotation.sub.KPJsonField;
 import com.kp.framework.annotation.verify.KPVerifyNote;
 import com.kp.framework.entity.bo.KPResult;
 import ${package.Entity}.${entity};
 import ${package.Entity}.param.${EntityParam}EditParamPO;
 import ${package.Entity}.param.${EntityParam}ListParamPO;
 import ${package.ServiceImpl}.${table.serviceImplName};
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiModelProperty;
-import io.swagger.annotations.ApiOperation;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -56,11 +56,12 @@ import java.util.List;
 <#else>
     <#assign requestMapping = "/" + table.name>
 </#if>
+
 /**
-* @Author ${author}
-* @Description  ${table.comment!}相关接口
-* @Date ${date}
-**/
+ * ${table.comment!}相关接口
+ * @author ${author}
+ * ${date}
+ */
 <#if restControllerStyle>
 @RestController
 <#else>
@@ -74,8 +75,8 @@ class ${table.controllerName}<#if superControllerClass??> : ${superControllerCla
 <#if superControllerClass??>
 public class ${table.controllerName} extends ${superControllerClass} {
 <#else>
-@Api(tags = "${commentMessage}相关接口", value = "${commentMessage}相关接口")
-@ApiSupport(order = 1)
+@Tag(name = "${commentMessage}相关接口")
+@ApiSupport(author = "${author}", order = 999)
 public class ${table.controllerName} {
 </#if>
 
@@ -84,19 +85,19 @@ public class ${table.controllerName} {
 
 
     @PreAuthorize("hasPermission('${requestMapping}/page/list', '${controllerPreAuthorize}:page:list')")
-    @ApiOperation(value = "查询${commentMessage}分页列表", notes = "权限 ${controllerPreAuthorize}:page:list")
+    @Operation(summary = "查询${commentMessage}分页列表", description = "权限 ${controllerPreAuthorize}:page:list")
     @PostMapping("/page/list")
     @KPVerifyNote
     public KPResult<${entity}> queryPageList(@RequestBody ${EntityParam}ListParamPO ${entityParam}ListParamPO){
-        return KPResult.list(${serviceImplName}.queryPageList(${entityParam}ListParamPO));
+        return ${serviceImplName}.queryPageList(${entityParam}ListParamPO);
     }
 
 
     @PreAuthorize("hasPermission('${requestMapping}/details','${controllerPreAuthorize}:details')")
-    @ApiOperation(value = "根据${keyComment}查询详情", notes="权限 ${controllerPreAuthorize}:details")
+    @Operation(summary = "根据${keyComment}查询详情", description = "权限 ${controllerPreAuthorize}:details")
     @PostMapping("/details")
-    @KPApiJsonlParam({
-        @ApiModelProperty(name = "${keyName}", value = "${keyComment}", required = true)
+    @KPApiJsonParam({
+        @KPJsonField(name = "${keyName}", description = "${keyComment}", required = true)
     })
     public KPResult<${entity}> queryDetailsById(@RequestBody JSONObject parameter){
         return KPResult.success(${serviceName}.queryDetailsById(parameter));
@@ -104,10 +105,10 @@ public class ${table.controllerName} {
 
 
     @PreAuthorize("hasPermission('${requestMapping}/save','${controllerPreAuthorize}:save')")
-    @ApiOperation(value = "新增${commentMessage}", notes="权限 ${controllerPreAuthorize}:save")
+    @Operation(summary = "新增${commentMessage}", description = "权限 ${controllerPreAuthorize}:save")
     @PostMapping("/save")
     @KPVerifyNote
-    @KPApiJsonlParamMode(component = ${EntityParam}EditParamPO.class, ignores = "${keyName}")
+    @KPApiJsonParamMode(component = ${EntityParam}EditParamPO.class, ignores = "${keyName}")
     public KPResult<${entity}> save(@RequestBody ${EntityParam}EditParamPO ${entityParam}EditParamPO){
         ${serviceName}.save${EntityParam}(${entityParam}EditParamPO);
         return KPResult.success();
@@ -115,7 +116,7 @@ public class ${table.controllerName} {
 
 
     @PreAuthorize("hasPermission('${requestMapping}/update','${controllerPreAuthorize}:update')")
-    @ApiOperation(value = "修改${commentMessage}", notes="权限 ${controllerPreAuthorize}:update")
+    @Operation(summary = "修改${commentMessage}", description = "权限 ${controllerPreAuthorize}:update")
     @PostMapping("/update")
     @KPVerifyNote
     public KPResult<${entity}> update(@RequestBody ${EntityParam}EditParamPO ${entityParam}EditParamPO){
@@ -125,12 +126,12 @@ public class ${table.controllerName} {
 
 
     @PreAuthorize("hasPermission('${requestMapping}/batch/remove','${controllerPreAuthorize}:batch:remove')")
-    @ApiOperation(value = "批量删除${commentMessage}", notes="权限 ${controllerPreAuthorize}:batch:remove")
+    @Operation(summary = "批量删除${commentMessage}", description = "权限 ${controllerPreAuthorize}:batch:remove")
     @PostMapping("/batch/remove")
-    @KPApiJsonlParam({
-        @ApiModelProperty(name = "ids", value = "${keyComment}", required = true, dataType = "list")
+    @KPApiJsonParam({
+        @KPJsonField(name = "ids", description = "${keyComment}", required = true, dataType = "array<string>")
     })
-    public KPResult batchRemove(@RequestBody List<String> ids){
+    public KPResult<String> batchRemove(@RequestBody List<String> ids){
         return KPResult.success(${serviceName}.batchRemove(ids));
     }
 }

@@ -10,14 +10,13 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 /**
- * xxl-job config
- *
- * @author xuxueli 2017-04-28
+ * xxl-job config。
+ * @author lipeng
+ * 2017-04-28
  */
 @Configuration
 @Slf4j
 public class XxlJobConfig {
-
 
     @Autowired
     private XXLJobProperties xxlJobProperties;
@@ -34,9 +33,9 @@ public class XxlJobConfig {
         xxlJobSpringExecutor.setAppname(xxlJobProperties.getExecutor().getAppname());
         xxlJobSpringExecutor.setAddress(xxlJobProperties.getExecutor().getAddress());
         xxlJobSpringExecutor.setIp(xxlJobProperties.getExecutor().getIp());
-        if (KPStringUtil.isEmpty(xxlJobProperties.getExecutor().getIp())){
+        if (KPStringUtil.isEmpty(xxlJobProperties.getExecutor().getIp())) {
             xxlJobSpringExecutor.setPort(KPIPUtil.findAvailablePort(KPIPUtil.getHostIp(), xxlJobProperties.getExecutor().getPort()));
-        }else{
+        } else {
             xxlJobSpringExecutor.setPort(KPIPUtil.findAvailablePort(xxlJobProperties.getExecutor().getIp(), xxlJobProperties.getExecutor().getPort()));
         }
         xxlJobSpringExecutor.setLogPath(xxlJobProperties.getExecutor().getLogpath());
@@ -44,23 +43,4 @@ public class XxlJobConfig {
 
         return xxlJobSpringExecutor;
     }
-
-    /**
-     * 针对多网卡、容器内部署等情况，可借助 "spring-cloud-commons" 提供的 "InetUtils" 组件灵活定制注册IP；
-     *
-     *      1、引入依赖：
-     *          <dependency>
-     *             <groupId>org.springframework.cloud</groupId>
-     *             <artifactId>spring-cloud-commons</artifactId>
-     *             <version>${version}</version>
-     *         </dependency>
-     *
-     *      2、配置文件，或者容器启动变量
-     *          spring.cloud.inetutils.preferred-networks: 'xxx.xxx.xxx.'
-     *
-     *      3、获取IP
-     *          String ip_ = inetUtils.findFirstNonLoopbackHostInfo().getIpAddress();
-     */
-
-
 }

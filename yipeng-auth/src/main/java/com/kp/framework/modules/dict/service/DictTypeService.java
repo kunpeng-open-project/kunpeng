@@ -9,6 +9,7 @@ import com.github.yulichang.wrapper.MPJLambdaWrapper;
 import com.kp.framework.common.cache.DictCache;
 import com.kp.framework.constant.ReturnFinishedMessageConstant;
 import com.kp.framework.entity.bo.DictionaryChildrenBO;
+import com.kp.framework.entity.bo.KPResult;
 import com.kp.framework.enums.DeleteFalgEnum;
 import com.kp.framework.enums.YesNoEnum;
 import com.kp.framework.exception.KPServiceException;
@@ -29,17 +30,16 @@ import com.kp.framework.utils.kptool.KPStringUtil;
 import com.kp.framework.utils.kptool.KPVerifyUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import springfox.documentation.spring.web.plugins.Docket;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
 /**
- * @Author lipeng
- * @Description 字典类型表 服务实现类
- * @Date 2025-07-03
- **/
+ * 字典类型表 服务实现类。
+ * @author lipeng
+ * 2025-07-03
+ */
 @Service
 public class DictTypeService extends ServiceImpl<DictTypeMapper, DictTypePO> {
 
@@ -48,17 +48,15 @@ public class DictTypeService extends ServiceImpl<DictTypeMapper, DictTypePO> {
 
     @Autowired
     private DictTypeProjectMapper dictTypeProjectMapper;
-    @Autowired
-    private Docket createRestApi;
 
     /**
-     * @Author lipeng
-     * @Description 查询字典类型列表
-     * @Date 2025-07-03
-     * @param dictTypeListParamPO
-     * @return java.util.List<DictTypePO>
-     **/
-    public List<DictTypeListCustomerPO> queryPageList(DictTypeListParamPO dictTypeListParamPO) {
+     * 查询字典类型列表。
+     * @author lipeng
+     * 2025-07-03
+     * @param dictTypeListParamPO 查询参数
+     * @return com.kp.framework.entity.bo.KPResult<com.kp.framework.modules.dict.po.customer.DictTypeListCustomerPO>
+     */
+    public KPResult<DictTypeListCustomerPO> queryPageList(DictTypeListParamPO dictTypeListParamPO) {
         MPJLambdaWrapper<DictTypePO> wrapper = new MPJLambdaWrapper<DictTypePO>("dictType")
                 .selectAll(DictTypePO.class, "dictType")
                 .select(KPDatabaseUtil.groupDistinctConcat("project.project_name", "projectNames"))
@@ -81,17 +79,16 @@ public class DictTypeService extends ServiceImpl<DictTypeMapper, DictTypePO> {
 
         Page page = PageHelper.startPage(dictTypeListParamPO.getPageNum(), dictTypeListParamPO.getPageSize(), dictTypeListParamPO.getOrderBy(DictTypePO.class));
         page.setCountColumn("distinct dict_type_id");
-        return this.baseMapper.selectJoinList(DictTypeListCustomerPO.class, wrapper);
+        return KPResult.list(this.baseMapper.selectJoinList(DictTypeListCustomerPO.class, wrapper));
     }
 
-
     /**
-     * @Author lipeng
-     * @Description 查询数据字典类型下拉框
-     * @Date 2025/11/28
-     * @param parameter
+     * 查询数据字典类型下拉框。
+     * @author lipeng
+     * 2025/11/28
+     * @param parameter 查询参数
      * @return java.util.List<com.kp.framework.entity.bo.DictionaryChildrenBO>
-     **/
+     */
     public List<DictionaryChildrenBO> queryDictTypeSelect(JSONObject parameter) {
         MPJLambdaWrapper<DictTypePO> wrapper = new MPJLambdaWrapper<DictTypePO>("dictType")
                 .selectAll(DictTypePO.class, "dictType")
@@ -120,14 +117,13 @@ public class DictTypeService extends ServiceImpl<DictTypeMapper, DictTypePO> {
         return body;
     }
 
-
     /**
-     * @Author lipeng
-     * @Description 根据字典类型ID查询详情
-     * @Date 2025-07-03
-     * @param parameter
-     * @return DictTypePO
-     **/
+     * 根据字典类型ID查询详情。
+     * @author lipeng
+     * 2025-07-03
+     * @param parameter 查询参数
+     * @return com.kp.framework.modules.dict.po.customer.DictTypeDetailsCustomerPO
+     */
     public DictTypeDetailsCustomerPO queryDetailsById(JSONObject parameter) {
         DictTypePO dictTypePO = KPJsonUtil.toJavaObject(parameter, DictTypePO.class);
         KPVerifyUtil.notNull(dictTypePO.getDictTypeId(), "请输入dictTypeId");
@@ -158,103 +154,93 @@ public class DictTypeService extends ServiceImpl<DictTypeMapper, DictTypePO> {
         return row;
     }
 
-
     /**
-     * @Author lipeng
-     * @Description 新增字典类型
-     * @Date 2025-07-03
-     * @param dictTypeEditParamPO
-     * @return void
-     **/
+     * 新增字典类型。
+     * @author lipeng
+     * 2025-07-03
+     * @param dictTypeEditParamPO 新增参数
+     */
     public void saveDictType(DictTypeEditParamPO dictTypeEditParamPO) {
         DictTypePO dictTypePO = KPJsonUtil.toJavaObjectNotEmpty(dictTypeEditParamPO, DictTypePO.class);
 
-        if (this.baseMapper.selectList(Wrappers.lambdaQuery(DictTypePO.class)
-                .eq(DictTypePO::getDictType, dictTypePO.getDictType())
-        ).size() > 0)
-            throw new KPServiceException("字典类型已存在，请勿重复添加");
-
+        if (KPStringUtil.isNotEmpty(this.baseMapper.selectList(Wrappers.lambdaQuery(DictTypePO.class)
+                .eq(DictTypePO::getDictType, dictTypePO.getDictType())))
+        ) throw new KPServiceException("字典类型已存在，请勿重复添加");
 
         if (this.baseMapper.insert(dictTypePO) == 0)
             throw new KPServiceException(ReturnFinishedMessageConstant.ERROR);
 
         // 删除项目关联
         List<String> deleteIds = dictTypeProjectMapper.selectList(Wrappers.lambdaQuery(DictTypeProjectPO.class).eq(DictTypeProjectPO::getDictTypeId, dictTypePO.getDictTypeId())).stream().map(DictTypeProjectPO::getAdtpId).collect(Collectors.toList());
-        if (KPStringUtil.isNotEmpty(deleteIds)) dictTypeProjectMapper.deleteAllByIds(deleteIds);
+        if (KPStringUtil.isNotEmpty(deleteIds)) dictTypeProjectMapper.kpDeleteAllByIds(deleteIds);
         // 新增项目关联
         List<DictTypeProjectPO> dictTypeProjectList = new ArrayList<>();
         dictTypeEditParamPO.getProjectIds().forEach(projectId -> {
             dictTypeProjectList.add(new DictTypeProjectPO().setDictTypeId(dictTypePO.getDictTypeId()).setProjectId(projectId));
         });
-        if (KPStringUtil.isNotEmpty(dictTypeProjectList)) dictTypeProjectMapper.insertBatchSomeColumn(dictTypeProjectList);
+        if (KPStringUtil.isNotEmpty(dictTypeProjectList)) dictTypeProjectMapper.kpInsertBatchSomeColumn(dictTypeProjectList);
 
 
         DictCache.clearAll();
     }
 
-
     /**
-     * @Author lipeng
-     * @Description 修改字典类型
-     * @Date 2025-07-03
-     * @param dictTypeEditParamPO
-     * @return void
-     **/
+     * 修改字典类型。
+     * @author lipeng
+     * 2025-07-03
+     * @param dictTypeEditParamPO 修改参数
+     */
     public void updateDictType(DictTypeEditParamPO dictTypeEditParamPO) {
         DictTypePO dictTypePO = KPJsonUtil.toJavaObjectNotEmpty(dictTypeEditParamPO, DictTypePO.class);
 
-        if (this.baseMapper.selectList(Wrappers.lambdaQuery(DictTypePO.class)
+        if (KPStringUtil.isNotEmpty(this.baseMapper.selectList(Wrappers.lambdaQuery(DictTypePO.class)
                 .eq(DictTypePO::getDictType, dictTypePO.getDictType())
-                .ne(DictTypePO::getDictTypeId, dictTypePO.getDictTypeId())
-        ).size() > 0)
-            throw new KPServiceException("字典类型已存在，请修改字典类型");
+                .ne(DictTypePO::getDictTypeId, dictTypePO.getDictTypeId())))
+        ) throw new KPServiceException("字典类型已存在，请修改字典类型");
 
         if (this.baseMapper.updateById(dictTypePO) == 0)
             throw new KPServiceException(ReturnFinishedMessageConstant.ERROR);
 
         // 删除项目关联
         List<String> deleteIds = dictTypeProjectMapper.selectList(Wrappers.lambdaQuery(DictTypeProjectPO.class).eq(DictTypeProjectPO::getDictTypeId, dictTypePO.getDictTypeId())).stream().map(DictTypeProjectPO::getAdtpId).collect(Collectors.toList());
-        if (KPStringUtil.isNotEmpty(deleteIds)) dictTypeProjectMapper.deleteAllByIds(deleteIds);
+        if (KPStringUtil.isNotEmpty(deleteIds)) dictTypeProjectMapper.kpDeleteAllByIds(deleteIds);
         // 新增项目关联
         List<DictTypeProjectPO> dictTypeProjectList = new ArrayList<>();
         dictTypeEditParamPO.getProjectIds().forEach(projectId -> {
             dictTypeProjectList.add(new DictTypeProjectPO().setDictTypeId(dictTypePO.getDictTypeId()).setProjectId(projectId));
         });
-        if (KPStringUtil.isNotEmpty(dictTypeProjectList)) dictTypeProjectMapper.insertBatchSomeColumn(dictTypeProjectList);
+        if (KPStringUtil.isNotEmpty(dictTypeProjectList)) dictTypeProjectMapper.kpInsertBatchSomeColumn(dictTypeProjectList);
 
         DictCache.clearAll();
     }
 
-
     /**
-     * @Author lipeng
-     * @Description 批量删除字典类型
-     * @Date 2025-07-03
-     * @param ids
-     * @return String
-     **/
+     * 批量删除字典类型。
+     * @author lipeng
+     * 2025-07-03
+     * @param ids 删除的ID
+     * @return java.lang.String
+     */
     public String batchRemove(List<String> ids) {
         if (KPStringUtil.isEmpty(ids)) throw new KPServiceException("请选择要删除的内容！");
 
         //查询角色下是否有用户
         List<DictDataPO> dictDataList = dictDataMapper.selectList(Wrappers.lambdaQuery(DictDataPO.class).in(DictDataPO::getDictTypeId, ids));
-        if (dictDataList.size() != 0) throw new KPServiceException(KPStringUtil.format("{0} 下存在字典数据, 不允许删除",  this.baseMapper.selectById(dictDataList.get(0).getDictTypeId()).getDictName()));
+        if (KPStringUtil.isNotEmpty(dictDataList)) throw new KPServiceException(KPStringUtil.format("{0} 下存在字典数据, 不允许删除", this.baseMapper.selectById(dictDataList.get(0).getDictTypeId()).getDictName()));
 
-        Integer row = this.baseMapper.deleteBatchIds(ids);
+        int row = this.baseMapper.deleteByIds(ids);
         if (row == 0) throw new KPServiceException(ReturnFinishedMessageConstant.ERROR);
 
         DictCache.clearAll();
         return KPStringUtil.format("删除成功{0}条数据", row);
     }
 
-
     /**
-     * @Author lipeng
-     * @Description 设置字典类型状态
-     * @Date 2025/7/3
-     * @param parameter
-     * @return void
-     **/
+     * 设置字典类型状态。
+     * @author lipeng
+     * 2025/7/3
+     * @param parameter 设置参数
+     */
     public void doStatus(JSONObject parameter) {
         DictTypePO dictTypeParameter = KPJsonUtil.toJavaObject(parameter, DictTypePO.class);
         KPVerifyUtil.notNull(dictTypeParameter.getDictTypeId(), "请输入字典类型Id");
@@ -262,20 +248,19 @@ public class DictTypeService extends ServiceImpl<DictTypeMapper, DictTypePO> {
         DictTypePO dictTypePO = this.baseMapper.selectById(dictTypeParameter.getDictTypeId());
         if (dictTypePO == null) throw new KPServiceException("字典类型不存在");
 
-        dictTypePO.setStatus(dictTypePO.getStatus().equals(YesNoEnum.YES.code())? YesNoEnum.NO.code():YesNoEnum.YES.code());
+        dictTypePO.setStatus(dictTypePO.getStatus().equals(YesNoEnum.YES.code()) ? YesNoEnum.NO.code() : YesNoEnum.YES.code());
 
         if (this.baseMapper.updateById(dictTypePO) == 0)
             throw new KPServiceException(ReturnFinishedMessageConstant.ERROR);
     }
 
-
     /**
-     * @Author lipeng
-     * @Description 根据字典类型Id集合查询字典类型列表
-     * @Date 2025/11/28
-     * @param dictTypeId
+     * 根据字典类型Id集合查询字典类型列表。
+     * @author lipeng
+     * 2025/11/28
+     * @param dictTypeId 字典类型Id集合
      * @return java.util.List<com.kp.framework.modules.dict.po.DictTypePO>
-     **/
+     */
     public List<DictTypePO> queryDictTypeIdList(List<String> dictTypeId) {
         KPVerifyUtil.notNull(dictTypeId, "字典类型Id集合不能为空");
 

@@ -11,43 +11,40 @@ import java.util.Collection;
 public interface ParentMapper<T> extends BaseMapper<T>, MPJBaseMapper<T> {
 
     /**
-     * @Author lipeng
-     * @Description 批量插入
-     * @Date 2022/3/29 15:45
-     * @param entityList
+     * 批量插入。
+     * @author lipeng
+     * 2022/3/29
+     * @param entityList 实体对象集合
      * @return java.lang.Integer
-     **/
-    Integer insertBatchSomeColumn(Collection<T> entityList);
-
-
-    /**
-     * @Author lipeng
-     * @Description 单条物理删除
-     * @Date 2024/6/3 11:32
-     * @param id
-     * @return int
-     **/
-    int deleteAllById(Serializable id);
-
+     */
+    Integer kpInsertBatchSomeColumn(Collection<T> entityList);
 
     /**
-     * @Author lipeng
-     * @Description 批量物理删除
-     * @Date 2024/6/3 11:35
-     * @param idList
+     * 单条物理删除。
+     * @author lipeng
+     * 2024/6/3
+     * @param id 主键
      * @return int
-     **/
-    int deleteAllByIds(@Param("coll") Collection<?> idList);
-
+     */
+    int kpDeleteAllById(Serializable id);
 
     /**
-     * @Author lipeng
-     * @Description 统计数量 并且根据指定字段去重
-     * @Date 2024/8/30 15:22
-     * @param distinctFile
-     * @param tableName
+     * 批量物理删除。
+     * @author lipeng
+     * 2024/6/3
+     * @param idList 主键集合
      * @return int
-     **/
+     */
+    int kpDeleteAllByIds(@Param("coll") Collection<?> idList);
+
+    /**
+     * 统计数量 并且根据指定字段去重。
+     * @author lipeng
+     * 2024/8/30
+     * @param distinctFile 去重字段
+     * @param tableName 表名
+     * @return int
+     */
     @Select("SELECT COUNT(DISTINCT ${distinctFile}) FROM ${tableName} WHERE delete_flag = 0")
-    int selectCountDistinct(@Param("distinctFile") String distinctFile, @Param("tableName") String tableName);
+    int kpSelectCountDistinct(@Param("distinctFile") String distinctFile, @Param("tableName") String tableName);
 }

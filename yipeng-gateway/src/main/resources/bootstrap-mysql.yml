@@ -1,0 +1,25 @@
+spring:
+  cloud:
+    nacos:
+      username: nacos
+      password: nacos123LP@#
+      discovery:
+        ip: 47.94.202.72
+        port: 10066
+        server-addr: http://nas.kunpengtool.cn
+        namespace: 6e57bb5f-703c-400c-b178-69aed29a9b00
+      config:
+        server-addr: http://nas.kunpengtool.cn
+        namespace: 6e57bb5f-703c-400c-b178-69aed29a9b00
+        group: DEFAULT_GROUP
+        file-extension: yaml
+        prefix: gateway
+logging:
+  level:
+    org.springframework.cloud.gateway: TRACE
+    org.springframework.cloud.loadbalancer: DEBUG
+    com.github.xiaoymin.knife4j.gateway: DEBUG
+    com.github.xiaoymin.knife4j.core: DEBUG
+
+log:
+  path: ./logs/gateway   # 相对路径：文件夹不存在自动创建

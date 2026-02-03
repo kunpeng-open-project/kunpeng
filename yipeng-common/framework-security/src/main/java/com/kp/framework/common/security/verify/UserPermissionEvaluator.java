@@ -13,13 +13,11 @@ import java.io.Serializable;
 import java.util.Arrays;
 import java.util.List;
 
-
 /**
- * @Author lipeng
- * @Description 自定义权限注解验证
- * @Date 2024/4/21
- * @return
- **/
+ * 自定义权限注解验证。
+ * @author lipeng
+ * 2024/4/21
+ */
 @Component
 public class UserPermissionEvaluator implements PermissionEvaluator {
 //    @Autowired
@@ -33,13 +31,13 @@ public class UserPermissionEvaluator implements PermissionEvaluator {
      * 这里仅仅判断PreAuthorize注解中的权限表达式
      * 实际中可以根据业务需求设计数据库通过targetUrl和permission做更复杂鉴权
      * 当然targetUrl不一定是URL可以是数据Id还可以是管理员标识等,这里根据需求自行设计
-     * @author zwq
-     * @date 2020/4/4
-     * @param authentication
-     * @param targetUrl
-     * @param permission
-     * @return
-     **/
+     * @author lipeng
+     * 2020/4/4
+     * @param authentication   用户信息
+     * @param targetUrl    请求路径
+     * @param permission   权限表达式
+     * @return boolean
+     */
     @Override
     public boolean hasPermission(Authentication authentication, Object targetUrl, Object permission) {
         PathMatcher pathMatcher = new AntPathMatcher();

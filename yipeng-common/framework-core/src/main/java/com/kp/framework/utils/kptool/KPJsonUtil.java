@@ -16,34 +16,31 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
-
-/* *
- * @Author 李鹏
- * @Description //
- * @Date 2020/5/31 0:26
- * @Param
- * @return
- **/
+/**
+ * json操作工具类。
+ * @author lipeng
+ * 2020/5/31
+ */
 @UtilityClass
 public final class KPJsonUtil {
 
     private static Logger log = LoggerFactory.getLogger(KPJsonUtil.class);
 
     /**
-     * @param obj
-     * @param clazz
+     * 把一个对象转成另一个对象。
+     * @author lipeng
+     * 2025/1/3
+     * @param obj 原对象
+     * @param clazz 需要转换成的对象
      * @return T
-     * @Author lipeng
-     * @Description 把一个对象转成另一个对象
-     * @Date 2025/1/3 15:13
-     **/
-    public static final <T> T toJavaObject(Object obj, Class<T> clazz) {
+     */
+    public static <T> T toJavaObject(Object obj, Class<T> clazz) {
         try {
             return JSON.toJavaObject(obj, clazz);
         } catch (Exception ex) {
             try {
                 return JSON.toJavaObject(JSON.toJSONString(obj), clazz);
-            }catch (Exception e){
+            } catch (Exception e) {
                 log.error("json转Java对象失败：" + e.getMessage());
                 throw new KPServiceException("数据转换异常！");
             }
@@ -51,14 +48,14 @@ public final class KPJsonUtil {
     }
 
     /**
-     * @Author lipeng
-     * @Description 把JSONObject 转成对象
-     * @Date 2025/11/20 11:23
-     * @param jsonObject
-     * @param clazz
+     * 把JSONObject 转成对象。
+     * @author lipeng
+     * 2025/11/20
+     * @param jsonObject 原对象
+     * @param clazz 需要转换成的对象
      * @return T
-     **/
-    public static final <T> T toJavaObject(JSONObject jsonObject, Class<T> clazz) {
+     */
+    public static <T> T toJavaObject(JSONObject jsonObject, Class<T> clazz) {
         try {
             cleanJsonObject(jsonObject);
             return JSON.toJavaObject(jsonObject, clazz);
@@ -69,55 +66,54 @@ public final class KPJsonUtil {
     }
 
     /**
-     * @Author lipeng
-     * @Description 把一个对象转成另一个对象并且去掉值数null的内容
-     * @Date 2025/11/20 11:23
-     * @param obj
-     * @param clazz
+     * 把一个对象转成另一个对象并且去掉值数null的内容。
+     * @author lipeng
+     * 2025/11/20
+     * @param obj 原对象
+     * @param clazz 需要转换成的对象
      * @return T
-     **/
-    public static final <T> T toJavaObjectNotEmpty(Object obj, Class<T> clazz) {
+     */
+    public static <T> T toJavaObjectNotEmpty(Object obj, Class<T> clazz) {
         return toJavaObject(KPJsonUtil.toJson(obj), clazz);
     }
 
-
     /**
+     * json 转 Javalist。
+     * @author lipeng
+     * 2025/1/3
+     * @param obj 原对象
+     * @param clazz 需要转换成的对象
      * @return java.util.List<T>
-     * @Author lipeng
-     * @Description json 转 Javalist
-     * @Date 2025/1/3 14:58
-     **/
+     */
     public static <T> List<T> toJavaObjectList(Object obj, Class<T> clazz) {
-        if (isJson(obj.toString())){
+        if (isJson(obj.toString())) {
             return toJavaObjectList(obj.toString(), clazz);
-        }else{
+        } else {
             return toJavaObjectList(JSON.toJSONString(obj), clazz);
         }
     }
 
-
     /**
-     * @Author lipeng
-     * @Description 把一个list 转成另一个list
-     * @Date 2025/11/20 11:24
-     * @param list
-     * @param clazz
+     * 把一个list 转成另一个list。
+     * @author lipeng
+     * 2025/11/20
+     * @param list 原list
+     * @param clazz 需要转换成的list
      * @return java.util.List<T>
-     **/
+     */
     public static <T> List<T> toJavaObjectList(List list, Class<T> clazz) {
         return toJavaObjectList(JSON.toJSONString(list), clazz);
     }
 
-
     /**
-     * @Author lipeng
-     * @Description 把一个josn字符串转成 list
-     * @Date 2025/11/20
-     * @param jsonString
-     * @param clazz
+     * 把一个josn字符串转成 list。
+     * @author lipeng
+     * 2025/11/20
+     * @param jsonString json字符串
+     * @param clazz 需要转换成的list
      * @return java.util.List<T>
-     **/
-    public static final <T> List<T> toJavaObjectList(String jsonString, Class<T> clazz) {
+     */
+    public static <T> List<T> toJavaObjectList(String jsonString, Class<T> clazz) {
         try {
             return JSON.parseArray(jsonString, clazz);
         } catch (Exception e) {
@@ -126,15 +122,14 @@ public final class KPJsonUtil {
         }
     }
 
-
     /**
-     * @return com.alibaba.fastjson.JSONObject
-     * @Author lipeng
-     * @Description 把 对象转 json
-     * @Date 2020/9/10
-     * @Param [obj]
-     **/
-    public static final JSONObject toJson(Object obj) {
+     * 把 对象转 json。
+     * @author lipeng
+     * 2020/9/10
+     * @param obj 需要转换的对象
+     * @return com.alibaba.fastjson2.JSONObject
+     */
+    public static JSONObject toJson(Object obj) {
         try {
             // 配置 JSONWriter 特性
             JSONWriter.Feature[] features = {
@@ -158,26 +153,25 @@ public final class KPJsonUtil {
         }
     }
 
-
     /**
-     * @Author lipeng
-     * @Description  那个json字符串转成jsonObject
-     * @Date 2025/11/20
-     * @param jsonStr
+     * 把json字符串转成jsonObject。
+     * @author lipeng
+     * 2025/11/20
+     * @param jsonStr json字符串
      * @return com.alibaba.fastjson2.JSONObject
-     **/
-    public static final JSONObject toJson(String jsonStr) {
+     */
+    public static JSONObject toJson(String jsonStr) {
         return JSONObject.parseObject(jsonStr);
     }
 
     /**
-     * @Author lipeng
-     * @Description 把对象转成json字符串
-     * @Date 2023/11/20
-     * @param obj
+     * 把对象转成json字符串。
+     * @author lipeng
+     * 2023/11/20
+     * @param obj 对象
      * @return java.lang.String
-     **/
-    public static final String toJsonString(Object obj) {
+     */
+    public static String toJsonString(Object obj) {
         try {
             // 配置 JSONWriter 特性
             JSONWriter.Feature[] features = {
@@ -188,6 +182,25 @@ public final class KPJsonUtil {
             return JSON.toJSONString(obj, "yyyy-MM-dd HH:mm:ss", features);
         } catch (Exception e) {
             log.error("对象转JSON字符串失败：" + e.getMessage());
+            throw new KPServiceException("数据转换异常！");
+        }
+    }
+
+    /**
+     * 把对象转成json字符串 去掉空值。
+     * @author lipeng
+     * 2026/1/19
+     * @param obj 对象
+     * @return java.lang.String
+     */
+    public static String toJsonStringNotEmpty(Object obj) {
+        try {
+            // 核心：直接复用你已有的两个方法，一行搞定，无任何冗余代码
+            JSONObject jsonObject = toJson(obj);
+            cleanJsonObject(jsonObject);
+            return jsonObject.toString();
+        } catch (Exception e) {
+            log.error("对象转非空JSON字符串失败：" + e.getMessage());
             throw new KPServiceException("数据转换异常！");
         }
     }
@@ -216,23 +229,21 @@ public final class KPJsonUtil {
 //
 
     //
-////	public static final <T> T toJavaObjectNotNull(Object obj, Class<T> newClass){
-//////		return KPJSONUtil.toJavaObjectNotNull(KPJSONUtil.toJson(obj), newClass);
-////		String jsonString = KPJSONUtil.toJsonStringNotNull(obj);
-////		return JSONObject.toJavaObject(KPJSONUtil.toJson(jsonString), newClass);
-////	}
-//
-//
-//
-//
-//	/**
-//	 * @Author lipeng
-//	 * @Description 合并json
-//	 * @Date 2020/9/14 18:15
-//	 * @Param [json1, json2]
-//	 * @return com.alibaba.fastjson.JSONObject
-//	 **/
-    public static final JSONObject mergeJson(JSONObject... json) {
+
+    ////	public static final <T> T toJavaObjectNotNull(Object obj, Class<T> newClass){
+    //////		return KPJSONUtil.toJavaObjectNotNull(KPJSONUtil.toJson(obj), newClass);
+    ////		String jsonString = KPJSONUtil.toJsonStringNotNull(obj);
+    ////		return JSONObject.toJavaObject(KPJSONUtil.toJson(jsonString), newClass);
+    ////    }
+
+    /**
+     * 合并json。
+     * @author lipeng
+     * 2020/9/14
+     * @param json 需要合并的所有json
+     * @return com.alibaba.fastjson2.JSONObject
+     */
+    public static JSONObject mergeJson(JSONObject... json) {
         JSONObject jsonThree = new JSONObject();
         Arrays.stream(json).iterator().forEachRemaining(jsonObject -> {
             jsonThree.putAll(jsonObject);
@@ -240,14 +251,13 @@ public final class KPJsonUtil {
         return jsonThree;
     }
 
-
     /**
-     * @param json
+     * 把json转HashMap。
+     * @author lipeng
+     * 2024/11/8
+     * @param json  json
      * @return java.util.HashMap
-     * @Author lipeng
-     * @Description 把json转HashMap
-     * @Date 2024/11/8 17:20
-     **/
+     */
     public static HashMap toHashMap(JSONObject json) {
 //		HashMap<String, Object> map = new HashMap<String, Object>();
 //		for (Map.Entry<String, Object> entry : json.entrySet()) {
@@ -261,12 +271,12 @@ public final class KPJsonUtil {
 
 
     /**
-     * @Author lipeng
-     * @Description 字典顺序
-     * @Date 2025/4/15 11:50
-     * @param json
+     * 按字典顺序排列。
+     * @author lipeng
+     * 2025/4/15
+     * @param json  json
      * @return java.util.TreeMap
-     **/
+     */
     public static TreeMap toTreeMap(JSONObject json) {
         TreeMap<String, Object> map = new TreeMap<String, Object>();
         for (Map.Entry<String, Object> entry : json.entrySet()) {
@@ -389,14 +399,12 @@ public final class KPJsonUtil {
 //
 //	}
 
-
     /**
-     * @param jsonObject
-     * @return void
-     * @Author lipeng
-     * @Description 把 “” 改成null
-     * @Date 2025/1/3 17:09
-     **/
+     * 把 “” 改成null。
+     * @author lipeng
+     * 2025/1/3
+     * @param jsonObject jsonObject
+     */
     private static void cleanJsonObject(JSONObject jsonObject) {
         for (Object key : jsonObject.keySet().toArray()) {
             Object value = jsonObject.get(key);
@@ -410,6 +418,22 @@ public final class KPJsonUtil {
                 // 移除 null 和 ""
                 jsonObject.remove(key);
             }
+        }
+    }
+
+    /**
+     * 判断字符串是不是json。
+     * @author lipeng
+     * 2025/4/17
+     * @param jsonStr json字符串
+     * @return boolean
+     */
+    public static boolean isJson(String jsonStr) {
+        try {
+            JSON.parse(jsonStr);
+            return true;
+        } catch (JSONException e) {
+            return false;
         }
     }
 
@@ -430,25 +454,10 @@ public final class KPJsonUtil {
     }
 
 
-    /**
-     * @Author lipeng
-     * @Description 判断字符串是不是json
-     * @Date 2025/4/17 15:06
-     * @param jsonStr
-     * @return boolean
-     **/
-    public static boolean isJson(String jsonStr) {
-        try {
-            JSON.parse(jsonStr);
-            return true;
-        } catch (JSONException e) {
-            return false;
-        }
-    }
-
-
     public static void main(String[] args) {
 
-        System.out.println(toJson(new KPJSONFactoryUtil().put("asdsad",null).put("asdsadsdasdd","asds").build()));
+        System.out.println(toJson(new KPJSONFactoryUtil().put("asdsad", null).put("asdsadsdasdd", "asds").build()));
     }
+
+
 }

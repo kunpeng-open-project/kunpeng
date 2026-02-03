@@ -9,49 +9,51 @@ import com.baomidou.mybatisplus.core.toolkit.sql.SqlScriptUtils;
 import com.baomidou.mybatisplus.extension.injector.methods.InsertBatchSomeColumn;
 import org.apache.ibatis.mapping.MappedStatement;
 import org.apache.ibatis.mapping.SqlSource;
+import org.apache.ibatis.session.Configuration;
 
 import java.util.List;
 
+/**
+ * MybatisPlus扩展方法。
+ * @author lipeng
+ * 2024/11/4
+ */
 public class MybatisPlusBathConfig extends DefaultSqlInjector {
+
     @Override
-    public List<AbstractMethod> getMethodList(Class<?> mapperClass, TableInfo tableInfo) {
-        List<AbstractMethod> methodList = super.getMethodList(mapperClass, tableInfo);
-        methodList.add(new InsertBatchSomeColumn(i -> i.getFieldFill() != FieldFill.UPDATE));
-        methodList.add(new deleteAllById("deleteAllById"));
-        methodList.add(new deleteAllByIds("deleteAllByIds"));
+    public List<AbstractMethod> getMethodList(Configuration configuration, Class<?> mapperClass, TableInfo tableInfo) {
+        List<AbstractMethod> methodList = super.getMethodList(configuration, mapperClass, tableInfo);
+        methodList.add(new InsertBatchSomeColumn("kpInsertBatchSomeColumn", i -> i.getFieldFill() != FieldFill.UPDATE));
+        methodList.add(new deleteAllById("kpDeleteAllById"));
+        methodList.add(new deleteAllByIds("kpDeleteAllByIds"));
         return methodList;
     }
 
-
     /**
-     * @Author lipeng
-     * @Description 物业删除单条
-     * @Date 2024/11/4 9:37
-     * @return
-     **/
-    class deleteAllById extends AbstractMethod {
+     * 物理删除单条。
+     * @author lipeng
+     * 2024/11/4
+     */
+    static class deleteAllById extends AbstractMethod {
         protected deleteAllById(String methodName) {
             super(methodName);
         }
 
         @Override
         public MappedStatement injectMappedStatement(Class<?> mapperClass, Class<?> modelClass, TableInfo tableInfo) {
-            String method = "deleteAllById";
             SqlMethod sqlMethod = SqlMethod.DELETE_BY_ID;
             String sql = String.format(sqlMethod.getSql(), tableInfo.getTableName(), tableInfo.getKeyColumn(), tableInfo.getKeyProperty());
             SqlSource sqlSource = this.languageDriver.createSqlSource(this.configuration, sql, Object.class);
-            return this.addDeleteMappedStatement(mapperClass, method, sqlSource);
+            return this.addDeleteMappedStatement(mapperClass, this.methodName, sqlSource);
         }
     }
 
-
     /**
-     * @Author lipeng
-     * @Description 物业删除批量
-     * @Date 2024/11/4 9:37
-     * @return
-     **/
-    class deleteAllByIds extends AbstractMethod {
+     * 物理删除批量。
+     * @author lipeng
+     * 2024/11/4
+     */
+    static class deleteAllByIds extends AbstractMethod {
 
         protected deleteAllByIds(String methodName) {
             super(methodName);
@@ -59,11 +61,10 @@ public class MybatisPlusBathConfig extends DefaultSqlInjector {
 
         @Override
         public MappedStatement injectMappedStatement(Class<?> mapperClass, Class<?> modelClass, TableInfo tableInfo) {
-            String method = "deleteAllByIds";
             SqlMethod sqlMethod = SqlMethod.DELETE_BATCH_BY_IDS;
             String sql = String.format(sqlMethod.getSql(), tableInfo.getTableName(), tableInfo.getKeyColumn(), SqlScriptUtils.convertForeach(SqlScriptUtils.convertChoose("@org.apache.ibatis.type.SimpleTypeRegistry@isSimpleType(item.getClass())", "#{item}", "#{item." + tableInfo.getKeyProperty() + "}"), "coll", (String) null, "item", ","));
             SqlSource sqlSource = this.languageDriver.createSqlSource(this.configuration, sql, Object.class);
-            return this.addDeleteMappedStatement(mapperClass, method, sqlSource);
+            return this.addDeleteMappedStatement(mapperClass, this.methodName, sqlSource);
         }
     }
 }

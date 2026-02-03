@@ -1,19 +1,18 @@
 package com.kp.framework.modules.menu.enums;
 
-
 /**
- * @Author lipeng
- * @Description 菜单类型
- * @Date 2024/4/25
- * @return
- **/
+ * 菜单类型。
+ * @author lipeng
+ * 2024/4/25
+ */
 public enum FrameStatusEnum {
     INSIDE(1, "内部"),
     OUTER_CHAIN_EMBEDDED(2, "外链内嵌"),
-    OUTER_CHAIN(3, "外链");
-    private String message;
+    OUTER_CHAIN(3, "外链"),
+    UNKNOWN(0, "未知");
 
-    private Integer code;
+    private final String message;
+    private final Integer code;
 
     FrameStatusEnum(Integer code, String message) {
         this.code = code;
@@ -21,14 +20,14 @@ public enum FrameStatusEnum {
     }
 
 
-
-    public static FrameStatusEnum getCodeValue(Integer code){
-        for(FrameStatusEnum value : values()){
+    public static FrameStatusEnum getCodeValue(Integer code) {
+        if (code == null) return UNKNOWN;
+        for (FrameStatusEnum value : values()) {
             if (value.code.equals(code)) {
                 return value;
             }
         }
-        return null;
+        return UNKNOWN;
     }
 
     public String message() {

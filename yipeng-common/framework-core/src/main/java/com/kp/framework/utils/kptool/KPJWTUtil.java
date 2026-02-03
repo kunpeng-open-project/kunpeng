@@ -1,6 +1,5 @@
 package com.kp.framework.utils.kptool;
 
-
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.algorithms.Algorithm;
@@ -14,13 +13,11 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
-/* *
- * @Author 李鹏
- * @Description JWT 相关操作
- * @Date 2020/5/19 11:29
- * @Param
- * @return
- **/
+/**
+ * JWT 相关操作。
+ * @author lipeng
+ * 2020/5/19
+ */
 @UtilityClass
 public final class KPJWTUtil {
 
@@ -36,15 +33,14 @@ public final class KPJWTUtil {
     //主题
     public static final String SUBJECT = "GALAXY-DATA-SYSTEM-CA";
 
-
     /**
-     * @Author lipeng
-     * @Description 生成Token
-     * @Date 2021/7/7 13:46
-     * @param val
+     * 生成Token。
+     * @author lipeng
+     * 2021/7/7
+     * @param val 值
      * @return java.lang.String
-     **/
-    public static String createToken(String val)  {
+     */
+    public static String createToken(String val) {
         try {
             Calendar nowTime = Calendar.getInstance();
             nowTime.add(Calendar.SECOND, EXPIRE_TIME);
@@ -62,19 +58,18 @@ public final class KPJWTUtil {
                     .withExpiresAt(expireDate)//过期时间
                     .sign(Algorithm.HMAC256(SECRET));//签名
             return token;
-        }catch (Exception ex){
-            throw  new KPServiceException("生成token异常！");
+        } catch (Exception ex) {
+            throw new KPServiceException("生成token异常！");
         }
     }
 
-
-   /**
-    * @Author lipeng
-    * @Description 验证Token
-    * @Date 2021/7/7 13:46
-    * @param token
-    * @return boolean
-    **/
+    /**
+     * 验证Token。
+     * @author lipeng
+     * 2021/7/7
+     * @param token 需要验证的token
+     * @return boolean
+     */
     public static boolean verifyToken(String token) {
         try {
             JWTVerifier verifier = JWT.require(Algorithm.HMAC256(SECRET)).build();
@@ -86,17 +81,12 @@ public final class KPJWTUtil {
     }
 
     /**
-     * @Author lipeng
-     * @Description  解析Token
-     * @Date 2021/7/7 13:46
-     * @param token
-     * @return java.lang.String
-     **/
-//    public static String parseToken(String token) {
-//        DecodedJWT decodedJWT = JWT.decode(token);
-//        return decodedJWT.getClaim(KEY).asString();
-//    }
-
+     * 解析Token。
+     * @author lipeng
+     * 2021/7/7
+     * @param token 需要解析的token
+     * @return com.auth0.jwt.interfaces.Claim
+     */
     public static Claim parseToken(String token) {
         DecodedJWT decodedJWT = JWT.decode(token);
         return decodedJWT.getClaim(KEY);
@@ -104,7 +94,7 @@ public final class KPJWTUtil {
 
     public static void main(String[] args) {
         try {
-            String aa =  KPJWTUtil.createToken("111");
+            String aa = KPJWTUtil.createToken("111");
 
             System.out.println(aa);
 
@@ -112,9 +102,8 @@ public final class KPJWTUtil {
             System.out.println(KPJWTUtil.parseToken(aa));
             System.out.println(KPJWTUtil.verifyToken(aa));
 
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
-
     }
 }

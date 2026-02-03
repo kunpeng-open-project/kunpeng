@@ -1,5 +1,9 @@
 package com.kp.framework.constant;
 
+/**
+ * redis前缀常量信息。
+ * @author lipeng
+ */
 public class RedisConstant {
 
     //公用

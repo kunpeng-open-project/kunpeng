@@ -14,21 +14,18 @@ import org.springframework.transaction.interceptor.DefaultTransactionAttribute;
 import org.springframework.transaction.interceptor.NameMatchTransactionAttributeSource;
 import org.springframework.transaction.interceptor.TransactionInterceptor;
 
-
 /**
- * @Author lipeng
- * @Description 统一事务处理
- * @Date 2020/9/7 11:48
- * @Param
- * @return
- **/
+ * 统一事务处理。
+ * @author lipeng
+ * 2020/9/7
+ */
 @Aspect
 @Configuration
 public class TransactionalConfigForBoot {
 
-//    private static final String AOP_POINTCUT_EXPRESSION = "execution(* com.mrp.data.module.*.service.*.*(..)) or execution(* com.galaxy.data.service.module.*.*(..)) or execution(* com.supervise.data.module.*.service.*.*(..))";
+    //    private static final String AOP_POINTCUT_EXPRESSION = "execution(* com.mrp.data.module.*.service.*.*(..)) or execution(* com.galaxy.data.service.module.*.*(..)) or execution(* com.supervise.data.module.*.service.*.*(..))";
     private static final String AOP_POINTCUT_EXPRESSION = "execution(* *..service.*.*(..))) or execution(* *..service.impl.*.*(..)))";
-//    or execution(* *..service.impl.*.*(..)))
+    //    or execution(* *..service.impl.*.*(..)))
     @Autowired
     private PlatformTransactionManager transactionManager;
 
@@ -48,7 +45,7 @@ public class TransactionalConfigForBoot {
 
         NameMatchTransactionAttributeSource source = new NameMatchTransactionAttributeSource();
 
- /*       source.addTransactionalMethod("query*", txAttr_REQUIRED_READONLY);*/
+        /*       source.addTransactionalMethod("query*", txAttr_REQUIRED_READONLY);*/
         source.addTransactionalMethod("add", txAttr_REQUIRED);
         source.addTransactionalMethod("add*", txAttr_REQUIRED);
         source.addTransactionalMethod("save", txAttr_REQUIRED);

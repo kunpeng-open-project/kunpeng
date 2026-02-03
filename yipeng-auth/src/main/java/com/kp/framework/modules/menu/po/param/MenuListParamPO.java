@@ -2,50 +2,57 @@ package com.kp.framework.modules.menu.po.param;
 
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.kp.framework.annotation.verify.KPNotNull;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
 
-/**
- * @Author lipeng
- * @Description 菜单信息列表查询入参
- * @Date 2025-04-11
-**/
-@Data
-@Accessors(chain = true)
-@ApiModel(value = "MenuListParamPO对象", description = "菜单信息列表查询入参")
-public class MenuListParamPO {
+import java.io.Serial;
+import java.io.Serializable;
 
-    @ApiModelProperty("项目Id")
+/**
+ * 菜单信息列表查询入参。
+ * @author lipeng
+ * 2025-04-11
+ */
+@Data
+@EqualsAndHashCode(callSuper = false)
+@Accessors(chain = true)
+@Schema(name = "MenuListParamPO对象", description = "菜单信息列表查询入参")
+public class MenuListParamPO implements Serializable {
+
+    @Serial
+    private static final long serialVersionUID = 1L;
+
+    @Schema(description = "项目Id")
     @TableField("project_id")
     @KPNotNull(errMeg = "请选择要查询的项目")
     private String projectId;
 
-    @ApiModelProperty("菜单名称")
+    @Schema(description = "菜单名称")
     @TableField("menu_name")
     private String menuName;
 
-    @ApiModelProperty("菜单类型 M目录 C菜单 B按钮 I接口")
+    @Schema(description = "菜单类型 M目录 C菜单 B按钮 I接口")
     @TableField("menu_type")
     private String menuType;
 
-    @ApiModelProperty("权限标识")
+    @Schema(description = "权限标识")
     @TableField("perms")
     private String perms;
 
-    @ApiModelProperty("是否显示 0否 1是")
+    @Schema(description = "是否显示 0否 1是")
     @TableField("visible")
     private Integer visible;
 
-    @ApiModelProperty("是否启用 0否 1是")
+    @Schema(description = "是否启用 0否 1是")
     @TableField("is_enable")
     private Integer isEnable;
 
-    @ApiModelProperty(value = "是否树形结构 1 树形 2 列表", required = true, example = "1")
+    @Schema(description = "是否树形结构 1 树形 2 列表", requiredMode = Schema.RequiredMode.REQUIRED, example = "1")
     private Integer isTree = 2;
 
-    @ApiModelProperty(value = "排序规则 如 id desc, name asc", required = false, example = "")
+    @Schema(description = "排序规则 如 id desc, name asc")
     @TableField(exist = false)
     private String orderBy;
 }

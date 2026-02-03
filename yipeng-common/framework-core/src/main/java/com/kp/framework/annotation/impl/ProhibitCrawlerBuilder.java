@@ -1,4 +1,5 @@
 package com.kp.framework.annotation.impl;
+
 import com.alibaba.fastjson2.JSONObject;
 import com.kp.framework.annotation.KPProhibitCrawlerNote;
 import com.kp.framework.entity.internal.ResultCode;
@@ -8,20 +9,18 @@ import com.kp.framework.utils.kptool.KPRedisUtil;
 import com.kp.framework.utils.kptool.KPRequsetUtil;
 import com.kp.framework.utils.kptool.KPResponseUtil;
 import com.kp.framework.utils.kptool.KPStringUtil;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.stereotype.Component;
 
-import javax.servlet.http.HttpServletRequest;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-
 /**
- * @Author lipeng
- * @Description
- * @Date 2023/12/20 9:14
- * @return
- **/
+ * KPProhibitCrawlerNote 实现方式。
+ * @author lipeng
+ * 2023/12/20
+ */
 @Component
 public class ProhibitCrawlerBuilder {
 
@@ -29,7 +28,7 @@ public class ProhibitCrawlerBuilder {
 
     private List<String> whitelist = Arrays.asList("119.3.223.72");
 
-    public Boolean dispose(KPProhibitCrawlerNote prohibitCrawler)  {
+    public Boolean dispose(KPProhibitCrawlerNote prohibitCrawler) {
         HttpServletRequest request = KPRequsetUtil.getRequest();
         //放行白名单
         if (whitelist.contains(KPIPUtil.getClientIP())) return true;
@@ -43,7 +42,7 @@ public class ProhibitCrawlerBuilder {
         String forbid = KPRedisUtil.getString(redisKey_forbid); // 是否禁用
         List<Object> blacklist = KPRedisUtil.getList(redisKey_blacklist); // 黑名单
 
-        if (blacklist != null && blacklist.size()>0 && blacklist.contains(KPIPUtil.getClientIP())){
+        if (blacklist != null && blacklist.size() > 0 && blacklist.contains(KPIPUtil.getClientIP())) {
             JSONObject error = new KPJSONFactoryUtil()
                     .put("code", ResultCode.PERPETUAL_FORBID_VISIT.code())
                     .put("message", ResultCode.PERPETUAL_FORBID_VISIT.message())
@@ -54,7 +53,7 @@ public class ProhibitCrawlerBuilder {
         }
 
         //禁止访问
-        if (KPStringUtil.isNotEmpty(forbid)){
+        if (KPStringUtil.isNotEmpty(forbid)) {
             JSONObject error = new KPJSONFactoryUtil()
                     .put("code", ResultCode.TEMPORARY_FORBID_VISIT.code())
                     .put("message", ResultCode.TEMPORARY_FORBID_VISIT.message())
@@ -64,7 +63,7 @@ public class ProhibitCrawlerBuilder {
             return false;
         }
 
-        if (KPStringUtil.isEmpty(number)){
+        if (KPStringUtil.isEmpty(number)) {
             KPRedisUtil.set(redisKey, 1, prohibitCrawler.minute() * 60);
             return true;
         }
@@ -72,19 +71,19 @@ public class ProhibitCrawlerBuilder {
 
         KPRedisUtil.set(redisKey, number + 1, KPRedisUtil.ttl(redisKey));
 
-        if (number >= prohibitCrawler.minuteCount()){
+        if (number >= prohibitCrawler.minuteCount()) {
             //设置禁用
             KPRedisUtil.set(redisKey_forbid, KPStringUtil.format("禁止访问{0}小时", prohibitCrawler.forbidHouse()), prohibitCrawler.forbidHouse(), TimeUnit.HOURS);
 
             //判断是否加入黑名单
             Integer forbidNumber = KPRedisUtil.getInteger(redisKey_forbidNumber);
-            if (KPStringUtil.isEmpty(forbidNumber)){
+            if (KPStringUtil.isEmpty(forbidNumber)) {
                 KPRedisUtil.set(redisKey_forbidNumber, 1, 30, TimeUnit.DAYS);
-            }else{
+            } else {
                 Integer forbidCount = forbidNumber + 1;
                 KPRedisUtil.set(redisKey_forbidNumber, forbidCount, 30, TimeUnit.DAYS);
-                if (forbidCount >= prohibitCrawler.blacklist()){
-                    if (!blacklist.contains(KPIPUtil.getClientIP())){
+                if (forbidCount >= prohibitCrawler.blacklist()) {
+                    if (!blacklist.contains(KPIPUtil.getClientIP())) {
                         KPRedisUtil.setListByLeftPush(redisKey_blacklist, KPIPUtil.getClientIP());
                     }
                 }

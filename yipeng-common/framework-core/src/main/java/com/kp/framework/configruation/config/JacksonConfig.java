@@ -1,6 +1,5 @@
 package com.kp.framework.configruation.config;
 
-
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.ser.std.StdSerializer;
@@ -19,26 +18,21 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
-
 /**
- * @Author lipeng
- * @Description  全局类型转换器
- * @Date 2020/9/23 17:24
- * @Param
- * @return
- **/
+ * 全局类型转换器。
+ * @author lipeng
+ * 2020/9/23
+ */
 @Configuration
 @Component
 public class JacksonConfig {
 
-
     /**
-     * @param
+     * 全局转化器。
+     * @author lipeng
+     * 2020/9/23
      * @return org.springframework.boot.autoconfigure.jackson.Jackson2ObjectMapperBuilderCustomizer
-     * @Author lipeng
-     * @Description Jackson全局转化long类型为String，解决jackson序列化时传入前端Long类型缺失精度问题
-     * @Date 2020/9/23 17:24
-     **/
+     */
     @Bean
     public Jackson2ObjectMapperBuilderCustomizer jackson2ObjectMapperBuilderCustomizer() {
         Jackson2ObjectMapperBuilderCustomizer cunstomizer = new Jackson2ObjectMapperBuilderCustomizer() {

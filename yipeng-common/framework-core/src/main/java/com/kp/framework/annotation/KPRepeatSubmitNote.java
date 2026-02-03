@@ -7,14 +7,11 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-
-
 /**
- * @Author lipeng
- * @Description
- * @Date 2023/12/20 8:59
- * @return
- **/
+ * 防抖注解。
+ * @author lipeng
+ * 2023/12/20
+ */
 @Inherited
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)

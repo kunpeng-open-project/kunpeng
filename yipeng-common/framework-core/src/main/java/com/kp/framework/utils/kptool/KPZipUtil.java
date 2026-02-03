@@ -1,23 +1,21 @@
 package com.kp.framework.utils.kptool;
 
-
 import com.github.junrar.Archive;
 import com.github.junrar.exception.RarException;
 import com.github.junrar.rarfile.FileHeader;
 import com.kp.framework.entity.po.ZipFilePO;
 import com.kp.framework.exception.KPServiceException;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.experimental.UtilityClass;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.compress.archivers.zip.Zip64Mode;
 import org.apache.commons.compress.archivers.zip.ZipArchiveEntry;
 import org.apache.commons.compress.archivers.zip.ZipArchiveOutputStream;
 import org.apache.commons.compress.utils.IOUtils;
 import org.apache.tika.Tika;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
-import javax.servlet.http.HttpServletResponse;
 import java.io.BufferedOutputStream;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -38,29 +36,25 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
 /**
- * @Author lipeng
- * @Description 压缩相关操作
- * @Date 2022/5/18 12:52
- * @return
- **/
+ * 压缩相关操作。
+ * @author lipeng
+ * 2022/5/18
+ */
 @UtilityClass
+@Slf4j
 public final class KPZipUtil {
 
-    private static Logger log = LoggerFactory.getLogger(KPZipUtil.class);
-
-
-
     /**
-     * @Author lipeng
-     * @Description 解压文件流
-     * @Date 2022/5/18 16:37
-     * @param inputStream
-     * @param filePath
-     * @return java.util.List<com.alibaba.fastjson.JSONObject>
-     **/
+     * 解压文件流。
+     * @author lipeng
+     * 2022/5/18
+     * @param inputStream 文件流
+     * @param filePath 文件路径
+     * @return java.util.List<com.kp.framework.entity.po.ZipFilePO>
+     */
     public static List<ZipFilePO> unInputStream(InputStream inputStream, String filePath) {
         List<ZipFilePO> list = new ArrayList<>();
-        switch (new Tika().detect(filePath)){
+        switch (new Tika().detect(filePath)) {
             case "application/zip":
                 list = unZipInputStream(inputStream);
                 break;
@@ -73,18 +67,16 @@ public final class KPZipUtil {
         return list;
     }
 
-
     /**
-     * @Author lipeng
-     * @Description 把多个文件流压缩并返回流文件
-     * @Date 2022/6/30 17:08
+     * 把多个文件流压缩并返回流文件。
+     * @author lipeng
+     * 2022/6/30
      * @param zipFilePOList 要压缩的文件流
      * @param fileName 压缩后的压缩包名称
-     * @return void
-     **/
+     */
     public static void decompressionByZip(List<ZipFilePO> zipFilePOList, String fileName) {
         long beforeTime = System.currentTimeMillis();
-        HttpServletResponse response =((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getResponse();
+        HttpServletResponse response = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getResponse();
         fileName = fileName.trim();
         if (KPStringUtil.isEmpty(fileName))
             throw new KPServiceException("请输入压缩后的文件名称");
@@ -115,33 +107,35 @@ public final class KPZipUtil {
                 // 结束
                 try {
                     zipArchiveOutputStream.closeArchiveEntry();
-                }catch (Exception ex){}
+                } catch (Exception ex) {
+                }
                 try {
                     in.close();
-                }catch (Exception ex){}
+                } catch (Exception ex) {
+                }
             }
-        }catch (Exception ex){
+        } catch (Exception ex) {
             throw new KPServiceException("压缩文件失败！");
-        }finally {
+        } finally {
             try {
                 zipArchiveOutputStream.close();
-            }catch (Exception ex){}
+            } catch (Exception ex) {
+            }
         }
         System.gc();
 
         long time = System.currentTimeMillis() - beforeTime;
-        log.info("压缩耗时：" + time  +" 毫秒");
+        log.info("压缩耗时：" + time + " 毫秒");
     }
 
-
     /**
-     * @Author lipeng
-     * @Description 把本地地址转为InputStream流
-     * @Date 2022/5/18 11:26
+     * 把本地地址转为InputStream流。
+     * @author lipeng
+     *  2022/5/18
      * @param localPath 本地地址
      * @return java.io.InputStream
-     **/
-    public static final InputStream pathByInputStream(String localPath){
+     */
+    public static InputStream pathByInputStream(String localPath) {
         File file = new File(localPath);
         try {
             InputStream inputStream = new FileInputStream(file);
@@ -151,22 +145,21 @@ public final class KPZipUtil {
         }
     }
 
-
     /**
-     * @Author lipeng
-     * @Description 解压到指定目录  目前没有实现压缩包里压缩文件的解压（多重解压）
-     * @Date 2022/5/18 11:47
-     * @param inputStream  输入流  pathByInputStream("F://add.zip")
+     * 解压到指定目录  目前没有实现压缩包里压缩文件的解压（多重解压）。
+     * @author lipeng
+     * 2022/5/18
+     * @param inputStream 输入流  pathByInputStream("F://add.zip")
      * @param path 存放文件目录  例如 "F://addqewqe//"
-     **/
-    public static final void unZipFile(InputStream inputStream, String path) {
+     */
+    public static void unZipFile(InputStream inputStream, String path) {
         try {
             ZipInputStream zin; // 创建ZipInputStream对象
             zin = new ZipInputStream(inputStream, Charset.forName("GBK")); // 实例化对象，指明要解压的文件
             ZipEntry entry;
             while ((entry = zin.getNextEntry()) != null) {
                 //目录
-                if (entry.getSize()==0){
+                if (entry.getSize() == 0) {
                     KPFileUtil.createFolder(path + entry.getName());
                     continue;
                 }
@@ -177,7 +170,7 @@ public final class KPZipUtil {
                     out = new BufferedOutputStream(new FileOutputStream(new File(path + entry.getName())));
                     int read_size = 1024, len;
                     byte[] buffer = new byte[read_size];
-                    while ((len = zin.read(buffer, 0 ,read_size)) != -1) {
+                    while ((len = zin.read(buffer, 0, read_size)) != -1) {
                         out.write(buffer);
                     }
                 } finally {
@@ -202,41 +195,14 @@ public final class KPZipUtil {
         }
     }
 
-
-
     /**
-     * @Author lipeng
-     * @Description 解压到内存中
-     * @Date 2022/5/18 13:39
-     * @param inputStream
-     * @return java.util.List<java.util.Map<java.lang.String,java.lang.Object>>
-     **/
-//    public static final List<ZipFilePO> unZipInputStream(InputStream inputStream) {
-//        try {
-//            ZipInputStream zin; // 创建ZipInputStream对象
-//            zin = new ZipInputStream(inputStream, Charset.forName("GBK")); // 实例化对象，指明要解压的文件
-//            ZipEntry entry;
-//            List<ZipFilePO> zipFilePOList = new ArrayList<>();
-//            while ((entry = zin.getNextEntry()) != null) {
-//                if (entry.getSize()==0) continue;
-//                log.info(entry.getName());
-//                BufferedInputStream bs = new BufferedInputStream(zin);
-//                byte[] bytes = new byte[(int) entry.getSize()];
-//                bs.read(bytes, 0, (int) entry.getSize());
-//
-//                ZipFilePO zipFilePO = new ZipFilePO(new File(entry.getName()).getName(), entry.getSize(),  new Tika().detect(entry.getName()), new ByteArrayInputStream(bytes));
-//                zipFilePOList.add(zipFilePO);
-//            }
-//            zin.close();
-//            return zipFilePOList;
-//        } catch (IOException e) {
-//            throw new KPServiceException("解压文件失败" + e.getMessage());
-//        } catch (Exception e) {
-//            throw new KPServiceException("解压文件失败" + e.getMessage());
-//        }
-//    }
-
-    public static final List<ZipFilePO> unZipInputStream(InputStream inputStream) {
+     * 解压到内存中。
+     * @author lipeng
+     * 2022/5/18
+     * @param inputStream 输入流  pathByInputStream("F://add.zip")
+     * @return java.util.List<com.kp.framework.entity.po.ZipFilePO>
+     */
+    public static List<ZipFilePO> unZipInputStream(InputStream inputStream) {
         try (ZipInputStream zin = new ZipInputStream(inputStream, StandardCharsets.UTF_8)) { // 使用try-with-resources自动关闭zin
             List<ZipFilePO> zipFilePOList = new ArrayList<>();
             ZipEntry entry;
@@ -259,16 +225,14 @@ public final class KPZipUtil {
         }
     }
 
-
     /**
-     * @Author lipeng
-     * @Description 解压到指定目录
-     * @Date 2022/5/18 16:14
-     * @param inputStream  输入流  pathByInputStream("F://add.zip")
+     * 解压到指定目录。
+     * @author lipeng
+     * 2022/5/18
+     * @param inputStream 输入流  pathByInputStream("F://add.zip")
      * @param path 存放文件目录  例如 "F://addqewqe//"
-     * @return void
-     **/
-    public static final void unRarFile(InputStream inputStream, String path) {
+     */
+    public static void unRarFile(InputStream inputStream, String path) {
         try {
             Archive archive = new Archive(inputStream);
             FileHeader fileHeader;
@@ -276,7 +240,7 @@ public final class KPZipUtil {
                 String fileName = fileHeader.getFileNameW().isEmpty() ? fileHeader.getFileNameString() :
                         fileHeader.getFileNameW();
                 //目录
-                if (fileHeader.getDataSize()==0){
+                if (fileHeader.getDataSize() == 0) {
                     KPFileUtil.createFolder(path + fileName);
                     continue;
                 }
@@ -288,7 +252,7 @@ public final class KPZipUtil {
 
                 try {
                     os = new ByteArrayOutputStream();
-                    out = new BufferedOutputStream(new FileOutputStream(new File(path +fileName)));
+                    out = new BufferedOutputStream(new FileOutputStream(new File(path + fileName)));
 
                     archive.extractFile(fileHeader, os);
                     byte[] bytes = os.toByteArray();
@@ -326,13 +290,13 @@ public final class KPZipUtil {
     }
 
     /**
-     * @Author lipeng
-     * @Description 解压到内存中
-     * @Date 2022/5/18 13:39
-     * @param inputStream
-     * @return java.util.List<java.util.Map<java.lang.String,java.lang.Object>>
-     **/
-    public static final List<ZipFilePO> unRarInputStream(InputStream inputStream){
+     * 解压到内存中。
+     * @author lipeng
+     * 2022/5/18
+     * @param inputStream 输入流  pathByInputStream("F://add.zip")
+     * @return java.util.List<com.kp.framework.entity.po.ZipFilePO>
+     */
+    public static List<ZipFilePO> unRarInputStream(InputStream inputStream) {
         try {
             Archive archive = new Archive(inputStream);
             FileHeader fileHeader;
@@ -341,7 +305,7 @@ public final class KPZipUtil {
                 String fileName = fileHeader.getFileNameW().isEmpty() ? fileHeader.getFileNameString() :
                         fileHeader.getFileNameW();
                 //目录
-                if (fileHeader.getDataSize()==0) continue;
+                if (fileHeader.getDataSize() == 0) continue;
 
                 log.info(fileName);
 
@@ -350,7 +314,7 @@ public final class KPZipUtil {
                     os = new ByteArrayOutputStream();
                     archive.extractFile(fileHeader, os);
                     byte[] bytes = os.toByteArray();
-                    ZipFilePO zipFilePO = new ZipFilePO(new File(fileName).getName(), fileHeader.getDataSize(),  new Tika().detect(fileName), new ByteArrayInputStream(bytes));
+                    ZipFilePO zipFilePO = new ZipFilePO(new File(fileName).getName(), fileHeader.getDataSize(), new Tika().detect(fileName), new ByteArrayInputStream(bytes));
                     zipFilePOList.add(zipFilePO);
 
                 } finally {

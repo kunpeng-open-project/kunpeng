@@ -2,9 +2,6 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.kp.framework.modules.monthly.mapper.customer.MonthlyReportCustomerMapper">
 
-    <!-- 开启二级缓存 -->
-    <cache type="org.mybatis.caches.ehcache.LoggingEhcache"/>
-
     <select id="countByReviewMonthStatus" resultType="com.kp.framework.modules.monthly.po.customer.MonthlyReportStatisticsCustomerPO">
         SELECT COUNT(1)                                                                AS totalCount,
                COALESCE(SUM(CASE WHEN STATUS = 2 THEN 1 ELSE 0 END), 0)                AS pendingReviewCount,

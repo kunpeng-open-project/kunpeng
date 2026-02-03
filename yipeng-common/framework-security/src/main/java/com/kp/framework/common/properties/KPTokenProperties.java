@@ -24,5 +24,4 @@ public class KPTokenProperties {
 
     // 是否允许同一账号多人登录
     private Boolean multiAccess = false;
-
 }

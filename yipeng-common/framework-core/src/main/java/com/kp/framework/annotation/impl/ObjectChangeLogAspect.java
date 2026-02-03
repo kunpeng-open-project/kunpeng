@@ -1,4 +1,5 @@
 package com.kp.framework.annotation.impl;
+
 import com.alibaba.fastjson2.JSONObject;
 import com.kp.framework.annotation.KPObjectChangeLogNote;
 import com.kp.framework.annotation.impl.util.ObjectChangeUtil;
@@ -9,19 +10,17 @@ import org.aspectj.lang.annotation.Aspect;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-
 /**
- * @Author lipeng
- * @Description 单注解处理数据改变信息
- * @Date 2024/2/22 10:31
- * @return
- **/
+ * 单注解处理数据改变信息。
+ * @author lipeng
+ * 2024/2/22
+ */
 @Aspect
 @Component
 @Slf4j
 //@Scope("prototype")
 @SuppressWarnings("all")
-public class ObjectChangeLogAspect{
+public class ObjectChangeLogAspect {
 
     @Autowired
     private ObjectChangeUtil objectChangeUtil;

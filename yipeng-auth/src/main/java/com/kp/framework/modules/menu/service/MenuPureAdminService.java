@@ -32,13 +32,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-
 /**
- * @Author lipeng
- * @Description Pure-Admin框架
- * @Date 2024/6/24
- * @return
- **/
+ * Pure-Admin框架。
+ * @author lipeng
+ * 2024/6/24
+ */
 @Service
 public class MenuPureAdminService {
 
@@ -48,14 +46,13 @@ public class MenuPureAdminService {
     @Autowired
     private RoleMenuMapper roleMenuMapper;
 
-
     /**
-     * @Author lipeng
-     * @Description 查询Pure-Admin框架路由
-     * @Date 2024/6/24
-     * @param parameter
-     * @return java.util.List<com.alibaba.fastjson.JSONObject>
-     **/
+     * 查询Pure-Admin框架路由。
+     * @author lipeng
+     * 2024/6/24
+     * @param parameter 查询参数
+     * @return java.util.List<com.alibaba.fastjson2.JSONObject>
+     */
     public List<JSONObject> queryRouters(JSONObject parameter) {
         KPVerifyUtil.notNull(parameter.getString("projectCode"), "请输入项目编号！");
 
@@ -63,7 +60,7 @@ public class MenuPureAdminService {
         ProjectPO projectPO = ProjectCache.getProjectByCode(parameter.getString("projectCode"));
         if (projectPO == null) throw new KPServiceException("项目不存在");
 
-        LoginUserBO loginUserBO = LoginUserBO.getLoginUser();
+        LoginUserBO loginUserBO = LoginUserBO.getLoginUserNotEmpty();
 
         MPJLambdaWrapper<MenuPO> wrapper = new MPJLambdaWrapper<MenuPO>()
                 .selectAll(MenuPO.class)
@@ -79,7 +76,7 @@ public class MenuPureAdminService {
             roleMenuWrapper.in(RoleMenuPO::getRoleId, loginUserBO.getRoles().stream().map(AuthRolePO::getRoleId).collect(Collectors.toList()))
                     .eq(RoleMenuPO::getProjectId, projectPO.getProjectId());
             List<String> menuIds = roleMenuMapper.selectList(roleMenuWrapper).stream().map(RoleMenuPO::getMenuId).collect(Collectors.toList());
-            if (menuIds.size() == 0)  return new ArrayList<>(); //throw new KPServiceException("沒有菜单权限");
+            if (KPStringUtil.isEmpty(menuIds)) return new ArrayList<>(); //throw new KPServiceException("沒有菜单权限");
             wrapper.in(MenuPO::getMenuId, menuIds);
         }
 
@@ -97,7 +94,7 @@ public class MenuPureAdminService {
     }
 
 
-    public List<PureAdminRouterCustomerPO> buildPureAdminMenus(List<MenuCustomerPO> menus, Map<String, List<MenuPO>> auths) {
+    private List<PureAdminRouterCustomerPO> buildPureAdminMenus(List<MenuCustomerPO> menus, Map<String, List<MenuPO>> auths) {
         List<PureAdminRouterCustomerPO> routers = new LinkedList<>();
         menus.forEach(menu -> {
             PureAdminRouterCustomerPO router = new PureAdminRouterCustomerPO();
@@ -113,7 +110,7 @@ public class MenuPureAdminService {
                                 .icon(menu.getIcon())
                                 .rank(menu.getSort())
                                 .build());
-                        router.setChildren(Arrays.asList(
+                        router.setChildren(List.of(
                                 PureAdminRouterCustomerPO.builder()
                                         .name(KPStringUtil.initialsUpperCase(menu.getRouteName()))
                                         .path("/" + menu.getRoutePath())

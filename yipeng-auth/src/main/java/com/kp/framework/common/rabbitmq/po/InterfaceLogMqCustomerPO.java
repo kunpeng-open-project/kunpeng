@@ -2,28 +2,21 @@ package com.kp.framework.common.rabbitmq.po;
 
 import com.kp.framework.entity.bo.OperationUserMessageBO;
 import com.kp.framework.modules.logRecord.po.InterfaceLogPO;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
-import lombok.Data;
+import io.swagger.v3.oas.annotations.media.Schema;
+import lombok.Getter;
+import lombok.Setter;
 import lombok.experimental.Accessors;
 
-/**
- * @Author lipeng
- * @Description
- * @Date 2025/5/16
- * @return
- **/
-@Data
+@Getter
+@Setter
 @Accessors(chain = true)
-@ApiModel(value="InterfaceLogMqCustomerPO", description="")
+@Schema(name = "InterfaceLogMqCustomerPO", description = "InterfaceLogMqCustomerPO")
 public class InterfaceLogMqCustomerPO extends InterfaceLogPO {
 
-    private static final long serialVersionUID=1L;
-
-    @ApiModelProperty(value = "mq的deliveryTag")
+    @Schema(description = "mq的deliveryTag")
     private long deliveryTag;
 
-    @ApiModelProperty(value = "用户信息")
+    @Schema(description = "用户信息")
     private OperationUserMessageBO userMessage;
 
 }

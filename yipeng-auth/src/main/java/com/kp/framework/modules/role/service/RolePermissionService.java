@@ -31,6 +31,7 @@ import com.kp.framework.utils.kptool.KPJsonUtil;
 import com.kp.framework.utils.kptool.KPStringUtil;
 import com.kp.framework.utils.kptool.KPVerifyUtil;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -39,12 +40,9 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
- * <p>
  * 角色权限关联表 服务实现类
- * </p>
- *
  * @author lipeng
- * @since 2024-04-19
+ * 2024-04-19
  */
 @Service
 public class RolePermissionService extends ServiceImpl<RolePermissionMapper, RolePermissionPO> {
@@ -63,21 +61,18 @@ public class RolePermissionService extends ServiceImpl<RolePermissionMapper, Rol
 
 
     /**
-     * @param rolePermissionInstallParamPO
-     * @return void
-     * @Author lipeng
-     * @Description 设置数据权限
-     * @Date 2024/5/6
-     **/
+     * 设置数据权限。
+     * @author lipeng
+     * 2024/5/6
+     * @param rolePermissionInstallParamPO 参数
+     */
+    @CacheEvict(value = {"userCache", "menuCache"}, allEntries = true)
     public void doPermissionInstall(RolePermissionInstallParamPO rolePermissionInstallParamPO) {
         RolePO rolePO = roleMapper.selectById(rolePermissionInstallParamPO.getRoleId());
         if (rolePO == null) throw new RuntimeException("角色不存在");
 
         List<RoleProjectRelevancePO> authRoleProjectRelevanceList = roleProjectRelevanceMapper.selectList(Wrappers.lambdaQuery(RoleProjectRelevancePO.class).eq(RoleProjectRelevancePO::getRoleId, rolePermissionInstallParamPO.getRoleId()));
-        if (authRoleProjectRelevanceList != null
-                && authRoleProjectRelevanceList.size() != 0
-                && !authRoleProjectRelevanceList.stream().map(RoleProjectRelevancePO::getRoleId).collect(Collectors.toList()).contains(rolePermissionInstallParamPO.getRoleId())
-        ) {
+        if (KPStringUtil.isNotEmpty(authRoleProjectRelevanceList) && !authRoleProjectRelevanceList.stream().map(RoleProjectRelevancePO::getRoleId).toList().contains(rolePermissionInstallParamPO.getRoleId())) {
             throw new RuntimeException("该角色没有分配该项目，请在角色里面设置所属项目");
         }
 
@@ -86,7 +81,7 @@ public class RolePermissionService extends ServiceImpl<RolePermissionMapper, Rol
                 .eq(RolePermissionPO::getRoleId, rolePermissionInstallParamPO.getRoleId())
                 .eq(RolePermissionPO::getProjectId, rolePermissionInstallParamPO.getProjectId())
         ).stream().map(RolePermissionPO::getArpId).collect(Collectors.toList());
-        if (arpIds != null && arpIds.size() != 0) this.baseMapper.deleteAllByIds(arpIds);
+        if (KPStringUtil.isNotEmpty(arpIds)) this.baseMapper.kpDeleteAllByIds(arpIds);
 
         switch (PermissionTypeEnum.getCode(rolePermissionInstallParamPO.getPermissionType())) {
             case CUSTOM_USER:
@@ -132,14 +127,13 @@ public class RolePermissionService extends ServiceImpl<RolePermissionMapper, Rol
         }
     }
 
-
     /**
-     * @param parameter
-     * @return java.util.List<java.lang.String>
-     * @Author lipeng
-     * @Description 查询选中的数据权限
-     * @Date 2024/5/6
-     **/
+     * 查询选中的数据权限。
+     * @author lipeng
+     * 2024/5/6
+     * @param parameter 查询参数
+     * @return com.kp.framework.modules.role.po.customer.QueryPermissionCustomerPO
+     */
     public QueryPermissionCustomerPO queryPermissionInstall(JSONObject parameter) {
         KPVerifyUtil.notNull(parameter.getString("roleId"), "请输入角色Id");
         KPVerifyUtil.notNull(parameter.getString("projectId"), "请输入项目Id");
@@ -147,7 +141,7 @@ public class RolePermissionService extends ServiceImpl<RolePermissionMapper, Rol
         List<RolePermissionPO> permissionPOList = this.baseMapper.selectList(new LambdaQueryWrapper<>(RolePermissionPO.class)
                 .eq(RolePermissionPO::getRoleId, parameter.getString("roleId"))
                 .eq(RolePermissionPO::getProjectId, parameter.getString("projectId")));
-        if (permissionPOList.size() == 0) return null;
+        if (KPStringUtil.isEmpty(permissionPOList)) return null;
 
         QueryPermissionCustomerPO row = new QueryPermissionCustomerPO();
         row.setPermissionType(permissionPOList.get(0).getPermissionType());
@@ -159,8 +153,8 @@ public class RolePermissionService extends ServiceImpl<RolePermissionMapper, Rol
             // 构建树形结构
             Map<String, List<DeptCustomerPO>> map = deptList.stream().collect(Collectors.groupingBy(DeptCustomerPO::getParentId));
             List<String> choiceValue = new ArrayList<>();
-            permissionPOList.stream().map(RolePermissionPO::getDeptId).collect(Collectors.toList()).forEach(deptId -> {
-                if (map.get(deptId) == null)  choiceValue.add(deptId);
+            permissionPOList.stream().map(RolePermissionPO::getDeptId).toList().forEach(deptId -> {
+                if (map.get(deptId) == null) choiceValue.add(deptId);
             });
             row.setChoiceValue(choiceValue);
         }
@@ -168,6 +162,13 @@ public class RolePermissionService extends ServiceImpl<RolePermissionMapper, Rol
         return row;
     }
 
+    /**
+     * 查询选中的用户。
+     * @author lipeng
+     * 2024/5/6
+     * @param parameter 查询参数
+     * @return java.util.List<com.kp.framework.modules.user.po.customer.QueryUserCustomerPO>
+     */
     public List<QueryUserCustomerPO> queryPermissionUser(JSONObject parameter) {
         KPVerifyUtil.notNull(parameter.getString("roleId"), "请输入角色Id");
         KPVerifyUtil.notNull(parameter.getString("projectId"), "请输入项目Id");
@@ -175,12 +176,13 @@ public class RolePermissionService extends ServiceImpl<RolePermissionMapper, Rol
         LambdaQueryWrapper<RolePermissionPO> wrapper = new LambdaQueryWrapper<>();
         wrapper.eq(RolePermissionPO::getRoleId, parameter.getString("roleId"))
                 .eq(RolePermissionPO::getProjectId, parameter.getString("projectId"));
-        List<String> userIds = this.baseMapper.selectList(wrapper).stream().filter(po -> KPStringUtil.isNotEmpty(po.getUserId())).map(RolePermissionPO::getUserId).collect(Collectors.toList());
+
+        List<String> userIds = this.baseMapper.selectList(wrapper).stream().map(RolePermissionPO::getUserId).filter(KPStringUtil::isNotEmpty).toList();
         if (KPStringUtil.isEmpty(userIds)) return new ArrayList<>();
 
 
         MPJLambdaWrapper<UserPO> mpjWrapper = new MPJLambdaWrapper<UserPO>("u")
-                .selectAll(UserPO.class,"u")
+                .selectAll(UserPO.class, "u")
                 .select(KPDatabaseUtil.groupConcat("dept.dept_name", false, "deptName"))
 //                .select("GROUP_CONCAT( dept.dept_name SEPARATOR ', ' ) AS deptName")
                 .leftJoin(UserDeptPO.class, "userDept", on -> on

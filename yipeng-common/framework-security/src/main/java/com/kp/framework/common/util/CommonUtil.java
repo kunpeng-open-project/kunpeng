@@ -3,6 +3,8 @@ package com.kp.framework.common.util;
 import com.alibaba.fastjson2.JSON;
 import com.alibaba.fastjson2.JSONObject;
 import com.alibaba.fastjson2.JSONWriter;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.web.context.request.RequestContextHolder;
@@ -10,9 +12,8 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.HandlerExecutionChain;
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping;
+import org.springframework.web.util.ServletRequestPathUtils;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.InetAddress;
@@ -28,25 +29,20 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.concurrent.TimeUnit;
 
-
 /**
- * @Author lipeng
- * @Description 因为鉴权系统不能直接引用鲲鹏核心工具包  所有把用的的 放在这里   只限这个小jar包使用
- * @return
- **/
+ * 因为鉴权系统不能直接引用鲲鹏核心工具包  所有把用的的 放在这里   只限这个小jar包使用。
+ * @author lipeng
+ * 2020/9/10
+ */
 @Deprecated
 @Slf4j
 public class CommonUtil {
 
     private static final RedisTemplate<String, Object> redisTemplate = ServiceUtil.getBean("redisTemplate", RedisTemplate.class);
-    ;
 
-    /* *
-     * @Author 李鹏
-     * @Description //返回json
-     * @Param [response, jsonData]
-     * @return void
-     **/
+    /**
+     * 返回json
+     */
     public static final void writeJson(JSONObject jsonData) {
         HttpServletResponse response = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getResponse();
         response.setStatus(200);
@@ -79,26 +75,20 @@ public class CommonUtil {
         }
     }
 
-
     /**
-     * @Author lipeng
-     * @Description String转Json
-     * @Date 2020/9/10
-     * @Param [jsonString]
-     * @return com.alibaba.fastjson.JSON
-     **/
+     * String转Json。
+     * @author lipeng
+     * 2020/9/10
+     */
     public static final JSONObject toJson(String jsonString) {
         return JSONObject.parseObject(jsonString);
     }
 
-
     /**
-     * @Author lipeng
-     * @Description String转Java对象
-     * @Date 2020/9/10
-     * @Param [jsonString, clazz]
-     * @return T
-     **/
+     * String转Java对象。
+     * @author lipeng
+     * 2020/9/10
+     */
     public static final <T> T toJavaObject(String obj, Class<T> clazz) {
         try {
             return JSON.toJavaObject(obj, clazz);
@@ -113,10 +103,8 @@ public class CommonUtil {
     }
 
     /**
-     * 时间加减分钟
-     * @param startDate 要处理的时间，Null则为当前时间
-     * @param minutes 加减的分钟
-     * @return
+     * 时间加减分钟。
+     * @author lipeng
      */
     public static Date dateAddMinutes(Date startDate, int minutes) {
         if (startDate == null) {
@@ -128,24 +116,23 @@ public class CommonUtil {
         return c.getTime();
     }
 
-
     /**
-     * @Author lipeng
-     * @Description LocalDateTime 转 date
-     * @Date 2023/10/7
-     * @param localDateTime
+     * LocalDateTime 转 date
+     * @author lipeng
+     * 2023/10/7
+     * @param localDateTime LocalDateTime
      * @return java.util.Date
-     **/
+     */
     public static Date LocalDateTimeByDate(LocalDateTime localDateTime) {
         return Date.from(localDateTime.atZone(ZoneId.systemDefault()).toInstant());
     }
 
-
     /**
      * 时间比较（如果myDate>compareDate返回1，<返回-1，相等返回0）
+     * @author lipeng
+     * 2026/1/22
      * @param myDate 时间
-     * @param compareDate 要比较的时间
-     *                    后面的大 -1
+     * @param compareDate 要比较的时间 后面的大 -1
      * @return int
      */
     public static int dateCompare(Date myDate, Date compareDate) {
@@ -157,24 +144,21 @@ public class CommonUtil {
     }
 
     /**
-     * @Author lipeng
-     * @Description date转LocalDateTime
-     * @Date 2023/10/7
-     * @param date
+     * date转LocalDateTime。
+     * @author lipeng
+     * 2023/10/7
+     * @param date  Date
      * @return java.time.LocalDateTime
-     **/
+     */
     public static LocalDateTime dateByLocalDateTime(Date date) {
         return LocalDateTime.ofInstant(date.toInstant(), ZoneId.systemDefault());
     }
 
-
     /**
-     * @Author lipeng
-     * @Description 将毫秒数转换为天、小时、分钟、秒和毫秒的字符串形式
-     * @Date 2024/1/25
-     * @param milliseconds 毫秒数
-     * @return java.lang.String
-     **/
+     * 将毫秒数转换为天、小时、分钟、秒和毫秒的字符串形式。
+     * @author lipeng
+     * 2024/1/25
+     */
     public static String formatDuration(Long milliseconds) {
         if (milliseconds == null) return "-1毫秒";
         if (milliseconds == 0) return "0毫秒";
@@ -200,14 +184,13 @@ public class CommonUtil {
         return body;
     }
 
-
     /**
-     * 计算两个日期时间（包含日期和时间）相差的分钟数。
-     *
+     * 计算两个日期时间（包含日期和时间）相差的分钟数
+     * @author lipeng
+     * 2026/1/22
      * @param startTimeStr 开始日期时间的字符串，格式为"yyyy-MM-dd HH:mm:ss"
      * @param endTimeStr 结束日期时间的字符串，格式为"yyyy-MM-dd HH:mm:ss"
-     * @return 相差的分钟数
-     * @throws IllegalArgumentException 如果日期时间格式不正确或日期时间无效
+     * @return long 相差的分钟数
      */
     public static long getSecondsBetween(String startTimeStr, String endTimeStr) {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
@@ -217,30 +200,27 @@ public class CommonUtil {
         return duration.getSeconds();
     }
 
-
     /**
-     * @Author lipeng
-     * @Description 计算两个日期时间（包含日期和时间）相差的分钟数。
-     * @Date 2024/5/7
+     * 计算两个日期时间（包含日期和时间）相差的分钟数。
+     * @author lipeng
+     * 2024/5/7
      * @param startTime 开始日期时间
      * @param endTime 结束日期时间
-     * @return 相差的分钟数
-     * @throws IllegalArgumentException 如果日期时间格式不正确或日期时间无效
-     **/
+     * @return long 相差的分钟数
+     */
     public static long getSecondsBetween(LocalDateTime startTime, LocalDateTime endTime) {
         Duration duration = Duration.between(startTime, endTime);
         return duration.getSeconds();
     }
 
-
     /**
-     * @Author lipeng
-     * @Description 字符串替换  {num} 占位符 0 開始
-     * @Date 2022/5/10
-     * @param format
-     * @param args
+     * 字符串替换  {num} 占位符 0 開始。
+     * @author lipeng
+     * 2022/5/10
+     * @param format 字符串
+     * @param args 占位符参数
      * @return java.lang.String
-     **/
+     */
     public static final String format(String format, Object... args) {
         try {
             if (format.contains("'")) format = format.replaceAll("'", "''");
@@ -278,10 +258,6 @@ public class CommonUtil {
 
     /**
      * 实现命令：SET key value EX seconds，设置key-value和超时时间（秒）
-     *
-     * @param key
-     * @param value
-     * @param timeout （以秒为单位）
      */
     public static final void set(String key, Object value, long timeout) {
         try {
@@ -299,9 +275,6 @@ public class CommonUtil {
 
     /**
      * 实现命令：GET key，返回 key所关联的字符串值。
-     *
-     * @param key
-     * @return value
      */
     public static final String get(String key) {
         try {
@@ -321,12 +294,10 @@ public class CommonUtil {
     }
 
     /**
-     * @Author lipeng
-     * @Description 字符串首字母小写
-     * @Date 2021/2/7
-     * @param str
-     * @return java.lang.String
-     **/
+     * 字符串首字母小写。
+     * @author lipeng
+     * 2021/2/7
+     */
     public static final String initialsLowerCase(String str) {
         if (Character.isLowerCase(str.charAt(0)))
             return str;
@@ -338,9 +309,6 @@ public class CommonUtil {
 
     /**
      * 实现命令：expire 设置过期时间，单位秒
-     *
-     * @param key
-     * @return
      */
     public static void expire(String key, long timeout) {
         try {
@@ -405,14 +373,8 @@ public class CommonUtil {
     }
 
     /**
-     * @Author lipeng
-     * @Description 获取锁
-     * @Date 2021/2/1
-     * @param key 锁的Key
-     * @param value 值(随便写毫无意义)
-     * @param releaseTime 锁过期时间 防止死锁  秒
-     * @return boolean
-     **/
+     * 获取锁。
+     */
     public static boolean lock(String key, int value, long releaseTime) {
         // 尝试获取锁
         Boolean boo = redisTemplate.opsForValue().setIfAbsent(key, value, releaseTime, TimeUnit.SECONDS);
@@ -427,18 +389,20 @@ public class CommonUtil {
         }
     }
 
-
     /**
-     * @Author lipeng
-     * @Description 从req中获取HandlerMethod
-     * @Date 2024/4/10
-     * @param req
+     * 从req中获取HandlerMethod。
+     * @author lipeng
+     * 2024/4/10
      * @return org.springframework.web.method.HandlerMethod
-     **/
+     */
     public static HandlerMethod queryHandlerMethod(HttpServletRequest req) {
         try {
+            // 兼容所有 Spring Boot 3 版本，避免 getParsedRequestPath 方法不存在/访问受限
+            ServletRequestPathUtils.parseAndCache(req);
+            // 获取 HandlerMapping 并获取 HandlerExecutionChain
             RequestMappingHandlerMapping handlerMapping = ServiceUtil.getBean(RequestMappingHandlerMapping.class);
             HandlerExecutionChain handlerExecutionChain = handlerMapping.getHandler(req);
+            // 校验并返回 HandlerMethod
             if (handlerExecutionChain != null && handlerExecutionChain.getHandler() instanceof HandlerMethod) {
                 return (HandlerMethod) handlerExecutionChain.getHandler();
             }

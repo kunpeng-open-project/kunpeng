@@ -4,24 +4,23 @@ import org.springframework.amqp.core.Binding;
 import org.springframework.amqp.core.BindingBuilder;
 import org.springframework.amqp.core.DirectExchange;
 import org.springframework.amqp.core.Queue;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Component;
 
 import java.util.HashMap;
 import java.util.Map;
 
-
 /**
- * @Author lipeng
- * @Description 接口记录
- * @Date 2024/1/24 9:05
- * @return
- **/
+ * 接口记录。
+ * @author lipeng
+ * 2024/1/24
+ */
 @Component
 public class InterfaceRabbitMqConfig {
 
     /**
-     * @Description 正常队列
+     *  正常队列
      **/
     public final static String NORMAL_EXCHANGE = "interface_exchange";//正常交换机
     public final static String NORMAL_QUEUE = "interface_queue";  //正常队列
@@ -29,7 +28,7 @@ public class InterfaceRabbitMqConfig {
 
 
     /**
-     * @Description 死信队列
+     *  死信队列
      **/
     private final String DEAD_EXCHANGE = "interface_exchange_dead";//死信交换机
     public final static String DEAD_QUEUE = "interface_queue_dead";//死信队列
@@ -56,7 +55,7 @@ public class InterfaceRabbitMqConfig {
 
     //绑定死信队列到死信交换机
     @Bean
-    public Binding interfaceDeadbinding(Queue interfaceDeadQueue, DirectExchange interfaceDeadExchange) {
+    public Binding interfaceDeadbinding(@Qualifier("interfaceDeadQueue") Queue interfaceDeadQueue, @Qualifier("interfaceDeadExchange") DirectExchange interfaceDeadExchange) {
         return BindingBuilder.bind(interfaceDeadQueue).to(interfaceDeadExchange).with(DEAD_ROUTING_KEY);
     }
 
@@ -84,7 +83,7 @@ public class InterfaceRabbitMqConfig {
 
     //绑定正常队列到正常交换机
     @Bean
-    public Binding interfaceNormalBinding(Queue interfaceNormalQueue, DirectExchange interfaceNormalExchange) {
+    public Binding interfaceNormalBinding(@Qualifier("interfaceNormalQueue") Queue interfaceNormalQueue, @Qualifier("interfaceNormalExchange") DirectExchange interfaceNormalExchange) {
         return BindingBuilder.bind(interfaceNormalQueue).to(interfaceNormalExchange).with(NORMAL_ROUTING_KEY);
     }
 }

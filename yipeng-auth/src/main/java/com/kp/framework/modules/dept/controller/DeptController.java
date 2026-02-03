@@ -2,9 +2,10 @@ package com.kp.framework.modules.dept.controller;
 
 import com.alibaba.fastjson2.JSONObject;
 import com.github.xiaoymin.knife4j.annotations.ApiSupport;
-import com.kp.framework.annotation.KPApiJsonlParam;
-import com.kp.framework.annotation.KPApiJsonlParamMode;
+import com.kp.framework.annotation.KPApiJsonParam;
+import com.kp.framework.annotation.KPApiJsonParamMode;
 import com.kp.framework.annotation.KPObjectChangeLogNote;
+import com.kp.framework.annotation.sub.KPJsonField;
 import com.kp.framework.annotation.verify.KPVerifyNote;
 import com.kp.framework.constant.ObjectChangeLogOperateType;
 import com.kp.framework.entity.bo.KPResult;
@@ -15,9 +16,8 @@ import com.kp.framework.modules.dept.po.param.DeptEditParamPO;
 import com.kp.framework.modules.dept.po.param.DeptListParamPO;
 import com.kp.framework.modules.dept.po.param.DeptSortParamPO;
 import com.kp.framework.modules.dept.service.DeptService;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiModelProperty;
-import io.swagger.annotations.ApiOperation;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -28,14 +28,14 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 
 /**
-* @Author lipeng
-* @Description  部门信息表相关接口
-* @Date 2025-04-08
-**/
+ * 部门信息表相关接口。
+ * @author lipeng
+ * 2025-04-08
+ */
 @RestController
 @RequestMapping("/auth/dept")
-@Api(tags = "部门信息相关接口", value = "部门信息相关接口")
-@ApiSupport(order = 3)
+@Tag(name = "部门信息相关接口")
+@ApiSupport(author = "lipeng", order = 26)
 public class DeptController {
 
     @Autowired
@@ -43,80 +43,79 @@ public class DeptController {
 
 
     @PreAuthorize("hasPermission('/auth/dept/list', 'auth:dept:list')")
-    @ApiOperation(value = "查询部门信息分页列表", notes = "权限 auth:dept:list")
+    @Operation(summary = "查询部门信息分页列表", description = "权限 auth:dept:list")
     @PostMapping("/list")
     @KPVerifyNote
-    public KPResult<DeptCustomerPO> queryList(@RequestBody DeptListParamPO deptListParamPO){
-        return KPResult.list(deptService.queryList(deptListParamPO));
+    public KPResult<List<DeptCustomerPO>> queryList(@RequestBody DeptListParamPO deptListParamPO) {
+        return KPResult.success(deptService.queryList(deptListParamPO));
     }
 
 
     @PreAuthorize("hasPermission('/auth/dept/details','auth:dept:details')")
-    @ApiOperation(value = "根据部门Id查询详情", notes="权限 auth:dept:details")
+    @Operation(summary = "根据部门Id查询详情", description = "权限 auth:dept:details")
     @PostMapping("/details")
-    @KPApiJsonlParam({
-        @ApiModelProperty(name = "deptId", value = "部门Id", required = true)
+    @KPApiJsonParam({
+            @KPJsonField(name = "deptId", description = "部门Id", required = true)
     })
-    public KPResult<DeptPO> queryDetailsById(@RequestBody JSONObject parameter){
+    public KPResult<DeptPO> queryDetailsById(@RequestBody JSONObject parameter) {
         return KPResult.success(deptService.queryDetailsById(parameter));
     }
 
 
     @PreAuthorize("hasPermission('/auth/dept/save','auth:dept:save')")
-    @ApiOperation(value = "新增部门信息", notes="权限 auth:dept:save")
+    @Operation(summary = "新增部门信息", description = "权限 auth:dept:save")
     @PostMapping("/save")
     @KPObjectChangeLogNote(parentMapper = DeptMapper.class, identification = "deptId,dept_id", operateType = ObjectChangeLogOperateType.ADD, businessType = "部门信息")
     @KPVerifyNote
-    @KPApiJsonlParamMode(component = DeptEditParamPO.class, ignores = "deptId")
-    public KPResult<DeptPO> save(@RequestBody DeptEditParamPO deptEditParamPO){
+    @KPApiJsonParamMode(component = DeptEditParamPO.class, ignores = "deptId")
+    public KPResult<DeptPO> save(@RequestBody DeptEditParamPO deptEditParamPO) {
         deptService.saveDept(deptEditParamPO);
         return KPResult.success();
     }
 
 
     @PreAuthorize("hasPermission('/auth/dept/update','auth:dept:update')")
-    @ApiOperation(value = "修改部门信息", notes="权限 auth:dept:update")
+    @Operation(summary = "修改部门信息", description = "权限 auth:dept:update")
     @PostMapping("/update")
     @KPObjectChangeLogNote(parentMapper = DeptMapper.class, identification = "deptId,dept_id", businessType = "部门信息")
     @KPVerifyNote
-    public KPResult<DeptPO> update(@RequestBody DeptEditParamPO deptEditParamPO){
+    public KPResult<DeptPO> update(@RequestBody DeptEditParamPO deptEditParamPO) {
         deptService.updateDept(deptEditParamPO);
         return KPResult.success();
     }
 
 
     @PreAuthorize("hasPermission('/auth/dept/batch/remove','auth:dept:batch:remove')")
-    @ApiOperation(value = "批量删除部门信息", notes="权限 auth:dept:batch:remove")
+    @Operation(summary = "批量删除部门信息", description = "权限 auth:dept:batch:remove")
     @PostMapping("/batch/remove")
-    @KPApiJsonlParam({
-        @ApiModelProperty(name = "ids", value = "部门Id", required = true, dataType = "list")
+    @KPApiJsonParam({
+            @KPJsonField(name = "ids", description = "部门Id", required = true, dataType = "array<string>")
     })
     @KPObjectChangeLogNote(parentMapper = DeptMapper.class, identification = "deptId,dept_id", operateType = ObjectChangeLogOperateType.DELETE, businessType = "部门信息")
-    public KPResult batchRemove(@RequestBody List<String> ids){
+    public KPResult<String> batchRemove(@RequestBody List<String> ids) {
         return KPResult.success(deptService.batchRemove(ids));
     }
 
 
-
     @PreAuthorize("hasPermission('/auth/dept/do/status','auth:dept:do:status')")
-    @ApiOperation(value = "设置部门状态", notes = "权限 auth:dept:do:status")
+    @Operation(summary = "设置部门状态", description = "权限 auth:dept:do:status")
     @PostMapping(value = "/do/status")
-    @KPApiJsonlParam({
-            @ApiModelProperty(name = "deptId", value = "部门Id", required = true),
+    @KPApiJsonParam({
+            @KPJsonField(name = "deptId", description = "部门Id", required = true),
     })
     @KPObjectChangeLogNote(parentMapper = DeptMapper.class, identification = "deptId,dept_id", businessType = "部门信息")
-    public KPResult doStatus(@RequestBody JSONObject parameter) {
+    public KPResult<Void> doStatus(@RequestBody JSONObject parameter) {
         deptService.doStatus(parameter);
         return KPResult.success();
     }
 
 
     @PreAuthorize("hasPermission('/auth/dept/do/set/sort','auth:dept:do:set:sort')")
-    @ApiOperation(value = "设置排序", notes="权限 auth:dept:do:set:sort")
+    @Operation(summary = "设置排序", description = "权限 auth:dept:do:set:sort")
     @PostMapping(value = "/do/set/sort")
     @KPObjectChangeLogNote(parentMapper = DeptMapper.class, identification = "deptId,dept_id", operateType = ObjectChangeLogOperateType.UPDATE_BATCH, businessType = "部门信息")
     @KPVerifyNote
-    public KPResult doSetSort(@RequestBody List<DeptSortParamPO> deptSortParamList) {
+    public KPResult<Void> doSetSort(@RequestBody List<DeptSortParamPO> deptSortParamList) {
         deptService.doSetSort(deptSortParamList);
         return KPResult.success();
     }

@@ -17,24 +17,22 @@ import java.util.List;
 public interface IPost {
 
     /**
-     * @Author lipeng
-     * @Description 根据岗位Id查询岗位信息
-     * @Date 2025/7/31
-     * @param parameter
+     * 根据岗位Id查询岗位信息。
+     * @author lipeng
+     * 2025/7/31
+     * @param parameter 查询参数
      * @return com.kp.framework.entity.bo.KPResult<com.alibaba.fastjson2.JSONObject>
-     **/
+     */
     @PostMapping(value = "/api/post/query/id", headers = {"content-type=application/json"})
     KPResult<JSONObject> queryPostById(@RequestBody JSONObject parameter);
 
-
-
     /**
-     * @Author lipeng
-     * @Description 根据岗位id集合查询岗位列表
-     * @Date 2025/9/16
-     * @param postIds
+     * 根据岗位id集合查询岗位列表。
+     * @author lipeng
+     * 2025/9/16
+     * @param postIds 岗位id集合
      * @return com.kp.framework.entity.bo.KPResult<java.util.List<com.alibaba.fastjson2.JSONObject>>
-     **/
+     */
     @PostMapping(value = "/api/post/query/ids/list", headers = {"content-type=application/json"})
     KPResult<List<JSONObject>> queryPostIdList(@RequestBody List<String> postIds);
 }

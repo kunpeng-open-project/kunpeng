@@ -6,26 +6,26 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.regex.Pattern;
 
+
+/**
+ * 身份证操作工具类。
+ * @author lipeng
+ * 2023/12/8
+ */
 @UtilityClass
 public class KPIDCardUtil {
-    /**
-     *
-     *
-     * @return
-     * @throws Exception
-     */
 
     /**
-     * @Author lipeng
-     * @Description 根据身份证获取年龄
-     * @Date 2023/12/8
-     * @param idCard
+     * 根据身份证获取年龄。
+     * @author lipeng
+     * 2023/12/8
+     * @param idCard 身份证号
      * @return java.lang.Integer
-     **/
-    public static Integer getUserAge(String idCard){
+     */
+    public static Integer getUserAge(String idCard) {
         if (KPStringUtil.isEmpty(idCard)) return null;
         Pattern pattern = Pattern.compile(KPVerifyUtil.IDENTITY_CARD);
-        if(!pattern.matcher(idCard).matches()) return null;
+        if (!pattern.matcher(idCard).matches()) return null;
 
         try {
             String year = idCard.substring(6).substring(0, 4);// 得到年份
@@ -41,45 +41,52 @@ public class KPIDCardUtil {
                 age = Integer.parseInt(fyear) - Integer.parseInt(year);
             }
             return age;
-        }catch (Exception ex){}
+        } catch (Exception ex) {
+        }
         return null;
     }
 
-
     /**
-     * @Author lipeng
-     * @Description 根据身份证获取性别
-     * @Date 2023/12/8
-     * @param realName
-     * @param idCard
+     * 根据身份证获取性别。
+     * @author lipeng
+     * 2023/12/8
+     * @param realName 真实姓名
+     * @param idCard  身份证号
      * @return java.lang.String
-     **/
-    public static String getUserSex(String realName,String idCard) {
+     */
+    public static String getUserSex(String realName, String idCard) {
         if (KPStringUtil.isEmpty(idCard)) return null;
         Pattern pattern = Pattern.compile(KPVerifyUtil.IDENTITY_CARD);
-        if(!pattern.matcher(idCard).matches()) return null;
+        if (!pattern.matcher(idCard).matches()) return null;
 
         String topName = realName.substring(0, 1);
         String sexStr = "0";
         if (idCard.length() == 15) {
             sexStr = idCard.substring(14, 15);
         } else if (idCard.length() == 18) {
-            sexStr = idCard.substring(16,17);
+            sexStr = idCard.substring(16, 17);
         }
         int sexNo = Integer.parseInt(sexStr);
-        return sexNo % 2 == 0 ? topName+"女士" : topName+"先生";
+        return sexNo % 2 == 0 ? topName + "女士" : topName + "先生";
     }
 
+    /**
+     * 根据身份证号获取性别。
+     * @author lipeng
+     * 2023/12/8
+     * @param idCard  身份证号
+     * @return java.lang.String
+     */
     public static String getUserSex(String idCard) {
         if (KPStringUtil.isEmpty(idCard)) return null;
         Pattern pattern = Pattern.compile(KPVerifyUtil.IDENTITY_CARD);
-        if(!pattern.matcher(idCard).matches()) return null;
+        if (!pattern.matcher(idCard).matches()) return null;
 
         String sexStr = "0";
         if (idCard.length() == 15) {
             sexStr = idCard.substring(14, 15);
         } else if (idCard.length() == 18) {
-            sexStr = idCard.substring(16,17);
+            sexStr = idCard.substring(16, 17);
         }
         int sexNo = Integer.parseInt(sexStr);
         return sexNo % 2 == 0 ? "女士" : "先生";

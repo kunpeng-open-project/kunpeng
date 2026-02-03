@@ -9,6 +9,12 @@ import org.springframework.context.annotation.Configuration;
 import java.util.ArrayList;
 import java.util.List;
 
+
+/**
+ * 读取项目相关配置信息。
+ * @author lipeng
+ * 2023/2/22
+ */
 @Data
 @ConfigurationProperties(prefix = "kp")
 @Configuration

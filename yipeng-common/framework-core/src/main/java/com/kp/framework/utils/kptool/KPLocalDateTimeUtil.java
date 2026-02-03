@@ -17,9 +17,9 @@ import java.util.Date;
 import java.util.concurrent.TimeUnit;
 
 /**
- * @Author lipeng
- * @Description LocalDateTime 工具类，其方法名与 KPDateUtil 保持一致，以便于项目迁移。
- * @Date 2023/10/24
+ * LocalDateTime 工具类，其方法名与 KPDateUtil 保持一致，以便于项目迁移。
+ * @author lipeng
+ * 2023/10/24
  */
 @UtilityClass
 public class KPLocalDateTimeUtil {
@@ -347,6 +347,7 @@ public class KPLocalDateTimeUtil {
         if (date == null) date = LocalDateTime.now();
         return date.toLocalDate().atStartOfDay();
     }
+
     public LocalDateTime getWeeHours(LocalDate date) {
         if (date == null) date = LocalDate.now();
         return date.atStartOfDay().toLocalDate().atStartOfDay();
@@ -367,6 +368,7 @@ public class KPLocalDateTimeUtil {
         if (date == null) date = LocalDateTime.now();
         return date.toLocalDate().atTime(LocalTime.MAX);
     }
+
     public static LocalDateTime getWitchingHour(LocalDate date) {
         if (date == null) date = LocalDate.now();
         return date.atStartOfDay().toLocalDate().atTime(LocalTime.MAX);
@@ -536,22 +538,27 @@ public class KPLocalDateTimeUtil {
     public static LocalDateTime getFirstDateTimeOfDay(LocalDateTime dateTime) {
         return getWeeHours(dateTime);
     }
+
     @Deprecated
     public static LocalDateTime getFirstDateTimeOfDay(LocalDate date) {
         return getWeeHours(date);
     }
+
     @Deprecated
     public static LocalDateTime getFirstDateTimeOfDay() {
         return getWeeHours();
     }
+
     @Deprecated
     public static LocalDateTime getLastDateTimeOfDay(LocalDateTime dateTime) {
         return getWitchingHour(dateTime);
     }
+
     @Deprecated
     public static LocalDateTime getLastDateTimeOfDay(LocalDate localDate) {
         return getWitchingHour(localDate);
     }
+
     @Deprecated
     public static LocalDateTime getLastDateTimeOfDay() {
         return getWitchingHour();

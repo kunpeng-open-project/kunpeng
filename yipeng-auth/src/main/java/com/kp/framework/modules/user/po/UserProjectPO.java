@@ -5,35 +5,36 @@ import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.kp.framework.entity.bo.ParentBO;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
 
 /**
- * @Author lipeng
- * @Description 用户项目关联表
- * @Date 2025-04-21
-**/
+ * 用户项目关联表。
+ * @author lipeng
+ * 2025-04-21
+ */
 @Data
+@EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
 @TableName("auth_user_project")
-@ApiModel(value = "UserProjectPO对象", description = "用户项目关联表")
-public class UserProjectPO extends ParentBO {
+@Schema(name = "UserProjectPO", description = "用户项目关联表")
+public class UserProjectPO extends ParentBO<UserProjectPO> {
 
-    @ApiModelProperty("用户项目Id")
+    @Schema(description = "用户项目Id")
     @TableId(value = "aup_id", type = IdType.ASSIGN_UUID)
     private String aupId;
 
-    @ApiModelProperty("用户Id")
+    @Schema(description = "用户Id")
     @TableField("user_id")
     private String userId;
 
-    @ApiModelProperty("项目Id")
+    @Schema(description = "项目Id")
     @TableField("project_id")
     private String projectId;
 
-    @ApiModelProperty("备注")
+    @Schema(description = "备注")
     @TableField("remark")
     private String remark;
 }

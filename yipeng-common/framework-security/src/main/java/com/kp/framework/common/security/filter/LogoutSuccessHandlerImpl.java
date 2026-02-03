@@ -7,24 +7,22 @@ import com.kp.framework.common.util.BackUtil;
 import com.kp.framework.common.util.CommonUtil;
 import com.kp.framework.common.util.KPJWTUtil;
 import com.kp.framework.modules.user.po.customer.LoginUserTypeBO;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.logout.LogoutSuccessHandler;
 
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
-
 /**
- * @Author lipeng
- * @Description 退出登录
- * @Date 2024/4/20
- * @return
- **/
+ * 退出登录。
+ * @author lipeng
+ * 2024/4/20
+ */
 @Configuration
 public class LogoutSuccessHandlerImpl implements LogoutSuccessHandler {
 
@@ -34,15 +32,14 @@ public class LogoutSuccessHandlerImpl implements LogoutSuccessHandler {
     @Autowired
     private BackUtil backUtil;
 
-
     /**
-     * @Author lipeng
-     * @Description 退出处理
-     * @param request
-     * @param response
-     * @param authentication
-     * @return void
-     **/
+     * 退出处理。
+     * @author lipeng
+     * 2026/1/22
+     * @param request 请求
+     * @param response 响应
+     * @param authentication 认证信息
+     */
     @Override
     public void onLogoutSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
         Object attachment = authentication.getPrincipal();

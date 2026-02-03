@@ -11,6 +11,10 @@ import com.kp.framework.common.util.CommonUtil;
 import com.kp.framework.common.util.KPJWTUtil;
 import com.kp.framework.modules.user.po.customer.LoginUserBO;
 import com.kp.framework.modules.user.po.customer.LoginUserTypeBO;
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,18 +26,13 @@ import org.springframework.util.AntPathMatcher;
 import org.springframework.util.PathMatcher;
 import org.springframework.web.filter.OncePerRequestFilter;
 
-import javax.servlet.FilterChain;
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 /**
- * @Author lipeng
- * @Description 校验token tokeng过滤器
- * @Date 2024/4/19
- * @return
- **/
+ * 校验token tokeng过滤器。
+ * @author lipeng
+ * 2024/4/19
+ */
 @Component
 @Slf4j
 public class JwtAuthenticationTokenFilter extends OncePerRequestFilter {
@@ -129,5 +128,4 @@ public class JwtAuthenticationTokenFilter extends OncePerRequestFilter {
         } catch (Exception ex) {
         }
     }
-
 }
